@@ -55,7 +55,7 @@ Each notebook starts with a setup cell that checks the API key, the Qdrant conne
 | Notebook | Topic |
 |---|---|
 | `w2_01_chunking_and_retrieval` | Preprocessing, chunking strategies, text embeddings, retrieval metrics, model recommendation |
-| `w2_02_embedding_models` | Image and text embeddings: image-to-image, text-to-image, image-to-text retrieval |
+| `w2_02_embedding_models` | Image and text embeddings: image-to-image retrieval with a vision model, text search over articles, and the shared multimodal space (the two cross-modal directions switch on once the API embeds images as images) |
 | `w2_03_real_world_datentypen` | IT-Grundschutz PDF with Docling: structure-aware chunking, Qdrant, RAG answers |
 | `w2_04_ocr_docling_vlm_comparison` | OCR: Docling OCR vs Docling VLM vs external VLM |
 | `w3_01_intro_end_to_end` | End-to-end RAG and RAGAS introduction |
