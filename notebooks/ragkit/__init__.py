@@ -1,11 +1,17 @@
 """Shared helpers for the RAG workshop notebooks.
 
-The notebooks run with `notebooks/` as the working directory, so this package
-imports with no install step:
+marimo puts the notebook directory on `sys.path`, so this package imports with
+no install step:
 
+    from ragkit.config import setup
+    from ragkit import theme
     from ragkit.embed import embed, cached_embed
     from ragkit.chunk import chunk_by_paragraph, normalize_text
     from ragkit.search import rag_search, entropy
+
+`config.setup()` validates key, Qdrant and data files once per notebook;
+`theme` carries the HPI look for notebook chrome and figures; `crawl` fetched
+the bird dataset once and documents how such data can be collected.
 
 `ragkit` holds the plumbing that every notebook repeats: API calls, batching,
 caching, chunking, similarity, ranking metrics. It deliberately does not hold
@@ -15,4 +21,4 @@ Submodules are not imported here, so `import ragkit` stays cheap and a notebook
 that does no OCR never pays for the docling import.
 """
 
-__all__ = ['chunk', 'config', 'embed', 'search', 'viz']
+__all__ = ['chunk', 'config', 'crawl', 'embed', 'search', 'theme', 'viz']
