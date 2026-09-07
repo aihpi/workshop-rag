@@ -65,7 +65,21 @@ SPECIES = [
 _NOT_A_PHOTO = re.compile(r'map|range|distribution|verbreitung|spectro|sonogram|egg|eier|\bei\b|skull|skelet|'
                           r'\.svg|\.png|\.gif|drawing|illustration|zeichnung|stamp|karte|nestling|chick|'
                           r'küken|feather|feder|footprint|museum|specimen|präparat|MHNT|juvenil|immature|'
-                          r'jungvogel|nest|strona|page|plate|tafel|\b1[89]\d\d\b', re.IGNORECASE)
+                          r'jungvogel|nest|strona|page|plate|tafel|\b1[89]\d\d\b|young|jonge|duckling|młode|'
+                          r'natural.history|cemetery|brunnen|palace|kraftwerk|cowbird', re.IGNORECASE)
+
+
+# Dropped after a visual review of the first crawl: distant subjects, look-alike
+# duplicates of an already chosen photo, or the bird is not the main subject.
+EXCLUDE_TITLES = {
+    'File:Amsel, Männchen (Mai 2025) 2.jpg',
+    'File:Buntspecht (März 2025).jpg',
+    'File:Buntspecht Männchen (April 2025).jpg',
+    'File:A grey heron on a boat.jpg',
+    'File:Bayreuth Kriegsgräberstätte St. Georgen-20190324-RM-170540.jpg',
+    'File:20210930 Falco tinnunculus.jpg',
+    'File:20240815 Falco tinnunculus.jpg',
+}
 
 
 def _get(url: str, **params) -> dict:
@@ -137,7 +151,7 @@ def _usable(page: dict) -> dict | None:
     title = page['title']
     if info.get('mime') != 'image/jpeg' or _NOT_A_PHOTO.search(title) or not licence_ok(lic):
         return None
-    if info.get('width', 0) < 600:
+    if title in EXCLUDE_TITLES or info.get('width', 0) < 600:
         return None
     return {
         'title': title, 'url': info['url'], 'licence': lic,
