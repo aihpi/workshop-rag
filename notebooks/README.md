@@ -81,7 +81,7 @@ Copy the template and fill in your own credentials:
 
 ```bash
 cd notebooks
-cp .env_example .env
+cp .env.example .env
 ```
 
 Open `notebooks/.env` and replace `your_openai_api_key_here` with your real API key:
@@ -91,7 +91,7 @@ OPENAI_API_KEY=your_real_key_here
 OPENAI_API_BASE=https://api.aisc.hpi.de/
 ```
 
-`.env` is gitignored and must never be committed. `.env_example` is the tracked
+`.env` is gitignored and must never be committed. `.env.example` is the tracked
 template, so keep it free of secrets. Do not put your key into a notebook cell.
 
 ---
@@ -141,7 +141,7 @@ from ragkit.search import rag_search, entropy
 | `embed.py` | `embed()` plus the model-specific backends, retries, batching, the on-disk vector cache, image encoding. |
 | `chunk.py` | Text normalisation (including the German umlaut repair) and every chunking strategy. |
 | `search.py` | Qdrant access, cosine similarity, entropy, MRR/nDCG, answer generation from retrieved context. |
-| `viz.py` | Kernel density estimate and the two comparison figures from w2_01. |
+| `viz.py` | Kernel density estimate and figure-to-base64 encoding; the plots themselves stay in the notebooks. |
 
 No installation step: the notebooks run with `notebooks/` as the working
 directory, so the package is importable as-is.
@@ -201,5 +201,5 @@ Then reload VS Code and select kernel `Python (workshop-ragV2)`.
 - Increase `max_tokens` in the `llm_factory()` call (already set to 8192–65536 in notebooks 03/04).
 
 **Embedding `batch_size` errors (413):**
-- `minilm-embedding` has a max batch size of 32 (configured in `config.py`).
-- If you add a new embedding model, add its constraints to the `_EMBED_MODELS` registry in `config.py`.
+- `minilm-embedding` has a max batch size of 32 (configured in `ragkit/config.py`).
+- If you add a new embedding model, add its constraints to the `_EMBED_MODELS` registry in `ragkit/config.py`.

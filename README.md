@@ -16,7 +16,20 @@ An educational RAG (Retrieval-Augmented Generation) system with a FastAPI backen
 
 ## Architecture
 
-![Search your database and augment the LLM](img/image_query.png)
+```
+┌─────────────┐     ┌──────────────┐     ┌─────────────┐
+│   Frontend  │────▶│   Backend    │────▶│   Qdrant    │
+│  (React)    │     │  (FastAPI)   │     │  (Vectors)  │
+│  Port 3000  │     │  Port 8000   │     │  Port 6333  │
+└─────────────┘     └──────┬───────┘     └─────────────┘
+                           │
+                           ▼
+                    ┌──────────────┐
+                    │    Ollama    │
+                    │   (Qwen)     │
+                    │  Port 11434  │
+                    └──────────────┘
+```
 
 ## Quick Start
 
