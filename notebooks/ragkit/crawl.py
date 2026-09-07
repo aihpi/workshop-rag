@@ -25,7 +25,7 @@ import requests
 from .config import WORKSHOP_DIR
 
 OUT_DIR = WORKSHOP_DIR / 'raw_data' / 'birds'
-USER_AGENT = 'HPI-RAG-Workshop/1.0 (https://github.com/aihpi/workshop-ragV2; teaching material)'
+USER_AGENT = 'HPI-RAG-Workshop/1.0 (https://github.com/aihpi/workshop-rag; teaching material)'
 COMMONS_API = 'https://commons.wikimedia.org/w/api.php'
 DEWIKI_API = 'https://de.wikipedia.org/w/api.php'
 ALLOWED_LICENCES = ('cc0', 'cc by', 'cc-by', 'public domain', 'pd')
