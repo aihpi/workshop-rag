@@ -1,0 +1,26 @@
+/* HPI corporate design for marimo notebooks. Values from ragkit/theme.py. */
+:root {
+  --hpi-paper: #ffffff; --hpi-ink: #212427; --hpi-grey: #5a6065;
+  --hpi-rule: #d6d7d8; --hpi-accent: #b1063a; --hpi-note: #fde9bf;
+  --marimo-text-font: "Inter", Verdana, Arial, sans-serif;
+  --marimo-heading-font: "Inter", Verdana, Arial, sans-serif;
+  --marimo-monospace-font: "JetBrains Mono", "Fira Mono", Menlo, Consolas, monospace;
+}
+.prose { color: var(--hpi-ink); max-width: 72ch; line-height: 1.35; }
+.prose h1, .prose h2, .prose h3, .prose h4 { font-weight: 500; line-height: 1.2; color: var(--hpi-ink); }
+.prose h1 { font-size: 1.75rem; margin-bottom: .25rem; }
+.prose h2 { font-size: 1.35rem; margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--hpi-rule); }
+.prose h3 { font-size: 1.1rem; }
+.prose a { color: var(--hpi-ink); text-decoration: underline; text-decoration-color: var(--hpi-grey); }
+.prose a:hover { color: var(--hpi-accent); text-decoration-color: var(--hpi-accent); }
+.prose blockquote { border-left: none; background: var(--hpi-note); padding: .75rem 1rem; border-radius: 2px; color: var(--hpi-ink); font-style: normal; }
+.prose table { font-size: .95rem; }
+.prose th { color: var(--hpi-grey); font-weight: 500; }
+.prose th, .prose td { border-bottom: 1px solid var(--hpi-rule); }
+.hpi-header { margin-bottom: 1.5rem; }
+.hpi-header h1 { font-size: 1.75rem; font-weight: 500; line-height: 1.2; margin: 0; }
+.hpi-title-rule { width: 48px; height: 3px; background: var(--hpi-accent); margin: .6rem 0 1rem; }
+.hpi-subtitle { color: var(--hpi-grey); margin: 0; max-width: 72ch; }
+.hpi-logos { display: flex; gap: 1.5rem; align-items: center; margin-bottom: 1.25rem; }
+.hpi-logos img { height: 40px; width: auto; }
+figcaption, .hpi-caption { color: var(--hpi-grey); font-size: .9rem; }

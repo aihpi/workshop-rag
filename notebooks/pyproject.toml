@@ -1,12 +1,12 @@
 [project]
 name = "rag-notebooks"
 version = "0.1.0"
-description = "Jupyter notebooks for the RAG workshop — data ingestion, chunking, retrieval, and embedding experiments."
+description = "marimo notebooks for the RAG workshop series: chunking, embeddings, retrieval, document types, evaluation."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "jupyter>=1.0.0",
-    "ipykernel>=6.29.0",
+    "marimo>=0.24",
+    "ipython>=8.0",
     "docling>=2.74.0",
     "litellm>=1.0.0",
     "easyocr>=1.7.2",
@@ -14,7 +14,9 @@ dependencies = [
     "qdrant-client>=1.7.0",
     "sentence-transformers>=2.3.0",
     "openai>=2.21.0",
-    "dotenv>=0.9.9",
+    "python-dotenv>=1.0",
+    "requests>=2.31",
+    "pillow>=10.0",
     "matplotlib>=3.10.8",
     "onnxruntime>=1.24.1",
     "rapidocr>=3.6.0",
@@ -31,4 +33,10 @@ vlm = [
 ]
 mac_vlm = [
     "docling[ocrmac,vlm]>=2.74.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.5",
 ]

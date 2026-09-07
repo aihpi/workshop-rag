@@ -6,7 +6,10 @@ evaluation cache directory and print a configuration summary.
 """
 
 import os
+from dataclasses import dataclass, field
 from pathlib import Path
+
+from dotenv import load_dotenv
 
 # ---------------------------------------------------------------------------
 # Pfade
@@ -39,18 +42,10 @@ CSV_PATH = DATA_DIR / _csv_file
 
 
 # ---------------------------------------------------------------------------
-# .env laden (einfacher Parser ohne externe Abhängigkeit)
+# .env laden (bereits gesetzte Umgebungsvariablen haben Vorrang)
 # ---------------------------------------------------------------------------
-# setdefault sorgt dafür, dass bereits gesetzte Umgebungsvariablen
-# (z.B. aus der Shell) Vorrang haben.
 
-if ENV_PATH.exists():
-    for _line in ENV_PATH.read_text(encoding='utf-8').splitlines():
-        _line = _line.strip()
-        if not _line or _line.startswith('#') or '=' not in _line:
-            continue
-        _key, _value = _line.split('=', 1)
-        os.environ.setdefault(_key.strip(), _value.strip())
+load_dotenv(ENV_PATH, override=False)
 
 
 # ---------------------------------------------------------------------------
@@ -115,28 +110,87 @@ FIGURES_DIR = WORKSHOP_DIR / 'figures'
 
 
 # ---------------------------------------------------------------------------
-# Setup für die Workshop-3-Notebooks (explizit aufrufen, kein Import-Effekt)
+# Setup (explizit aufrufen, kein Import-Effekt)
 # ---------------------------------------------------------------------------
 
-def setup() -> None:
-    """Create CACHE_DIR and print the configuration summary.
+@dataclass
+class WorkshopEnv:
+    """What every notebook needs before the first cell of real work."""
 
-    Called by the Workshop 3 notebooks right after `from ragkit.config import *`.
-    Kept out of import time so that Workshop 2 notebooks, which only need
-    `ragkit.embed` or `ragkit.search`, neither print this banner nor create
-    the evaluation cache directory.
+    api_key: str | None
+    api_base: str
+    qdrant_host: str
+    qdrant_port: int
+    qdrant_ok: bool
+    missing_files: list[Path] = field(default_factory=list)
+
+    @property
+    def problems(self) -> list[str]:
+        out = []
+        if not self.api_key:
+            out.append(f'OPENAI_API_KEY is missing: copy {ENV_PATH.parent / ".env.example"} to '
+                       f'{ENV_PATH} and insert your key.')
+        if not self.qdrant_ok:
+            out.append(f'Qdrant does not answer on {self.qdrant_host}:{self.qdrant_port}: '
+                       f'run `docker compose up -d` in {REPO_ROOT}.')
+        for path in self.missing_files:
+            out.append(f'Missing data file: {path}')
+        return out
+
+    @property
+    def ok(self) -> bool:
+        return not self.problems
+
+    def openai(self):
+        from .embed import client
+        return client()
+
+    def qdrant(self):
+        from .search import client
+        return client(self.qdrant_host, self.qdrant_port)
+
+    def summary_md(self) -> str:
+        """Markdown table for display in a notebook."""
+        mark = lambda good: '✓' if good else '✗'
+        rows = [
+            ('API base', self.api_base, mark(bool(self.api_key))),
+            ('API key', 'set' if self.api_key else 'missing', mark(bool(self.api_key))),
+            ('Qdrant', f'{self.qdrant_host}:{self.qdrant_port}', mark(self.qdrant_ok)),
+            ('Data files', 'all present' if not self.missing_files else
+             ', '.join(p.name for p in self.missing_files), mark(not self.missing_files)),
+        ]
+        table = '| | | |\n|---|---|---|\n' + '\n'.join(f'| {a} | {b} | {c} |' for a, b, c in rows)
+        fixes = ''.join(f'\n\n> {p}' for p in self.problems)
+        return table + fixes
+
+
+def _qdrant_reachable(host: str, port: int, timeout: float = 2.0) -> bool:
+    try:
+        from qdrant_client import QdrantClient
+        QdrantClient(host=host, port=port, timeout=timeout).get_collections()
+        return True
+    except Exception:  # noqa: BLE001 - any failure means 'not reachable'
+        return False
+
+
+def setup(*, require_qdrant: bool = True, required_files: tuple[Path, ...] = (),
+          strict: bool = True) -> WorkshopEnv:
+    """Validate credentials, Qdrant and data files; return the environment.
+
+    Args:
+        require_qdrant: Probe the Qdrant server (skip for notebooks without a vector store).
+        required_files: Paths that must exist before the notebook can run.
+        strict: Raise `RuntimeError` listing every problem instead of returning them.
     """
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    print('=== Workshop-Konfiguration ===')
-    print(f'  PDF:             {PDF_PATH.name} | exists: {PDF_PATH.exists()}')
-    print(f'  Datensatz:       {DATASET} ({CSV_PATH.name}, sep="{CSV_SEP}") | exists: {CSV_PATH.exists()}')
-    print(f'  Embedding:       {EMBED_MODEL_NAME} (max_chars={EMBED_MAX_CHARS})')
-    print(f'  RAG-Modell:      {RAG_MODEL_NAME}')
-    print(f'  Evaluator:       {EVALUATOR_MODEL_NAME}')
-    print(f'  API Base URL:    {API_BASE_URL}')
-    print(f'  API Key gesetzt: {bool(os.getenv("OPENAI_API_KEY"))}')
-    print(f'  Qdrant:          {QDRANT_HOST}:{QDRANT_PORT}')
-    print(f'  Chunking-Modus:  {CHUNKING_MODE}')
-    print(f'  Collection:      {COLLECTION_NAME}')
-    print(f'  Chunking:        MAX_CHUNK={MAX_CHUNK}, OVERLAP={OVERLAP}, TOP_K={TOP_K}')
-    print('=' * 30)
+    env = WorkshopEnv(
+        api_key=os.getenv('OPENAI_API_KEY') or None,
+        api_base=API_BASE_URL,
+        qdrant_host=QDRANT_HOST,
+        qdrant_port=QDRANT_PORT,
+        qdrant_ok=_qdrant_reachable(QDRANT_HOST, QDRANT_PORT) if require_qdrant else True,
+        missing_files=[Path(p) for p in required_files if not Path(p).exists()],
+    )
+    if strict and not env.ok:
+        raise RuntimeError('Workshop setup incomplete:\n- ' + '\n- '.join(env.problems))
+    return env

@@ -74,3 +74,6 @@ notebooks/embedding_cache/
 # Local artefacts from earlier app versions
 models/
 chat_history/
+
+# marimo session cache
+__marimo__/

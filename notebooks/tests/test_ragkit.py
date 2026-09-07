@@ -211,6 +211,101 @@ def test_ndcg_at_k_with_no_relevant_docs():
     assert ndcg_at_k(['a', 'b'], set(), k=2) == 0.0
 
 
+# ---------------------------------------------------------------------------
+# config.setup, theme, crawl
+# ---------------------------------------------------------------------------
+
+import os
+
+from ragkit import config, theme
+from ragkit.crawl import _NOT_A_PHOTO, licence_ok
+
+
+def test_setup_non_strict_reports_missing_key_and_file():
+    saved = os.environ.pop('OPENAI_API_KEY', None)
+    try:
+        env = config.setup(require_qdrant=False, required_files=(Path('/nonexistent/file.md'),), strict=False)
+        assert not env.ok
+        assert any('OPENAI_API_KEY' in p for p in env.problems)
+        assert env.missing_files == [Path('/nonexistent/file.md')]
+        assert '✗' in env.summary_md() and 'nonexistent' in env.summary_md()
+    finally:
+        if saved is not None:
+            os.environ['OPENAI_API_KEY'] = saved
+
+
+def test_setup_strict_raises_with_fix_text():
+    saved = os.environ.pop('OPENAI_API_KEY', None)
+    try:
+        try:
+            config.setup(require_qdrant=False, strict=True)
+        except RuntimeError as e:
+            assert '.env' in str(e)
+        else:
+            raise AssertionError('strict setup should raise without an API key')
+    finally:
+        if saved is not None:
+            os.environ['OPENAI_API_KEY'] = saved
+
+
+def test_setup_ok_without_qdrant_when_key_present():
+    saved = os.environ.get('OPENAI_API_KEY')
+    os.environ['OPENAI_API_KEY'] = 'test-key'
+    try:
+        env = config.setup(require_qdrant=False, strict=True)
+        assert env.ok and env.api_key == 'test-key'
+    finally:
+        if saved is None:
+            del os.environ['OPENAI_API_KEY']
+        else:
+            os.environ['OPENAI_API_KEY'] = saved
+
+
+def test_tint_bounds_and_values():
+    assert theme.tint('#5a6065', 100) == '#5a6065'
+    assert theme.tint('#5a6065', 0) == '#ffffff'
+    assert theme.tint('#5a6065', 25) == '#d6d7d8'
+    try:
+        theme.tint('#5a6065', 101)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError('tint must reject percent > 100')
+
+
+def test_mpl_rc_keys_are_valid():
+    import matplotlib
+    rc = theme.mpl_rc()
+    for key, value in rc.items():
+        matplotlib.rcParams[key] = value  # raises KeyError/ValueError on a bad key or value
+
+
+def test_palette_greys_first_and_capped():
+    assert theme.palette(2) == theme.GREYS[:2]
+    assert theme.palette(3, accent='#b1063a')[-1] == '#b1063a'
+    try:
+        theme.palette(7)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError('palette must refuse more than five grey classes')
+
+
+def test_licence_filter():
+    assert licence_ok('CC BY-SA 4.0') and licence_ok('CC0') and licence_ok('CC BY 2.0')
+    assert licence_ok('Public domain')
+    assert not licence_ok('CC BY-NC-SA 3.0') and not licence_ok('CC BY-ND 4.0')
+    assert not licence_ok('Copyrighted free use') and not licence_ok('')
+
+
+def test_photo_filename_filter():
+    rejected = ['File:Juveniler Seeadler.jpg', 'File:Haliaeetus albicilla MHNT.ZOO.2010.11.96.1.jpg',
+                'File:Erithacus rubecula distribution map.jpg', 'File:Book (1922) - strona 224.jpg']
+    kept = ['File:Common Swift 2025 07 18 01.jpg', 'File:Rotkehlchen (April 2025) 1.jpg']
+    assert all(_NOT_A_PHOTO.search(t) for t in rejected)
+    assert not any(_NOT_A_PHOTO.search(t) for t in kept)
+
+
 if __name__ == '__main__':
     tests = [v for k, v in sorted(globals().items()) if k.startswith('test_')]
     for test in tests:
