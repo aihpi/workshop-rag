@@ -1,3 +1,4 @@
+# Qdrant vector database for the workshop notebooks. Start with `docker compose up -d`.
 services:
   qdrant:
     image: qdrant/qdrant:latest
@@ -6,38 +7,3 @@ services:
     volumes:
       - ./qdrant_storage:/qdrant/storage
     restart: unless-stopped
-    profiles:
-      - with-qdrant
-
-  backend:
-    image: ghcr.io/aihpi/workshop-ragv2-backend:latest
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./data:/app/data
-      - ./chat_history:/app/chat_history
-    environment:
-      - LLM_PROVIDER=ollama
-      - QDRANT_HOST=${QDRANT_HOST:-host.docker.internal}
-      - QDRANT_PORT=6333
-      - OLLAMA_HOST=host.docker.internal
-      - OLLAMA_PORT=11434
-      - DATA_FOLDER=/app/data
-      - CHAT_HISTORY_FOLDER=/app/chat_history
-      # - OLLAMA_MODEL=qwen2.5:7b-instruct
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    restart: unless-stopped
-
-  frontend:
-    image: ghcr.io/aihpi/workshop-ragv2-frontend:latest
-    ports:
-      - "3000:3000"
-    depends_on:
-      - backend
-    restart: unless-stopped
-
-volumes:
-  qdrant_storage:
-  data:
-  chat_history:

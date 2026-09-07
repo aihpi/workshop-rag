@@ -55,23 +55,9 @@ Thumbs.db
 # Qdrant storage
 qdrant_storage/
 
-# Chat history
-chat_history/
-
 # Logs
 logs/
 *.log
-
-# Node
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# React build
-frontend/build/
-frontend/dist/
 
 # Testing
 .pytest_cache/
@@ -79,16 +65,12 @@ frontend/dist/
 htmlcov/
 *.cover
 
-# Model cache
-models/
-*.bin
-*.safetensors
-
-# Data files
-uploads/
-
 # Workshop 3 notebooks (auto-generated plots)
 notebooks/figures/
 
 # Cached embeddings (regenerated per machine)
 notebooks/embedding_cache/
+
+# Local artefacts from earlier app versions
+models/
+chat_history/
