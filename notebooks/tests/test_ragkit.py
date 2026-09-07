@@ -306,6 +306,342 @@ def test_photo_filename_filter():
     assert not any(_NOT_A_PHOTO.search(t) for t in kept)
 
 
+# ---------------------------------------------------------------------------
+# IT-Grundschutz structure, gold labels, metrics and figures (w2_01)
+# ---------------------------------------------------------------------------
+
+import functools
+from collections import Counter
+
+import matplotlib
+
+matplotlib.use('Agg')
+
+from ragkit.chunk import (
+    MODAL_RE,
+    build_sections,
+    chunk_stats,
+    classify_header,
+    dedupe,
+    modality,
+    parse_requirement_header,
+    sections_to_text,
+    strip_furniture,
+    workshop_slice,
+)
+from ragkit.evaluate import (
+    attach_section_keys,
+    evaluate_ranking,
+    gold_targets,
+    load_gold,
+    relevant_chunks,
+    section_key,
+    section_texts,
+)
+from ragkit.search import precision_at_k, recall_at_k
+from ragkit.viz import head_tail, kde_plot, length_hist_panels, sorted_score_plot
+
+SCHICHTEN = 'Hinweise zum Schichtenmodell und zur Modellierung'
+
+SYNTHETIC_MD = f'''## Vorwort
+
+Ein Vorwort.
+
+<!-- image -->
+
+## {SCHICHTEN}
+
+Prozess-Bausteine gelten für alle.
+
+## G 0.1 Feuer
+
+Feuer brennt.
+
+## APP.3.2 Webserver
+
+## 1. Beschreibung
+
+## 1.1. Einleitung
+
+Ein Webserver liefert 'Seiten' aus.
+
+## 3.1. Basis-Anforderungen
+
+Die folgenden Anforderungen MÜSSEN vorrangig erfüllt werden.
+
+## APP.3.2.A1 Sichere Konfiguration eines Webservers (B)
+
+Der IT-Betrieb MUSS den Webserver sicher konfigurieren. Er DARF NUR nötige Dienste anbieten.
+Er SOLLTE NICHT ohne Härtung laufen. Er SOLLTE protokollieren.
+
+## APP.3.2.A3 ENTFALLEN (B)
+
+Diese Anforderung ist entfallen.
+
+## APP.3.2.A4 Protokollierung (B) [OT-Betrieb (Operational Technology, OT), Planende]
+
+Der Webserver MUSS Ereignisse protokollieren.
+'''
+
+
+def test_classify_header_on_the_analysis_examples():
+    cases = {
+        '## ISMS.1 Sicherheitsmanagement': 'baustein',
+        '## APP.3.2 Webserver': 'baustein',
+        '## OPS.1.1.6 Software-Tests und -Freigaben': 'baustein',
+        '## 1.1. Einleitung': 'template',
+        '## 3.1. Basis-Anforderungen': 'template',
+        '## ISMS.1.A1 Übernahme der Gesamtverantwortung für Informationssicherheit durch die '
+        'Leitung (B) [Institutionsleitung]': 'requirement',
+        '## APP.3.2.A1 Sichere Konfiguration eines Webservers (B)': 'requirement',
+        '## ISMS.1.A14 ENTFALLEN (S)': 'requirement',
+        '## G 0.1 Feuer': 'gefaehrdung',
+        '## G 0.14 Ausspähen von Informationen (Spionage)': 'gefaehrdung',
+        '## Vorwort': 'other',
+        '## ORP: Organisation und Personal': 'other',
+        '## Beispiele :': 'other',
+        '## TGA-Anlage': 'other',
+    }
+    for line, kind in cases.items():
+        assert classify_header(line) == kind, line
+
+
+def test_parse_requirement_header_roles_and_entfallen():
+    parsed = parse_requirement_header(
+        '## IND.1.A18 Protokollierung (B) [Mitarbeitende, OT-Betrieb (Operational Technology, OT)]')
+    assert parsed == {'req_id': 'IND.1.A18', 'title': 'Protokollierung', 'level': 'B',
+                      'roles': ['Mitarbeitende', 'OT-Betrieb (Operational Technology, OT)']}
+    parsed = parse_requirement_header('## ISMS.1.A14 ENTFALLEN (S)')
+    assert parsed == {'req_id': 'ISMS.1.A14', 'title': 'ENTFALLEN', 'level': 'S', 'roles': []}
+    assert parse_requirement_header('## 3.1. Basis-Anforderungen') is None
+
+
+def test_modality_counts_the_five_classes():
+    text = ('Es MUSS. Sie MÜSSEN. Er DARF NUR. Sie DÜRFEN NICHT. Er DARF KEINE. '
+            'Er SOLLTE. Sie SOLLTEN. Er SOLLTE NICHT. Er SOLLTE KEINE. Er muss. Du MUSST.')
+    assert modality(text) == {'MUSS': 2, 'DARF NUR': 1, 'DARF NICHT': 2,
+                              'SOLLTE': 2, 'SOLLTE NICHT': 2}
+    assert MODAL_RE.search('MUSST') is None
+
+
+def test_strip_furniture_removes_image_markers_and_page_furniture():
+    assert strip_furniture('a\n\n<!-- image -->\n\nb') == 'a\n\nb'
+    assert strip_furniture('a\n42\nSeite 3\nIT-Grundschutz-Kompendium: Stand Februar 2023\nb') \
+        == 'a\nb'
+
+
+def test_build_sections_on_synthetic_markdown():
+    sections = build_sections(SYNTHETIC_MD)
+    assert [s['kind'] for s in sections] == ['other', 'other', 'gefaehrdung', 'baustein',
+                                             'template', 'template', 'template',
+                                             'requirement', 'requirement', 'requirement']
+    assert [s['is_front_matter'] for s in sections] == [True] * 3 + [False] * 7
+    assert all(s['baustein_id'] is None for s in sections[:3])
+    assert '<!-- image -->' not in sections[0]['text']
+    assert sections[2]['title'] == 'G 0.1 Feuer' and sections[2]['section_path'] == 'G 0.1 Feuer'
+    baustein = sections[3]
+    assert (baustein['baustein_id'], baustein['title'], baustein['section_path']) \
+        == ('APP.3.2', 'Webserver', 'APP.3.2')
+    assert baustein['text'] == '## APP.3.2 Webserver' and baustein['body'] == ''
+    assert sections[4]['section_path'] == 'APP.3.2 > 1. Beschreibung'
+    assert sections[5]['section_path'] == 'APP.3.2 > 1.1. Einleitung'
+    a1 = sections[7]
+    assert a1['req_id'] == 'APP.3.2.A1' and a1['level'] == 'B' and a1['roles'] == []
+    assert a1['title'] == 'Sichere Konfiguration eines Webservers'
+    assert a1['baustein_title'] == 'Webserver'
+    assert a1['section_path'] == ('APP.3.2 > 3.1. Basis-Anforderungen > '
+                                  'APP.3.2.A1 Sichere Konfiguration eines Webservers')
+    assert a1['text'].startswith('## APP.3.2.A1 ') and a1['body'].startswith('Der IT-Betrieb')
+    assert a1['modality'] == {'MUSS': 1, 'DARF NUR': 1, 'DARF NICHT': 0,
+                              'SOLLTE': 1, 'SOLLTE NICHT': 1}
+    assert a1['n_chars'] == len(a1['text']) and not a1['is_entfallen']
+    assert sections[8]['is_entfallen']
+    assert sections[9]['roles'] == ['OT-Betrieb (Operational Technology, OT)', 'Planende']
+
+
+def test_sections_to_text_round_trips_the_cleaned_markdown():
+    assert sections_to_text(build_sections(SYNTHETIC_MD)) == strip_furniture(SYNTHETIC_MD)
+
+
+def test_workshop_slice_keeps_bausteine_and_named_front_matter():
+    sections = build_sections(SYNTHETIC_MD)
+    sliced = workshop_slice(sections, ['APP.3.2'], extra_titles=(SCHICHTEN,))
+    assert [s['title'] for s in sliced][:2] == [SCHICHTEN, 'Webserver']
+    assert len(sliced) == 8
+    assert workshop_slice(sections, ['SYS.1.1']) == []
+
+
+def test_section_key_prefers_the_requirement_id():
+    sections = build_sections(SYNTHETIC_MD)
+    assert section_key(sections[0]) == 'front::Vorwort'
+    assert section_key(sections[6]) == 'APP.3.2::3.1. Basis-Anforderungen'
+    assert section_key(sections[7]) == 'APP.3.2.A1'
+
+
+def test_gold_targets_by_id_and_by_fuzzy_passage():
+    sections = build_sections(SYNTHETIC_MD)
+    texts = section_texts(sections)
+    assert gold_targets('APP.3.2.A1 Sichere Konfiguration ... siehe auch APP.3.2.A4', sections) \
+        == {'APP.3.2.A1', 'APP.3.2.A4'}
+    assert gold_targets('Siehe SYS.1.1.A2 Rollentrennung', sections) == set()
+    assert gold_targets('Ein Webserver liefert „Seiten“ aus.', sections, texts) \
+        == {'APP.3.2::1.1. Einleitung'}
+    assert gold_targets(f'{SCHICHTEN}\nProzess-Bausteine gelten für alle.', sections) \
+        == {f'front::{SCHICHTEN}'}
+    # a leading citation line that is not corpus text must not spoil the match
+    assert gold_targets('APP.3.2, Kap. 1.1\n1.1. Einleitung\nEin Webserver liefert „Seiten“ aus.',
+                        sections) == {'APP.3.2::1.1. Einleitung'}
+    # an ID that does not exist falls back to the quoted text
+    assert gold_targets('APP.3.2.A9 Einleitung\nEin Webserver liefert „Seiten“ aus.', sections) \
+        == {'APP.3.2::1.1. Einleitung'}
+    assert gold_targets('8.2.2 Vorgehen bei der Schutzbedarfsfeststellung (BSI-Standard 200-2)',
+                        sections) == set()
+
+
+TWO_SECTION_MD = '''## APP.1 Alpha
+
+## 1.1. Einleitung
+
+aaa bbb ccc ddd eee fff ggg hhh
+
+## 1.2. Zielsetzung
+
+iii jjj kkk lll mmm nnn ooo ppp
+'''
+
+
+def test_attach_section_keys_on_a_chunk_spanning_the_boundary():
+    sections = build_sections(TWO_SECTION_MD)
+    text = sections_to_text(sections)
+    chunks = ['bbb ccc', 'fff ggg hhh\n\n## 1.2. Zielsetzung\n\niii jjj', 'ooo ppp']
+    keys = [r['section_keys'] for r in attach_section_keys(chunks, sections)]
+    assert keys == [['APP.1::1.1. Einleitung'],
+                    ['APP.1::1.1. Einleitung', 'APP.1::1.2. Zielsetzung'],
+                    ['APP.1::1.2. Zielsetzung']]
+    # word chunks flatten newlines to spaces and must still be located
+    from ragkit.chunk import chunk_by_words
+    records = attach_section_keys(chunk_by_words(text, 5), sections)
+    assert all(r['section_keys'] for r in records)
+    assert records[0]['section_keys'][0] == 'APP.1::Alpha'
+    # chunk 2 ('eee fff ggg hhh ##') already reaches into the 1.2 header
+    assert relevant_chunks(records, {'APP.1::1.2. Zielsetzung'}) == {2, 3, 4}
+    try:
+        attach_section_keys(['not in the text at all'], sections)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError('a chunk that is not a slice of the text must be rejected')
+
+
+def test_relevant_chunks_intersects_section_keys():
+    records = [{'section_keys': ['a']}, {'section_keys': ['b', 'c']}, {'section_keys': []}]
+    assert relevant_chunks(records, {'c'}) == {1}
+    assert relevant_chunks(records, {'a', 'b'}) == {0, 1}
+    assert relevant_chunks(records, {'z'}) == set()
+
+
+def test_recall_and_precision_at_k():
+    assert recall_at_k(['a', 'b', 'c'], {'a', 'z'}, k=2) == 0.5
+    assert precision_at_k(['a', 'b', 'c'], {'a', 'z'}, k=2) == 0.5
+    assert recall_at_k(['a', 'b'], set(), k=2) == 0.0
+    assert abs(precision_at_k(['a', 'b'], {'a', 'b'}, k=5) - 0.4) < 1e-9
+
+
+def test_evaluate_ranking_values():
+    import numpy as np
+    result = evaluate_ranking(['x', 'a', 'y'], {'a'}, k=3)
+    assert result['mrr'] == 0.5 and result['first_hit_rank'] == 2
+    assert result['recall'] == 1.0 and abs(result['precision'] - 1 / 3) < 1e-9
+    assert abs(result['ndcg'] - 1 / np.log2(3)) < 1e-9
+    miss = evaluate_ranking(['x', 'y'], {'a'}, k=2)
+    assert miss['mrr'] == 0.0 and miss['first_hit_rank'] is None and miss['recall'] == 0.0
+
+
+def test_chunk_stats_and_dedupe():
+    assert chunk_stats([5, 1, 3, 9, 7]) == {'n': 5, 'median': 5, 'p95': 9, 'max': 9, 'min': 1}
+    assert chunk_stats(list(range(1, 21)))['p95'] == 19
+    assert dedupe(['a', 'b', 'a', 'c', 'b']) == (['a', 'b', 'c'], 2)
+
+
+def test_head_tail():
+    assert head_tail('abcdefghij', n=3) == 'abc … hij'
+    assert head_tail('abcdef', n=3) == 'abcdef'
+
+
+def test_figure_helpers_smoke():
+    import matplotlib.pyplot as plt
+    from matplotlib.axes import Axes
+    fig = length_hist_panels({'chars-300': [100, 250, 300, 300], 'section': [40, 900, 1400]})
+    assert len(fig.axes) == 2
+    assert fig.axes[0].get_ylabel() == 'chunks' and fig.axes[1].get_ylabel() == ''
+    ax = sorted_score_plot([0.1, 0.9, 0.5], highlight_index=2)
+    assert isinstance(ax, Axes) and len(ax.lines) == 2
+    assert ax.lines[1].get_xdata()[0] == 2  # score 0.5 sits at rank 2
+    plt.figure()
+    ax = kde_plot([0.8, 0.85, 0.9], [0.1, 0.2, 0.3, 0.4])
+    assert len(ax.lines) == 2 and len(ax.texts) == 2
+    plt.close('all')
+
+
+# --- integration on the real corpus (skipped when the data files are absent) --
+
+CORPUS_MD = config.DATA_DIR / 'IT_Grundschutz_Kompendium_Edition2023.md'
+WORKSHOP_BAUSTEINE = ['APP.3.2', 'APP.3.3', 'CON.3', 'CON.6', 'DER.3.1', 'ISMS.1', 'NET.1.1',
+                      'OPS.1.1.6', 'OPS.1.2.2', 'OPS.1.2.4', 'OPS.1.2.5', 'OPS.2.2', 'OPS.2.3',
+                      'ORP.1', 'ORP.4', 'ORP.5', 'SYS.1.1', 'SYS.1.2.3', 'SYS.1.8']
+
+
+@functools.lru_cache(maxsize=1)
+def _corpus_sections():
+    return build_sections(CORPUS_MD.read_text(encoding='utf-8'))
+
+
+def test_real_corpus_reproduces_the_analysis_counts():
+    if not CORPUS_MD.exists():
+        return
+    sections = _corpus_sections()
+    kinds = Counter(s['kind'] for s in sections)
+    assert len(sections) == 4432
+    assert (kinds['baustein'], kinds['requirement'], kinds['gefaehrdung'], kinds['template']) \
+        == (111, 2123, 47, 1927)
+    assert sum(s['is_entfallen'] for s in sections) == 289
+    assert sum(s['is_front_matter'] for s in sections) == 213
+    sliced = workshop_slice(sections, WORKSHOP_BAUSTEINE, extra_titles=(SCHICHTEN,))
+    assert len({s['baustein_id'] for s in sliced} - {None}) == 19
+    assert sum(s['kind'] == 'requirement' for s in sliced) == 385
+    assert len(sections_to_text(workshop_slice(sections, WORKSHOP_BAUSTEINE))) == 391_899
+
+
+def test_real_gold_rows_resolve_to_sections():
+    if not CORPUS_MD.exists():
+        return
+    sections = _corpus_sections()
+    texts = section_texts(sections)
+    rows = load_gold('40_einfach')
+    assert len(rows) == 40
+    targets = [gold_targets(r['fundstelle'], sections, texts) for r in rows]
+    assert all(targets)
+    assert targets[0] == {f'front::{SCHICHTEN}'}
+    assert targets[1] == {'APP.3.2.A1'}
+    # 10 rows cite no requirement ID and resolve to a Baustein or front-matter section
+    assert sum(1 for t in targets if any('::' in key for key in t)) == 10
+    rows = load_gold('123_einfach')
+    assert len(rows) == 123
+    targets = [gold_targets(r['fundstelle'], sections, texts) for r in rows]
+    # row 122 cites BSI-Standard 200-2, which is not in the Kompendium
+    assert [i for i, t in enumerate(targets) if not t] == [122]
+    # row 109 cites SYS.1.2.3.A5, which does not exist; its quoted text is SYS.1.2.2.A5
+    assert targets[109] == {'SYS.1.2.2.A5'}
+
+
+def test_entropy_softmax_separates_peaked_from_flat():
+    peaked = entropy([0.9, 0.5, 0.4, 0.35, 0.3], temperature=0.05)
+    flat = entropy([0.6, 0.6, 0.59, 0.59, 0.58], temperature=0.05)
+    assert peaked < 0.3
+    assert 2.0 < flat <= 2.33
+    assert abs(entropy([1.0, 1.0, 1.0, 1.0], temperature=0.05) - 2.0) < 1e-9
+
+
 if __name__ == '__main__':
     tests = [v for k, v in sorted(globals().items()) if k.startswith('test_')]
     for test in tests:

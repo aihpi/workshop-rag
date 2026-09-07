@@ -98,7 +98,8 @@ def l2_normalise(matrix: np.ndarray) -> np.ndarray:
 # Retrieval quality
 # ---------------------------------------------------------------------------
 
-def entropy(scores, top_n=None, shift_min: bool = False) -> float:
+def entropy(scores, top_n=None, shift_min: bool = False,
+            temperature: float | None = None) -> float:
     """Shannon entropy (bits) of similarity scores normalised to probabilities.
 
     Low entropy means the retriever is decisive: a few chunks dominate. High
@@ -112,11 +113,18 @@ def entropy(scores, top_n=None, shift_min: bool = False) -> float:
     minimum score, which makes the result offset-invariant (only the shape of
     the score curve counts) and sends the lowest score to p=0. w2_02 uses this
     variant for the Matryoshka experiment, where absolute cosine levels differ
-    between vector widths.
+    between vector widths. `temperature` switches to a softmax over the scores
+    (p_i = exp(s_i/T) / sum exp(s_j/T)); cosine scores differ by hundredths, so
+    T around 0.05 is needed before the entropy separates peaked from flat
+    curves. w2_01 teaches this variant.
     """
     if top_n is not None:
         scores = sorted(scores, reverse=True)[:top_n]
     arr = np.asarray(scores, dtype=float)
+    if temperature is not None:
+        z = (arr - arr.max()) / temperature
+        p = np.exp(z) / np.exp(z).sum()
+        return float(-np.sum(p * np.log2(p + 1e-12)))
     if shift_min:
         arr = arr - arr.min() + 1e-9
     else:
@@ -148,6 +156,18 @@ def ndcg_at_k(ranked_docs: list, relevant: set, k: int = 5) -> float:
     # Ideal DCG: all relevant docs at the top
     ideal = sum(1.0 / np.log2(i + 2) for i in range(min(len(relevant), k)))
     return dcg / ideal if ideal > 0 else 0.0
+
+
+def recall_at_k(ranked_docs: list, relevant: set, k: int = 5) -> float:
+    """Share of the relevant docs that appear in the top k (0 when nothing is relevant)."""
+    if not relevant:
+        return 0.0
+    return len(set(ranked_docs[:k]) & set(relevant)) / len(relevant)
+
+
+def precision_at_k(ranked_docs: list, relevant: set, k: int = 5) -> float:
+    """Share of the top k that is relevant."""
+    return len(set(ranked_docs[:k]) & set(relevant)) / k
 
 
 # ---------------------------------------------------------------------------
