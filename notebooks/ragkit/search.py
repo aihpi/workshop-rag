@@ -1,0 +1,200 @@
+"""Indexing, retrieval, similarity, ranking metrics and answer generation.
+
+The Qdrant side of the workshop, plus the numbers used to judge whether a
+retriever is doing its job.
+"""
+
+import hashlib
+import os
+import uuid
+
+import numpy as np
+
+from .config import (
+    API_BASE_URL,
+    COLLECTION_NAME,
+    QDRANT_HOST,
+    QDRANT_PORT,
+    RAG_MODEL_NAME,
+)
+from .embed import embed
+
+# ---------------------------------------------------------------------------
+# Qdrant
+# ---------------------------------------------------------------------------
+
+_client = None
+
+
+def client(host: str = QDRANT_HOST, port: int = QDRANT_PORT):
+    """Return the shared Qdrant client, created on first use."""
+    global _client
+    if _client is None:
+        from qdrant_client import QdrantClient
+        _client = QdrantClient(host=host, port=port)
+    return _client
+
+
+def make_point_id(doc_name: str, chunk_idx: int) -> str:
+    """Create a deterministic UUID from document name + chunk index.
+
+    Deterministic so that re-indexing overwrites the same points instead of
+    piling up duplicates.
+    """
+    raw = f'{doc_name}_{chunk_idx}'
+    hash_hex = hashlib.sha256(raw.encode()).hexdigest()
+    return str(uuid.UUID(hash_hex[:32]))
+
+
+def rag_search(query: str, top_k: int = 5, collection: str = COLLECTION_NAME,
+               model: str | None = None):
+    """Embed a query and return the top-k hits as plain dicts."""
+    q_vec = np.asarray(embed(query, **({'model': model} if model else {}))[0]).tolist()
+    response = client().query_points(
+        collection_name=collection,
+        query=q_vec,
+        limit=top_k,
+        with_payload=True,
+        with_vectors=False,
+    )
+
+    results = []
+    for h in response.points:
+        payload = h.payload or {}
+        results.append({
+            'score': h.score,
+            'chunk_id': payload.get('chunk_id'),
+            'text': payload.get('text', ''),
+            'source_file': payload.get('source_file'),
+            'page_numbers': payload.get('page_numbers', []),
+            'citation_hint': payload.get('citation_hint'),
+        })
+    return results
+
+
+# ---------------------------------------------------------------------------
+# Similarity
+# ---------------------------------------------------------------------------
+
+def cosine_sim(a: np.ndarray, b: np.ndarray) -> float:
+    """Cosine similarity between two vectors."""
+    return float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-10))
+
+
+def cosine_similarity_matrix(embeddings: np.ndarray) -> np.ndarray:
+    """Pairwise cosine similarity between all rows."""
+    norms = np.linalg.norm(embeddings, axis=1, keepdims=True)
+    normed = embeddings / (norms + 1e-10)
+    return normed @ normed.T
+
+
+def l2_normalise(matrix: np.ndarray) -> np.ndarray:
+    """Row-wise L2 normalisation, so a dot product equals cosine similarity."""
+    norms = np.linalg.norm(matrix, axis=1, keepdims=True)
+    return matrix / np.clip(norms, 1e-12, None)
+
+
+# ---------------------------------------------------------------------------
+# Retrieval quality
+# ---------------------------------------------------------------------------
+
+def entropy(scores, top_n=None, shift_min: bool = False) -> float:
+    """Shannon entropy (bits) of similarity scores normalised to probabilities.
+
+    Low entropy means the retriever is decisive: a few chunks dominate. High
+    entropy means the scores are flat and it cannot discriminate.
+
+    Scores are sorted internally, so `top_n` means the top n regardless of the
+    order they arrive in.
+
+    Default (`shift_min=False`) is the formula taught in w2_01: p_i = s_i / sum(s),
+    with non-positive scores dropped. `shift_min=True` first subtracts the
+    minimum score, which makes the result offset-invariant (only the shape of
+    the score curve counts) and sends the lowest score to p=0. w2_02 uses this
+    variant for the Matryoshka experiment, where absolute cosine levels differ
+    between vector widths.
+    """
+    if top_n is not None:
+        scores = sorted(scores, reverse=True)[:top_n]
+    arr = np.asarray(scores, dtype=float)
+    if shift_min:
+        arr = arr - arr.min() + 1e-9
+    else:
+        arr = arr[arr > 0]
+    p = arr / arr.sum()
+    return float(-np.sum(p * np.log2(p + 1e-12)))
+
+
+def reciprocal_rank(ranked_docs: list, relevant: set) -> float:
+    """Return 1/rank of the first relevant doc, or 0 if none found.
+
+    Averaged over a query set, this is MRR.
+    """
+    for rank, doc in enumerate(ranked_docs, 1):
+        if doc in relevant:
+            return 1.0 / rank
+    return 0.0
+
+
+def ndcg_at_k(ranked_docs: list, relevant: set, k: int = 5) -> float:
+    """Normalised Discounted Cumulative Gain at k.
+
+    Rewards relevant hits near the top of the ranking, not just their presence.
+    """
+    dcg = 0.0
+    for i, doc in enumerate(ranked_docs[:k]):
+        if doc in relevant:
+            dcg += 1.0 / np.log2(i + 2)  # i+2 because rank starts at 1
+    # Ideal DCG: all relevant docs at the top
+    ideal = sum(1.0 / np.log2(i + 2) for i in range(min(len(relevant), k)))
+    return dcg / ideal if ideal > 0 else 0.0
+
+
+# ---------------------------------------------------------------------------
+# Generation from retrieved context
+# ---------------------------------------------------------------------------
+
+def build_rag_context(hits, max_chars_per_chunk: int = 1400) -> str:
+    """Assemble retrieved chunks into a prompt-sized, cited context block.
+
+    max_chars_per_chunk keeps the prompt inside the LLM's practical context
+    window; over-stuffing the context can actually degrade answer quality.
+    """
+    blocks = []
+    for i, h in enumerate(hits, start=1):
+        pages = h.get('page_numbers') or []
+        cite = h.get('citation_hint') or '-'
+        pages_text = ', '.join(map(str, pages)) if pages else '-'
+        snippet = (h.get('text') or '')[:max_chars_per_chunk]
+        blocks.append(
+            f"[Source {i}] score={h['score']:.4f} | pages={pages_text} | cite={cite}\n{snippet}"
+        )
+    return '\n\n'.join(blocks)
+
+
+def answer_with_llm(query: str, hits, model: str | None = None,
+                    system_prompt: str | None = None) -> str:
+    """Answer `query` from the retrieved `hits`, refusing to go beyond them."""
+    from litellm import completion
+
+    model = model or RAG_MODEL_NAME
+    system_prompt = system_prompt or (
+        'You are a RAG assistant for IT-Grundschutz. '
+        'Answer only based on the provided context. '
+        'If the information is missing, say so clearly. '
+        'List the sources with page numbers at the end. '
+        'Answer in the language of the question.'
+    )
+
+    resp = completion(
+        model=model,
+        messages=[
+            {'role': 'system', 'content': system_prompt},
+            {'role': 'user',
+             'content': f'Question:\n{query}\n\nContext:\n{build_rag_context(hits)}'},
+        ],
+        api_base=API_BASE_URL,
+        api_key=os.getenv('OPENAI_API_KEY'),
+        temperature=0.2,
+    )
+    return resp.choices[0].message.content
