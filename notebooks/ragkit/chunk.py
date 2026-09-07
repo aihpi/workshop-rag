@@ -8,9 +8,8 @@ that is cheap to test and safe to experiment with.
 
 import json
 import re
+from pathlib import Path
 from typing import Any
-
-from .config import MAX_CHUNK, OVERLAP, PDF_PATH
 
 # ---------------------------------------------------------------------------
 # Normalisation
@@ -54,10 +53,15 @@ def count_umlaut_placeholders(obj) -> int:
     return len(re.findall(r'/?C\d{3}', s))
 
 
-def normalize_text(text: str) -> str:
-    """Normalise line endings, repair umlauts, collapse blank-line runs."""
+def normalize_text(text: str, fix_umlauts: bool = True) -> str:
+    """Normalise line endings, collapse whitespace and blank-line runs.
+
+    With `fix_umlauts=True` (default) Docling/OCR placeholders like `/C231`
+    are also repaired. w2_04 passes `False`: it compares OCR engines, so a
+    placeholder there is a real quality difference that must stay visible.
+    """
     text = text.replace('\r\n', '\n').replace('\r', '\n')
-    text = _fix_german_umlauts(text)
+    text = _fix_german_umlauts(text) if fix_umlauts else re.sub(r'[ \t]{2,}', ' ', text)
     text = re.sub(r'\n{3,}', '\n\n', text)
     return text.strip()
 
@@ -79,13 +83,14 @@ def normalize_json(doc_json: dict) -> dict:
     return walk(doc_json)
 
 
-def format_citation(pages: list[int]):
-    """Render a page list as a citation hint, e.g. 'p. 12' or 'p. 12-15'."""
+def format_citation(pages: list[int], lang: str = 'en'):
+    """Render a page list as a citation hint, e.g. 'p. 12' or 'S. 12-15' (lang='de')."""
     if not pages:
         return None
+    prefix = 'S.' if lang == 'de' else 'p.'
     if len(pages) == 1:
-        return f'p. {pages[0]}'
-    return f'p. {pages[0]}-{pages[-1]}'
+        return f'{prefix} {pages[0]}'
+    return f'{prefix} {pages[0]}-{pages[-1]}'
 
 
 # ---------------------------------------------------------------------------
@@ -224,21 +229,27 @@ def chunk_markdown_by_headers(markdown_text: str, max_chunk: int = 1200,
 # Chunk records (text + metadata, ready for indexing)
 # ---------------------------------------------------------------------------
 
-def records_from_markdown_header_chunks(markdown_text: str) -> list[dict[str, Any]]:
-    """Build indexable records by splitting Markdown at its headings."""
-    chunks = chunk_markdown_by_headers(markdown_text, max_chunk=MAX_CHUNK, overlap=OVERLAP)
+def records_from_markdown_header_chunks(markdown_text: str, pdf_path: Path | str,
+                                        max_chunk: int = 1200, overlap: int = 200) -> list[dict[str, Any]]:
+    """Build indexable records by splitting Markdown at its headings.
+
+    `pdf_path` is stamped into every record's metadata; the notebook that owns
+    the document passes it, together with its own chunk-size constants.
+    """
+    pdf_path = Path(pdf_path)
+    chunks = chunk_markdown_by_headers(markdown_text, max_chunk=max_chunk, overlap=overlap)
     return [
         {
             'chunk_id': i,
             'text': chunk_text,
             'metadata': {
-                'source_file': PDF_PATH.name,
-                'source_path': str(PDF_PATH),
+                'source_file': pdf_path.name,
+                'source_path': str(pdf_path),
                 'doc_type': 'pdf',
                 'converter': 'docling',
                 'chunking_mode': 'markdown_headers',
-                'max_chunk': MAX_CHUNK,
-                'overlap': OVERLAP,
+                'max_chunk': max_chunk,
+                'overlap': overlap,
                 'total_chunks': len(chunks),
                 # Exact page numbers usually cannot be derived reliably from plain Markdown
                 'page_numbers': [],
@@ -249,8 +260,13 @@ def records_from_markdown_header_chunks(markdown_text: str) -> list[dict[str, An
     ]
 
 
-def records_from_docling_json_structured_sections(doc_json: dict) -> list[dict[str, Any]]:
-    """Structure-driven chunks: exactly from heading to heading, no max-chunk/overlap."""
+def records_from_docling_json_structured_sections(doc_json: dict, pdf_path: Path | str,
+                                                  lang: str = 'en') -> list[dict[str, Any]]:
+    """Structure-driven chunks: exactly from heading to heading, no max-chunk/overlap.
+
+    `lang` selects the citation-hint language ('p. 12' vs 'S. 12').
+    """
+    pdf_path = Path(pdf_path)
     elements = doc_json.get('texts', [])
     if not isinstance(elements, list):
         return []
@@ -289,7 +305,7 @@ def records_from_docling_json_structured_sections(doc_json: dict) -> list[dict[s
         items.append({
             'text': section_text,
             'page_numbers': page_numbers,
-            'citation_hint': format_citation(page_numbers),
+            'citation_hint': format_citation(page_numbers, lang=lang),
         })
 
         current_parts = []
@@ -331,8 +347,8 @@ def records_from_docling_json_structured_sections(doc_json: dict) -> list[dict[s
             'chunk_id': i,
             'text': item['text'],
             'metadata': {
-                'source_file': PDF_PATH.name,
-                'source_path': str(PDF_PATH),
+                'source_file': pdf_path.name,
+                'source_path': str(pdf_path),
                 'doc_type': 'pdf',
                 'converter': 'docling',
                 'chunking_mode': 'json_structured_sections',

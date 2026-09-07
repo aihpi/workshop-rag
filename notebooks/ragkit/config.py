@@ -1,8 +1,8 @@
 """Shared configuration for the workshop notebooks.
 
-Loads environment variables from .env, defines path constants,
-model names, and infrastructure settings. Prints a configuration
-summary at import time.
+Loads environment variables from .env (if present), defines path constants,
+model names, and infrastructure settings. Call `setup()` to create the
+evaluation cache directory and print a configuration summary.
 """
 
 import os
@@ -70,12 +70,13 @@ CSV_PATH = DATA_DIR / _csv_file
 # setdefault sorgt dafür, dass bereits gesetzte Umgebungsvariablen
 # (z.B. aus der Shell) Vorrang haben.
 
-for _line in ENV_PATH.read_text(encoding='utf-8').splitlines():
-    _line = _line.strip()
-    if not _line or _line.startswith('#') or '=' not in _line:
-        continue
-    _key, _value = _line.split('=', 1)
-    os.environ.setdefault(_key.strip(), _value.strip())
+if ENV_PATH.exists():
+    for _line in ENV_PATH.read_text(encoding='utf-8').splitlines():
+        _line = _line.strip()
+        if not _line or _line.startswith('#') or '=' not in _line:
+            continue
+        _key, _value = _line.split('=', 1)
+        os.environ.setdefault(_key.strip(), _value.strip())
 
 
 # ---------------------------------------------------------------------------
@@ -134,26 +135,34 @@ COLLECTION_NAME = f'grundschutz_chunks_{CHUNKING_MODE}__{EMBED_SHORT}'
 # Cache-Verzeichnis für Evaluationsergebnisse (pro Datensatz + Chunking + Embedding + Evaluator)
 EVALUATOR_SHORT = EVALUATOR_MODEL_NAME.split('/')[-1]
 CACHE_DIR = DATA_DIR / 'cache' / f'{DATASET}__{CHUNKING_MODE}__{EMBED_SHORT}__{EVALUATOR_SHORT}'
-CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 # Figures-Verzeichnis für gespeicherte Plots
 FIGURES_DIR = WORKSHOP_DIR / 'figures'
 
 
 # ---------------------------------------------------------------------------
-# Zusammenfassung (wird bei jedem Import ausgegeben)
+# Setup für die Workshop-3-Notebooks (explizit aufrufen, kein Import-Effekt)
 # ---------------------------------------------------------------------------
 
-print('=== Workshop-Konfiguration ===')
-print(f'  PDF:             {PDF_PATH.name} | exists: {PDF_PATH.exists()}')
-print(f'  Datensatz:       {DATASET} ({CSV_PATH.name}, sep="{CSV_SEP}") | exists: {CSV_PATH.exists()}')
-print(f'  Embedding:       {EMBED_MODEL_NAME} (max_chars={EMBED_MAX_CHARS})')
-print(f'  RAG-Modell:      {RAG_MODEL_NAME}')
-print(f'  Evaluator:       {EVALUATOR_MODEL_NAME}')
-print(f'  API Base URL:    {API_BASE_URL}')
-print(f'  API Key gesetzt: {bool(os.getenv("OPENAI_API_KEY"))}')
-print(f'  Qdrant:          {QDRANT_HOST}:{QDRANT_PORT}')
-print(f'  Chunking-Modus:  {CHUNKING_MODE}')
-print(f'  Collection:      {COLLECTION_NAME}')
-print(f'  Chunking:        MAX_CHUNK={MAX_CHUNK}, OVERLAP={OVERLAP}, TOP_K={TOP_K}')
-print('=' * 30)
+def setup() -> None:
+    """Create CACHE_DIR and print the configuration summary.
+
+    Called by the Workshop 3 notebooks right after `from ragkit.config import *`.
+    Kept out of import time so that Workshop 2 notebooks, which only need
+    `ragkit.embed` or `ragkit.search`, neither print this banner nor create
+    the evaluation cache directory.
+    """
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    print('=== Workshop-Konfiguration ===')
+    print(f'  PDF:             {PDF_PATH.name} | exists: {PDF_PATH.exists()}')
+    print(f'  Datensatz:       {DATASET} ({CSV_PATH.name}, sep="{CSV_SEP}") | exists: {CSV_PATH.exists()}')
+    print(f'  Embedding:       {EMBED_MODEL_NAME} (max_chars={EMBED_MAX_CHARS})')
+    print(f'  RAG-Modell:      {RAG_MODEL_NAME}')
+    print(f'  Evaluator:       {EVALUATOR_MODEL_NAME}')
+    print(f'  API Base URL:    {API_BASE_URL}')
+    print(f'  API Key gesetzt: {bool(os.getenv("OPENAI_API_KEY"))}')
+    print(f'  Qdrant:          {QDRANT_HOST}:{QDRANT_PORT}')
+    print(f'  Chunking-Modus:  {CHUNKING_MODE}')
+    print(f'  Collection:      {COLLECTION_NAME}')
+    print(f'  Chunking:        MAX_CHUNK={MAX_CHUNK}, OVERLAP={OVERLAP}, TOP_K={TOP_K}')
+    print('=' * 30)

@@ -177,6 +177,13 @@ def embed(texts, model: str = EMBED_MODEL_NAME, batch_size: int = EMBED_BATCH_SI
     """
     from litellm import embedding
 
+    key = os.getenv('OPENAI_API_KEY', '')
+    if not key or key.startswith('your_'):
+        raise RuntimeError(
+            'OPENAI_API_KEY is missing or still the placeholder. '
+            'Copy notebooks/.env.example to notebooks/.env and insert your key.'
+        )
+
     if isinstance(texts, str):
         texts = [texts]
     if max_chars:
@@ -194,6 +201,8 @@ def embed(texts, model: str = EMBED_MODEL_NAME, batch_size: int = EMBED_BATCH_SI
             if vec is None:
                 raise RuntimeError('Received an embedding response without a vector.')
             vectors.append(np.asarray(vec, dtype=np.float32))
+        if len(texts) > batch_size:  # single-query calls stay quiet
+            print(f'  Embedded {len(vectors)}/{len(texts)}')
     return vectors
 
 

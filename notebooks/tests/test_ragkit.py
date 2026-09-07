@@ -23,6 +23,8 @@ from ragkit.chunk import (
     format_citation,
     normalize_text,
     parser_aware_split,
+    records_from_docling_json_structured_sections,
+    records_from_markdown_header_chunks,
 )
 from ragkit.search import (
     cosine_sim,
@@ -48,10 +50,28 @@ def test_count_umlaut_placeholders_walks_nested_structures():
     assert count_umlaut_placeholders({'a': ['x/C252y', 'clean']}) == 1
 
 
+def test_normalize_text_can_leave_umlaut_placeholders_alone():
+    assert normalize_text('a  b /C231') == 'a b ü'
+    assert normalize_text('a  b /C231', fix_umlauts=False) == 'a b /C231'
+
+
 def test_format_citation():
     assert format_citation([]) is None
     assert format_citation([7]) == 'p. 7'
     assert format_citation([7, 8, 9]) == 'p. 7-9'
+    assert format_citation([7], lang='de') == 'S. 7'
+
+
+def test_records_stamp_the_callers_pdf_and_chunk_sizes():
+    md = '# One\n\nbody one\n\n## Two\n\nbody two'
+    records = records_from_markdown_header_chunks(md, 'x/standard.pdf', max_chunk=50, overlap=10)
+    assert records[0]['metadata']['source_file'] == 'standard.pdf'
+    assert records[0]['metadata']['max_chunk'] == 50
+    doc = {'texts': [{'label': 'section_header', 'text': 'H', 'prov': [{'page_no': 3}]},
+                     {'label': 'text', 'text': 'body', 'prov': [{'page_no': 3}]}]}
+    records = records_from_docling_json_structured_sections(doc, 'x/standard.pdf', lang='de')
+    assert records[0]['metadata']['source_file'] == 'standard.pdf'
+    assert records[0]['metadata']['citation_hint'] == 'S. 3'
 
 
 # --- chunking ------------------------------------------------------------
@@ -139,6 +159,33 @@ def test_entropy_handles_negative_scores():
     # Cosine similarity can be negative; this must not produce nan.
     import numpy as np
     assert np.isfinite(entropy([-0.4, 0.1, 0.9]))
+    assert np.isfinite(entropy([-0.4, 0.1, 0.9], shift_min=True))
+
+
+def test_entropy_default_is_the_taught_formula_and_shift_min_differs():
+    # w2_01 cell 30: p_i = s_i / sum(s). The peaked demo vector gives 2.76 bits.
+    peaked = [1.0] + [0.01] * 49
+    assert abs(entropy(peaked) - 2.76) < 0.01
+    assert entropy(peaked, shift_min=True) < 0.01  # min-shift sends the 49 tail scores to p=0
+
+
+def test_embed_rejects_the_placeholder_key():
+    import os
+
+    from ragkit.embed import embed
+    saved = os.environ.get('OPENAI_API_KEY')
+    os.environ['OPENAI_API_KEY'] = 'your_openai_api_key_here'
+    try:
+        embed('x')
+    except RuntimeError as exc:
+        assert 'placeholder' in str(exc)
+    else:
+        raise AssertionError('expected RuntimeError for placeholder key')
+    finally:
+        if saved is None:
+            del os.environ['OPENAI_API_KEY']
+        else:
+            os.environ['OPENAI_API_KEY'] = saved
 
 
 def test_entropy_top_n_sorts_first():

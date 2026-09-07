@@ -98,20 +98,29 @@ def l2_normalise(matrix: np.ndarray) -> np.ndarray:
 # Retrieval quality
 # ---------------------------------------------------------------------------
 
-def entropy(scores, top_n=None) -> float:
+def entropy(scores, top_n=None, shift_min: bool = False) -> float:
     """Shannon entropy (bits) of similarity scores normalised to probabilities.
 
     Low entropy means the retriever is decisive: a few chunks dominate. High
     entropy means the scores are flat and it cannot discriminate.
 
     Scores are sorted internally, so `top_n` means the top n regardless of the
-    order they arrive in, and shifted by their minimum, so negative cosine
-    values are handled rather than dropped.
+    order they arrive in.
+
+    Default (`shift_min=False`) is the formula taught in w2_01: p_i = s_i / sum(s),
+    with non-positive scores dropped. `shift_min=True` first subtracts the
+    minimum score, which makes the result offset-invariant (only the shape of
+    the score curve counts) and sends the lowest score to p=0. w2_02 uses this
+    variant for the Matryoshka experiment, where absolute cosine levels differ
+    between vector widths.
     """
     if top_n is not None:
         scores = sorted(scores, reverse=True)[:top_n]
     arr = np.asarray(scores, dtype=float)
-    arr = arr - arr.min() + 1e-9
+    if shift_min:
+        arr = arr - arr.min() + 1e-9
+    else:
+        arr = arr[arr > 0]
     p = arr / arr.sum()
     return float(-np.sum(p * np.log2(p + 1e-12)))
 
