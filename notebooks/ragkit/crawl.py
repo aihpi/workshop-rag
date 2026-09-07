@@ -160,14 +160,17 @@ def _usable(page: dict) -> dict | None:
     }
 
 
-def fetch_image_candidates(category: str, want: int = IMAGES_PER_SPECIES) -> list[dict]:
+def fetch_image_candidates(category: str, want: int = IMAGES_PER_SPECIES,
+                           exclude: set[str] = frozenset()) -> list[dict]:
     """Photos for one species, best sources first.
 
     1. Commons files whose structured data says they *depict* the species (Wikidata
        item) and that carry the community's Quality-image assessment.
     2. Any file depicting the species.
     3. Files in the species' Commons category (alphabetical, so least curated).
-    JPEG, licence, size and file-name filters apply to all three.
+    JPEG, licence, size and file-name filters apply to all three; `exclude` holds
+    titles already taken by another species (a photo of an eagle chased by crows
+    depicts both, and must not become a photo of each).
     """
     pages: list[dict] = []
     qid = _wikidata_qid(category)
@@ -176,7 +179,7 @@ def fetch_image_candidates(category: str, want: int = IMAGES_PER_SPECIES) -> lis
         pages += _imageinfo(_search_titles(f'{depicts} hastemplate:"Quality image"'))
         pages += _imageinfo(_search_titles(depicts))
     pages += _category_pages(category)
-    out, seen = [], set()
+    out, seen = [], set(exclude)
     for page in pages:
         cand = _usable(page)
         if cand and cand['title'] not in seen:
@@ -203,9 +206,10 @@ def _slugify(title: str) -> str:
 def crawl(out_dir: Path = OUT_DIR, dry_run: bool = False) -> list[dict]:
     """Fetch articles and images for every species; return the attribution rows."""
     img_dir, art_dir = out_dir / 'images', out_dir / 'articles'
-    rows = []
+    rows, used_titles = [], set()
     for slug, de_title, category in SPECIES:
-        cands = fetch_image_candidates(category)
+        cands = fetch_image_candidates(category, exclude=used_titles)
+        used_titles.update(c['title'] for c in cands)
         print(f'{de_title:14s} {len(cands)} photos', end='')
         if not dry_run:
             img_dir.mkdir(parents=True, exist_ok=True)
