@@ -61,10 +61,10 @@ in the top search bar and pull it first.)
 docker run -d --name qdrant -p 6333:6333 -v "$(pwd)/qdrant_storage:/qdrant/storage" qdrant/qdrant
 ```
 
-Or use the bundled script from the repository root:
+Or use the compose file from the repository root:
 
 ```bash
-./scripts/start_qdrant.sh
+docker compose up -d
 ```
 
 Verify it is up before continuing:

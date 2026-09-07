@@ -9,38 +9,12 @@ import os
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
-# Repository-Root finden
-# ---------------------------------------------------------------------------
-
-def find_repo_root(start: Path | None = None) -> Path:
-    """Walk up the directory tree to find the repository root.
-
-    The root is identified by the presence of a 'docker-compose.yml' file.
-
-    Args:
-        start: Directory to start searching from. Defaults to this file's own
-            location, so the paths below are correct regardless of the working
-            directory Jupyter was launched from.
-
-    Returns:
-        Path to the repository root directory.
-
-    Raises:
-        RuntimeError: If no docker-compose.yml is found in any parent.
-    """
-    current = (start or Path(__file__).parent).resolve()
-    for candidate in [current, *current.parents]:
-        if (candidate / 'docker-compose.yml').exists():
-            return candidate
-    raise RuntimeError('Repository root not found.')
-
-
-# ---------------------------------------------------------------------------
 # Pfade
 # ---------------------------------------------------------------------------
 
-REPO_ROOT = find_repo_root()
-WORKSHOP_DIR = REPO_ROOT / 'notebooks'
+# ragkit lives in <repo>/notebooks/ragkit, so the workshop directory is one level up.
+WORKSHOP_DIR = Path(__file__).resolve().parents[1]
+REPO_ROOT = WORKSHOP_DIR.parent
 DATA_DIR = WORKSHOP_DIR / 'data'
 ENV_PATH = WORKSHOP_DIR / '.env'
 
