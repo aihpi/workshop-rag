@@ -220,6 +220,7 @@ import os
 from ragkit import config, theme
 from ragkit.chunk import wiki_headings_to_markdown
 from ragkit.crawl import _NOT_A_PHOTO, licence_ok
+from ragkit.embed import _check_image_was_seen
 from ragkit.viz import image_grid, thumbnail_sheet
 
 
@@ -668,6 +669,24 @@ def test_image_figures_have_one_axis_per_photo(tmp_path=None):
     sheet = thumbnail_sheet(paths, ['a', 'b', 'c'], cols=2)
     assert len(sheet.axes) == 4
     matplotlib.pyplot.close('all')
+
+
+def test_image_embedding_guard_detects_text_tokenisation():
+    class _Usage:
+        def __init__(self, n):
+            self.prompt_tokens = n
+
+    class _Resp:
+        def __init__(self, n):
+            self.usage = _Usage(n)
+
+    _check_image_was_seen(_Resp(340), uri_chars=43_000)   # genuine vision tokens: fine
+    try:
+        _check_image_was_seen(_Resp(31_964), uri_chars=43_000)
+    except RuntimeError as e:
+        assert 'as text' in str(e)
+    else:
+        raise AssertionError('base64-as-text must be detected')
 
 
 if __name__ == '__main__':
