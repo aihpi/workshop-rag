@@ -112,3 +112,43 @@ def head_tail(text: str, n: int = 120) -> str:
     if len(text) <= 2 * n:
         return text
     return f'{text[:n]} … {text[-n:]}'
+
+
+def image_grid(query_path, hit_paths, scores, labels=None, credit: str | None = None):
+    """Query photo on the left, the ranked hits in one row, similarity under each hit.
+
+    `labels` (optional) are short names printed above the hits, e.g. the species.
+    The query is framed in ink; a credit line goes under the figure when given.
+    """
+    from matplotlib.image import imread
+
+    k = len(hit_paths)
+    fig, axes = plt.subplots(1, k + 1, figsize=(6.5, 6.5 / (k + 1) + 0.5),
+                             gridspec_kw={'wspace': 0.08, 'width_ratios': [1.15] + [1] * k})
+    for ax in axes:
+        ax.set_axis_off()
+    axes[0].imshow(imread(query_path))
+    axes[0].set_title('query', fontsize=8.5, color=theme.INK)
+    axes[0].add_patch(plt.Rectangle((0, 0), 1, 1, transform=axes[0].transAxes, fill=False,
+                                    edgecolor=theme.INK, linewidth=1.5))
+    for i, (ax, path, score) in enumerate(zip(axes[1:], hit_paths, scores)):
+        ax.imshow(imread(path))
+        title = f'{labels[i]}\n{score:.2f}' if labels else f'{score:.2f}'
+        ax.set_title(title, fontsize=8, color=theme.GREY)
+    if credit:
+        fig.text(0.01, -0.02, credit, fontsize=7, color=theme.GREY)
+    return fig
+
+
+def thumbnail_sheet(paths, labels, cols: int = 13):
+    """Small thumbnails in a grid with a label under each; for a corpus overview."""
+    from matplotlib.image import imread
+
+    rows = -(-len(paths) // cols)
+    fig, axes = plt.subplots(rows, cols, figsize=(6.5, 6.5 / cols * rows * 1.25))
+    for ax in axes.flat:
+        ax.set_axis_off()
+    for ax, path, label in zip(axes.flat, paths, labels):
+        ax.imshow(imread(path))
+        ax.set_title(label, fontsize=6, color=theme.INK, pad=2)
+    return fig

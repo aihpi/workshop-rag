@@ -218,7 +218,9 @@ def test_ndcg_at_k_with_no_relevant_docs():
 import os
 
 from ragkit import config, theme
+from ragkit.chunk import wiki_headings_to_markdown
 from ragkit.crawl import _NOT_A_PHOTO, licence_ok
+from ragkit.viz import image_grid, thumbnail_sheet
 
 
 def test_setup_non_strict_reports_missing_key_and_file():
@@ -640,6 +642,32 @@ def test_entropy_softmax_separates_peaked_from_flat():
     assert peaked < 0.3
     assert 2.0 < flat <= 2.33
     assert abs(entropy([1.0, 1.0, 1.0, 1.0], temperature=0.05) - 2.0) < 1e-9
+
+
+def test_wiki_headings_to_markdown():
+    md = wiki_headings_to_markdown('# Rotkehlchen\n\n== Beschreibung ==\nText\n=== Merkmale ===\n==== Gesang ====\nx == y')
+    assert md.split('\n')[2] == '## Beschreibung'
+    assert '### Merkmale' in md and '#### Gesang' in md and 'x == y' in md
+
+
+def test_image_figures_have_one_axis_per_photo(tmp_path=None):
+    from pathlib import Path
+
+    import matplotlib
+    import numpy as np
+    from PIL import Image
+    folder = Path('/tmp') / 'ragkit_test_imgs'
+    folder.mkdir(exist_ok=True)
+    paths = []
+    for i in range(3):
+        path = folder / f'p{i}.jpg'
+        Image.fromarray(np.full((8, 8, 3), 90 + 50 * i, dtype=np.uint8)).save(path)
+        paths.append(path)
+    fig = image_grid(paths[0], paths[1:], [0.9, 0.8], labels=['a', 'b'], credit='Photos: test')
+    assert len(fig.axes) == 3
+    sheet = thumbnail_sheet(paths, ['a', 'b', 'c'], cols=2)
+    assert len(sheet.axes) == 4
+    matplotlib.pyplot.close('all')
 
 
 if __name__ == '__main__':

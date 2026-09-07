@@ -200,6 +200,12 @@ def parser_aware_split(text: str, max_chunk: int = 1200, overlap: int = 200) -> 
     return chunks
 
 
+def wiki_headings_to_markdown(text: str) -> str:
+    """Turn Wikipedia extract headings ('== Titel ==', '=== Untertitel ===') into '##' / '###' lines."""
+    return re.sub(r'(?m)^(={2,6})\s*(.+?)\s*\1\s*$',
+                  lambda m: '#' * len(m.group(1)) + ' ' + m.group(2), text)
+
+
 def chunk_markdown_by_headers(markdown_text: str, max_chunk: int = 1200,
                               overlap: int = 200) -> list[str]:
     """Split along Markdown headings; oversized sections are split further."""
