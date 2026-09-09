@@ -1,0 +1,16 @@
+[
+ {
+  "qid": "123_einfach_122",
+  "question": "Wie erfolgt die Vererbung des Schutzbedarfs von Geschäftsprozessen und Anwendungen auf IT-Systeme, und welche Effekte müssen dabei berücksichtigt werden?",
+  "difficulty": "easy",
+  "gold_set": "123_einfach",
+  "fundstelle": "8.2.2 Vorgehen bei der Schutzbedarfsfeststellung \nDer für diese Elemente ermittelte Schutzbedarf vererbt sich auf die für deren Verarbeitung genutzten Objekte, also Anwendungen, IT-Systeme, ICS- und sonstige Geräte, Räume und Kommunikationsverbindungen (Vererbung). Zur Ermittlung des Schutzbedarfs e"
+ },
+ {
+  "qid": "43_komplex_042",
+  "question": "Welche Schritte sind erforderlich, um den Schutzbedarf für Geschäftsprozesse und Anwendungen zu ermitteln, und welche Schadensszenarien sind dabei zu berücksichtigen?",
+  "difficulty": "complex",
+  "gold_set": "43_komplex",
+  "fundstelle": "8.2.3 Schutzbedarfsfeststellung für Geschäftsprozesse und Anwendungen Um den Schutzbedarf in den verschiedenen Bereichen eines Informationsverbunds zu bestimmen, muss zunächst der Schutzbedarf der Geschäftsprozesse und der zugehörigen Informationen ermittelt werden. Darauf aufbauend wird daraus der "
+ }
+]
