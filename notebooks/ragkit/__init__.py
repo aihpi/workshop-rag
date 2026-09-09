@@ -10,8 +10,9 @@ no install step:
     from ragkit.search import rag_search, entropy
 
 `config.setup()` validates key, Qdrant and data files once per notebook;
-`theme` carries the HPI look for notebook chrome and figures; `crawl` fetched
-the bird dataset once and documents how such data can be collected.
+`theme` carries the HPI look for notebook chrome and figures; `evaluate` maps
+gold Fundstellen and chunks onto Kompendium sections; `crawl` fetched the bird
+dataset once and documents how such data can be collected.
 
 `ragkit` holds the plumbing that every notebook repeats: API calls, batching,
 caching, chunking, similarity, ranking metrics. It deliberately does not hold
@@ -21,4 +22,4 @@ Submodules are not imported here, so `import ragkit` stays cheap and a notebook
 that does no OCR never pays for the docling import.
 """
 
-__all__ = ['chunk', 'config', 'crawl', 'embed', 'search', 'theme', 'viz']
+__all__ = ['chunk', 'config', 'crawl', 'embed', 'evaluate', 'search', 'submit', 'theme', 'viz']

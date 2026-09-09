@@ -98,7 +98,8 @@ def l2_normalise(matrix: np.ndarray) -> np.ndarray:
 # Retrieval quality
 # ---------------------------------------------------------------------------
 
-def entropy(scores, top_n=None, shift_min: bool = False) -> float:
+def entropy(scores, top_n=None, shift_min: bool = False,
+            temperature: float | None = None) -> float:
     """Shannon entropy (bits) of similarity scores normalised to probabilities.
 
     Low entropy means the retriever is decisive: a few chunks dominate. High
@@ -112,17 +113,48 @@ def entropy(scores, top_n=None, shift_min: bool = False) -> float:
     minimum score, which makes the result offset-invariant (only the shape of
     the score curve counts) and sends the lowest score to p=0. w2_02 uses this
     variant for the Matryoshka experiment, where absolute cosine levels differ
-    between vector widths.
+    between vector widths. `temperature` switches to a softmax over the scores
+    (p_i = exp(s_i/T) / sum exp(s_j/T)); cosine scores differ by hundredths, so
+    T around 0.05 is needed before the entropy separates peaked from flat
+    curves. w2_01 teaches this variant.
     """
     if top_n is not None:
         scores = sorted(scores, reverse=True)[:top_n]
     arr = np.asarray(scores, dtype=float)
+    if temperature is not None:
+        z = (arr - arr.max()) / temperature
+        p = np.exp(z) / np.exp(z).sum()
+        return float(-np.sum(p * np.log2(p + 1e-12)))
     if shift_min:
         arr = arr - arr.min() + 1e-9
     else:
         arr = arr[arr > 0]
     p = arr / arr.sum()
     return float(-np.sum(p * np.log2(p + 1e-12)))
+
+
+def rank_gap(scores) -> float:
+    """Distance between the best and the second-best score.
+
+    Discriminability without labels: a large gap means one chunk clearly won, a
+    gap near zero means the order of the hit list is noise. It says nothing
+    about whether the winner is the right chunk.
+    """
+    top = sorted(scores, reverse=True)[:2]
+    return float(top[0] - top[1]) if len(top) == 2 else float('nan')
+
+
+def ndcg_graded(gains: list[float], k: int = 5) -> float:
+    """nDCG@k over relevance grades given in rank order, with gain 2**g - 1.
+
+    `gains[i]` is the grade of the chunk at rank i+1, so 0 is irrelevant and a
+    higher grade is more relevant. Binary grades reproduce `ndcg_at_k`.
+    """
+    def dcg(values):
+        return sum((2.0 ** g - 1) / np.log2(i + 2) for i, g in enumerate(values[:k]))
+
+    ideal = dcg(sorted(gains, reverse=True))
+    return dcg(gains) / ideal if ideal > 0 else 0.0
 
 
 def reciprocal_rank(ranked_docs: list, relevant: set) -> float:
@@ -148,6 +180,18 @@ def ndcg_at_k(ranked_docs: list, relevant: set, k: int = 5) -> float:
     # Ideal DCG: all relevant docs at the top
     ideal = sum(1.0 / np.log2(i + 2) for i in range(min(len(relevant), k)))
     return dcg / ideal if ideal > 0 else 0.0
+
+
+def recall_at_k(ranked_docs: list, relevant: set, k: int = 5) -> float:
+    """Share of the relevant docs that appear in the top k (0 when nothing is relevant)."""
+    if not relevant:
+        return 0.0
+    return len(set(ranked_docs[:k]) & set(relevant)) / len(relevant)
+
+
+def precision_at_k(ranked_docs: list, relevant: set, k: int = 5) -> float:
+    """Share of the top k that is relevant."""
+    return len(set(ranked_docs[:k]) & set(relevant)) / k
 
 
 # ---------------------------------------------------------------------------

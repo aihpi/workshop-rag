@@ -7,7 +7,9 @@ that is cheap to test and safe to experiment with.
 """
 
 import json
+import math
 import re
+import statistics
 from pathlib import Path
 from typing import Any
 
@@ -361,3 +363,141 @@ def records_from_docling_json_structured_sections(doc_json: dict, pdf_path: Path
         }
         for i, item in enumerate(items)
     ]
+
+
+# ---------------------------------------------------------------------------
+# IT-Grundschutz structure (w2_01)
+# ---------------------------------------------------------------------------
+# The Docling export of the Kompendium uses '## ' for every heading. Four header
+# shapes carry the structure; everything else ('## Vorwort', glossary terms,
+# layer separators) is 'other'. Verified on Edition 2023: 111 Bausteine, 2123
+# requirements (289 of them ENTFALLEN), 47 Gefährdungen, 1927 template sections.
+
+_BAUSTEIN_ID = r'[A-Z]{2,4}(?:\.\d{1,2}){1,3}'
+REQ_ID_RE = re.compile(rf'\b({_BAUSTEIN_ID})\.A(\d{{1,2}})\b')
+REQ_HEADER_RE = re.compile(
+    rf'^## ({_BAUSTEIN_ID}\.A\d{{1,2}}) (.+?) \(([BSH])\)(?: \[([^\]]+)\])?$')
+BAUSTEIN_HEADER_RE = re.compile(rf'^## ({_BAUSTEIN_ID}) (?!A\d)(\S.*)$')
+GEFAEHRDUNG_HEADER_RE = re.compile(r'^## (G 0\.\d{1,2}) (.+)$')
+TEMPLATE_HEADER_RE = re.compile(r'^## (\d{1,2}\.(?:\d{1,2}\.)?) (.+)$')
+# Page furniture: Docling image placeholders plus the running-head and
+# page-number shapes a PDF export usually leaves behind.
+FURNITURE_RE = re.compile(
+    r'^(<!-- image -->|IT-Grundschutz-Kompendium: Stand \w+ \d{4}.*|\d{1,4}|Seite \d+)$')
+# BSI modal verbs as whole tokens. Negated forms come first in the alternation
+# so that 'SOLLTE NICHT' is not also counted as 'SOLLTE'.
+MODAL_RE = re.compile(
+    r'\b(?:(?P<muss>MUSS|MÜSSEN)'
+    r'|(?P<darf_nur>D(?:ARF|ÜRFEN) NUR)'
+    r'|(?P<darf_nicht>D(?:ARF|ÜRFEN) (?:NICHT|KEIN\w*))'
+    r'|(?P<sollte_nicht>SOLLTEN? (?:NICHT|KEIN\w*))'
+    r'|(?P<sollte>SOLLTEN?))\b')
+_MODAL_LABELS = {'muss': 'MUSS', 'darf_nur': 'DARF NUR', 'darf_nicht': 'DARF NICHT',
+                 'sollte': 'SOLLTE', 'sollte_nicht': 'SOLLTE NICHT'}
+_HEADER_KINDS = (('requirement', REQ_HEADER_RE), ('baustein', BAUSTEIN_HEADER_RE),
+                 ('gefaehrdung', GEFAEHRDUNG_HEADER_RE), ('template', TEMPLATE_HEADER_RE))
+# Roles are comma-separated, but one role may carry a parenthesised expansion
+# with its own comma: '[OT-Betrieb (Operational Technology, OT), Planende]'.
+# ponytail: one level of parentheses is all the corpus has.
+_ROLE_SPLIT_RE = re.compile(r',\s*(?![^()]*\))')
+
+
+def modality(text: str) -> dict[str, int]:
+    """Count the BSI modal verbs in `text`, one entry per class."""
+    counts = dict.fromkeys(_MODAL_LABELS.values(), 0)
+    for m in MODAL_RE.finditer(text):
+        counts[_MODAL_LABELS[m.lastgroup]] += 1
+    return counts
+
+
+def classify_header(line: str) -> str:
+    """Kind of a '## ' line: requirement, baustein, gefaehrdung, template or other."""
+    for kind, rx in _HEADER_KINDS:
+        if rx.match(line):
+            return kind
+    return 'other'
+
+
+def parse_requirement_header(line: str) -> dict[str, Any] | None:
+    """Split '## APP.3.2.A1 Titel (B) [Rolle, Rolle]' into req_id, title, level and roles."""
+    m = REQ_HEADER_RE.match(line)
+    if m is None:
+        return None
+    req_id, title, level, roles = m.groups()
+    return {'req_id': req_id, 'title': title, 'level': level,
+            'roles': _ROLE_SPLIT_RE.split(roles) if roles else []}
+
+
+def strip_furniture(md: str) -> str:
+    """Drop furniture lines (image markers, running heads, page numbers), then normalise."""
+    kept = [line for line in md.split('\n') if not FURNITURE_RE.match(line.strip())]
+    return normalize_text('\n'.join(kept))
+
+
+def build_sections(md: str) -> list[dict[str, Any]]:
+    """One record per '## ' header: the header line, its body and where it sits.
+
+    `md` may be the raw Docling export; furniture is stripped and the text
+    normalised first. Everything before the first Baustein header is front
+    matter (`baustein_id` None). `title` is the header text without '## ',
+    except for requirements and Bausteine, whose ID moves into its own field.
+    `section_path` is Baustein > nearest template section > requirement, e.g.
+    'APP.3.2 > 3.1. Basis-Anforderungen > APP.3.2.A1 Sichere Konfiguration ...'.
+    """
+    lines = strip_furniture(md).split('\n')
+    header_idx = [i for i, line in enumerate(lines) if line.startswith('## ')]
+    sections: list[dict[str, Any]] = []
+    baustein_id = baustein_title = template = None
+    for k, i in enumerate(header_idx):
+        end = header_idx[k + 1] if k + 1 < len(header_idx) else len(lines)
+        header = lines[i]
+        body = '\n'.join(lines[i + 1:end]).strip()
+        kind = classify_header(header)
+        req = parse_requirement_header(header) or {'req_id': None, 'level': None, 'roles': []}
+        title = leaf = header[3:]
+        if kind == 'baustein':
+            baustein_id, title = BAUSTEIN_HEADER_RE.match(header).groups()
+            baustein_title, template, leaf = title, None, None
+        elif kind == 'template':
+            template, leaf = title, None
+        elif kind == 'requirement':
+            title = req['title']
+            leaf = f"{req['req_id']} {title}"
+        text = f'{header}\n\n{body}' if body else header
+        sections.append({
+            'kind': kind, 'title': title, 'text': text, 'body': body,
+            'baustein_id': baustein_id, 'baustein_title': baustein_title,
+            'section_path': ' > '.join(p for p in (baustein_id, template, leaf) if p),
+            'req_id': req['req_id'], 'level': req['level'], 'roles': req['roles'],
+            'modality': modality(body),
+            'is_entfallen': kind == 'requirement' and title == 'ENTFALLEN',
+            'is_front_matter': baustein_id is None,
+            'n_chars': len(text),
+        })
+    return sections
+
+
+def workshop_slice(sections: list[dict[str, Any]], baustein_ids,
+                   extra_titles=()) -> list[dict[str, Any]]:
+    """Sections of the given Bausteine plus front-matter sections named in `extra_titles`."""
+    ids, titles = set(baustein_ids), set(extra_titles)
+    return [s for s in sections
+            if s['baustein_id'] in ids or (s['is_front_matter'] and s['title'] in titles)]
+
+
+def sections_to_text(sections: list[dict[str, Any]]) -> str:
+    """Join section texts (header lines kept) into one document for the fixed-size chunkers."""
+    return '\n\n'.join(s['text'] for s in sections)
+
+
+def chunk_stats(lengths) -> dict[str, int | float]:
+    """n, median, p95, max and min of a list of chunk lengths."""
+    v = sorted(lengths)
+    return {'n': len(v), 'median': statistics.median(v), 'p95': v[math.ceil(0.95 * len(v)) - 1],
+            'max': v[-1], 'min': v[0]}
+
+
+def dedupe(chunks: list[str]) -> tuple[list[str], int]:
+    """Drop exact duplicates keeping first occurrences; also returns how many were dropped."""
+    unique = list(dict.fromkeys(chunks))
+    return unique, len(chunks) - len(unique)

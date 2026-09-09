@@ -24,3 +24,10 @@
 .hpi-logos { display: flex; gap: 1.5rem; align-items: center; margin-bottom: 1.25rem; }
 .hpi-logos img { height: 40px; width: auto; }
 figcaption, .hpi-caption { color: var(--hpi-grey); font-size: .9rem; }
+
+/* Only the page scrolls. marimo caps a cell output at 610px and scrolls it; a long line in a
+   code fence or a wide table scrolls sideways. Undo both: outputs grow, long lines wrap. */
+.output-area { max-height: none !important; overflow: visible !important; }
+.prose pre, .prose pre code { white-space: pre-wrap; overflow-wrap: anywhere; overflow-x: visible; }
+.prose table { width: 100%; }
+.prose td, .prose th { overflow-wrap: anywhere; }
