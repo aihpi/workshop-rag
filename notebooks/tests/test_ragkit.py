@@ -568,6 +568,37 @@ def test_head_tail():
     assert head_tail('abcdef', n=3) == 'abcdef'
 
 
+def test_length_hist_panels_from_bins_matches_the_raw_version():
+    # The notebook draws this figure from committed bins, so it must agree with the raw-length
+    # version it replaces: same panel count, same labels, one bar per bin.
+    import matplotlib.pyplot as plt
+
+    from ragkit.viz import length_hist_panels_from_bins
+    bins = {'chars-300': ([0, 100, 200], [100, 200, 300], [4, 9, 2]),
+            'section': ([0, 700], [700, 1400], [11, 3])}
+    fig = length_hist_panels_from_bins(bins)
+    assert len(fig.axes) == 2
+    # The HPI theme sets axes.titlelocation to 'left', so the title is not in the centre slot.
+    titles = [''.join(ax.get_title(loc=loc) for loc in ('left', 'center', 'right')) for ax in fig.axes]
+    assert titles == ['chars-300', 'section']
+    assert len(fig.axes[0].patches) == 3 and len(fig.axes[1].patches) == 2
+    assert fig.axes[0].get_ylabel() == 'chunks'
+    assert fig.axes[0].get_xlim()[1] == 1400  # both panels share the widest x range
+    plt.close('all')
+
+
+def test_md_table():
+    from ragkit.viz import md_table
+    rows = [{'strategy': 'section', 'Recall@5': 0.823}, {'strategy': 'words-400', 'Recall@5': 0.82}]
+    assert md_table(rows).splitlines() == [
+        '| strategy | Recall@5 |',
+        '|---|---|',
+        '| section | 0.823 |',
+        '| words-400 | 0.82 |',
+    ]
+    assert md_table([]) == ''
+
+
 def test_figure_helpers_smoke():
     import matplotlib.pyplot as plt
     from matplotlib.axes import Axes
@@ -640,6 +671,76 @@ def test_entropy_softmax_separates_peaked_from_flat():
     assert peaked < 0.3
     assert 2.0 < flat <= 2.33
     assert abs(entropy([1.0, 1.0, 1.0, 1.0], temperature=0.05) - 2.0) < 1e-9
+
+
+# --- discriminability and graded relevance -----------------------------------
+
+import math
+
+from ragkit.search import ndcg_graded, rank_gap
+
+
+def test_rank_gap_separates_decisive_from_arbitrary():
+    assert rank_gap([0.9, 0.5, 0.4]) > 0.39
+    assert rank_gap([0.60, 0.60, 0.59]) == 0.0
+    assert rank_gap([0.4, 0.9, 0.5]) == rank_gap([0.9, 0.5, 0.4])  # order must not matter
+    assert math.isnan(rank_gap([0.7]))
+
+
+def test_ndcg_graded_matches_binary_ndcg():
+    for grades in ([1, 0, 0, 0, 0], [0, 1, 0, 0, 0], [0, 0, 0, 0, 1], [1, 0, 1, 0, 0]):
+        ranked = list(range(len(grades)))
+        relevant = {i for i, g in enumerate(grades) if g}
+        assert abs(ndcg_graded(grades, 5) - ndcg_at_k(ranked, relevant, 5)) < 1e-12
+
+
+def test_ndcg_graded_rewards_the_higher_grade_first():
+    assert ndcg_graded([2, 1, 0], 3) == 1.0
+    assert ndcg_graded([1, 2, 0], 3) < 1.0
+    assert ndcg_graded([0, 0, 0], 3) == 0.0
+
+
+# --- score submission (no network) -------------------------------------------
+
+import tempfile
+
+from ragkit import submit
+
+
+def test_submit_body_round_trips():
+    payload = {'handle': 'teal-otter-41', 'try': '1', 'config': 'chars_1200__octen',
+               'recall_at_5': 0.6341}
+    assert submit.decode_body(submit.encode_body(payload)) == {k: str(v) for k, v in payload.items()}
+
+
+def test_submit_body_ignores_prose_around_it():
+    body = 'I think section chunking won.\nhandle: lime-crane-07\ntry: 2\nGood workshop!'
+    assert submit.decode_body(body) == {'handle': 'lime-crane-07', 'try': '2'}
+
+
+def test_submit_pairs_only_complete_participants():
+    rows = [
+        {'handle': 'a', 'try': '1', 'recall_at_5': '0.4'},
+        {'handle': 'a', 'try': '2', 'recall_at_5': '0.8'},
+        {'handle': 'b', 'try': '1', 'recall_at_5': '0.5'},         # never came back
+        {'handle': 'c', 'try': '2', 'recall_at_5': 'not a number'},
+        {'try': '1', 'recall_at_5': '0.9'},                        # no handle
+    ]
+    assert submit.pair_tries(rows) == [{'handle': 'a', 'first': 0.4, 'second': 0.8}]
+
+
+def test_submit_issue_url_carries_the_payload():
+    url = submit.issue_url({'handle': 'rust-ibex-03', 'try': '2', 'recall_at_5': 0.71})
+    assert url.startswith(f'https://github.com/{submit.SCORES_REPO}/issues/new?')
+    assert 'rust-ibex-03' in url and 'labels=score' in url
+
+
+def test_submit_state_keeps_one_handle():
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / 'state.json'
+        first = submit.load_state(path)
+        assert first['handle'].count('-') == 2
+        assert submit.load_state(path)['handle'] == first['handle']
 
 
 if __name__ == '__main__':

@@ -133,6 +133,30 @@ def entropy(scores, top_n=None, shift_min: bool = False,
     return float(-np.sum(p * np.log2(p + 1e-12)))
 
 
+def rank_gap(scores) -> float:
+    """Distance between the best and the second-best score.
+
+    Discriminability without labels: a large gap means one chunk clearly won, a
+    gap near zero means the order of the hit list is noise. It says nothing
+    about whether the winner is the right chunk.
+    """
+    top = sorted(scores, reverse=True)[:2]
+    return float(top[0] - top[1]) if len(top) == 2 else float('nan')
+
+
+def ndcg_graded(gains: list[float], k: int = 5) -> float:
+    """nDCG@k over relevance grades given in rank order, with gain 2**g - 1.
+
+    `gains[i]` is the grade of the chunk at rank i+1, so 0 is irrelevant and a
+    higher grade is more relevant. Binary grades reproduce `ndcg_at_k`.
+    """
+    def dcg(values):
+        return sum((2.0 ** g - 1) / np.log2(i + 2) for i, g in enumerate(values[:k]))
+
+    ideal = dcg(sorted(gains, reverse=True))
+    return dcg(gains) / ideal if ideal > 0 else 0.0
+
+
 def reciprocal_rank(ranked_docs: list, relevant: set) -> float:
     """Return 1/rank of the first relevant doc, or 0 if none found.
 

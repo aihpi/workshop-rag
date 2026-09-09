@@ -22,4 +22,4 @@ Submodules are not imported here, so `import ragkit` stays cheap and a notebook
 that does no OCR never pays for the docling import.
 """
 
-__all__ = ['chunk', 'config', 'crawl', 'embed', 'evaluate', 'search', 'theme', 'viz']
+__all__ = ['chunk', 'config', 'crawl', 'embed', 'evaluate', 'search', 'submit', 'theme', 'viz']
