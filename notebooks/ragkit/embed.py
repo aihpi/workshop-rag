@@ -306,6 +306,22 @@ def embed_dinov3(images_b64: list) -> list:
     return results
 
 
+def _check_image_was_seen(resp, uri_chars: int) -> None:
+    """Raise when the endpoint embedded the data URI as text instead of as an image.
+
+    A 512 px photo is a few hundred vision tokens; base64 text of the same photo
+    is tens of thousands of tokens. Observed on the AISC proxy in September 2026:
+    prompt_tokens grew with the URI length and unrelated photos came out 0.97
+    similar, so every image "embedding" was in fact a text embedding of base64.
+    """
+    tokens = getattr(getattr(resp, 'usage', None), 'prompt_tokens', None)
+    if tokens is not None and tokens > 2000 and tokens > uri_chars / 10:
+        raise RuntimeError(
+            f'qwen3-vl-embedding-8b counted {tokens} prompt tokens for one image: the endpoint '
+            'embedded the data URI as text, not as a picture. Ask the API admins to enable '
+            'multimodal input for this model before using image embeddings.')
+
+
 def embed_qwen3vl(texts: list | None = None, images_b64: list | None = None) -> list:
     """Embed text and/or images with qwen3-vl-embedding-8b (multimodal).
 
@@ -333,6 +349,7 @@ def embed_qwen3vl(texts: list | None = None, images_b64: list | None = None) -> 
                 input=[data_uri], model='qwen3-vl-embedding-8b', encoding_format='float',
                 label=f'qwen3-vl img {idx + 1}/{len(imgs)}',
             )
+            _check_image_was_seen(resp, len(data_uri))
             results.append(np.array(resp.data[0].embedding))
         return results
 
