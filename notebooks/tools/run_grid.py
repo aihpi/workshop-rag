@@ -6,12 +6,19 @@ and show retrieved chunks from `grid_hits.parquet`.
 
     uv run python -m tools.run_grid --stage 1 --sections 300   # schema smoke test
     uv run python -m tools.run_grid --stage all                # the real run, ~3.5 h
+    uv run python -m tools.run_grid --stage dense --resume     # every combination, over days
 
 Run it from `notebooks/`, as a module, so that `ragkit` is importable.
 
 Every configuration embeds the whole corpus once (about 2.45 M characters, some
 eight minutes on octen), so the cache in `embedding_cache/` is what makes a
 re-run free.
+
+The tables are rewritten after every single configuration, so the run can be
+stopped at any point. `--resume` then keeps what is already measured and works
+through the rest; without it the tables are rebuilt from nothing. `w2_00` only
+offers what the tables hold, so a partly finished dense run leaves the notebook
+correct, just narrower.
 """
 
 from __future__ import annotations
@@ -88,6 +95,43 @@ STAGE1 = [
     Config('chars', 1200, overlap=200),
     Config('section', 1200),
 ]
+
+
+#: the sizes each strategy is measured at; `paragraph` cuts on the text's own breaks and has none.
+DENSE_SIZES = {
+    'paragraph': (None,),
+    'words': (60, 100, 200, 400),
+    'chars': (300, 600, 900, 1200, 1600, 2000),
+    'section': (800, 1200, 1600),
+}
+DENSE_OVERLAPS = (0, 120, 200, 240)
+
+
+def dense() -> list[Config]:
+    """Every combination the playground's controls can offer, so the cascade never narrows to one.
+
+    The chained dropdowns in `w2_00` only ever offer what this table holds, so a partial run is
+    never wrong, only narrower. That is what makes this safe to build up over several sessions.
+    """
+    out = [Config(strategy, size, overlap, title, model)
+           for strategy, sizes in DENSE_SIZES.items()
+           for size in sizes
+           for overlap in (DENSE_OVERLAPS if size else (0,))  # no size, no overlap to speak of
+           for title in (False, True)
+           for model in MODELS]
+    return _dedupe_configs(out)
+
+
+def config_of(row) -> Config:
+    """Rebuild a `Config` from a scored row, whether it came from this run or back off disk.
+
+    A size read back from parquet is NaN rather than None, and NaN is truthy, so it has to be
+    turned back into None or `chunking_id` would render it as the string 'nan'.
+    """
+    size = row['size']
+    size = None if size is None or pd.isna(size) else int(size)
+    return Config(str(row['strategy']), size, int(row['overlap']),
+                  bool(row['prepend_title']), str(row['model']))
 
 
 def _dedupe_configs(configs: list[Config]) -> list[Config]:
@@ -263,12 +307,29 @@ def write(out_dir, state):
     pd.DataFrame(state['lengths']).to_parquet(out_dir / 'grid_lengths.parquet', index=False)
 
 
+def read_state(out_dir):
+    """What a previous run already measured, so a long run can be stopped and picked up again.
+
+    `write` replaces the tables after every configuration, so whatever is on disk is complete for
+    the configurations it names. Without this the tables would be truncated back to the current
+    run's progress on every restart.
+    """
+    state = {'scores': [], 'hits': [], 'lengths': []}
+    for key, name in (('scores', 'grid_scores'), ('hits', 'grid_hits'), ('lengths', 'grid_lengths')):
+        path = out_dir / f'{name}.parquet'
+        if path.exists():
+            state[key] = pd.read_parquet(path).to_dict('records')
+    return state
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--stage', choices=['1', '2', 'all'], default='all')
+    parser.add_argument('--stage', choices=['1', '2', 'all', 'dense'], default='all')
     parser.add_argument('--sections', type=int, help='truncate the corpus, for a schema smoke test')
     parser.add_argument('--out', type=Path, default=OUT_DIR)
     parser.add_argument('--dry-run', action='store_true', help='list the configurations and stop')
+    parser.add_argument('--resume', action='store_true',
+                        help='keep what the tables already hold and measure only what is missing')
     args = parser.parse_args()
 
     sections, text = load_corpus(args.sections)
@@ -279,8 +340,12 @@ def main():
           f'{len(dropped)} dropped', flush=True)
 
     if args.dry_run:
-        for cfg in STAGE1:
-            print(' ', cfg.id)
+        planned = dense() if args.stage == 'dense' else STAGE1
+        done = {r['config_id'] for r in read_state(args.out)['scores']} if args.resume else set()
+        for cfg in planned:
+            print(f"  {'done' if cfg.id in done else '    '}  {cfg.id}")
+        print(f'{len(planned)} configurations, {len(planned) - len(done & {c.id for c in planned})} '
+              f'still to measure')
         return
 
     args.out.mkdir(parents=True, exist_ok=True)
@@ -290,13 +355,19 @@ def main():
     (args.out / 'dropped_questions.json').write_text(json.dumps(
         [{k: v for k, v in q.items() if k != 'targets'} for q in dropped], indent=1, ensure_ascii=False))
 
-    state = {'scores': [], 'hits': [], 'lengths': []}
+    state = read_state(args.out) if args.resume else {'scores': [], 'hits': [], 'lengths': []}
+    if args.resume:
+        print(f'resuming with {len(state["scores"])} configurations already measured', flush=True)
+
+    if args.stage == 'dense':
+        run(dense(), sections, text, sections_by_key, questions, args.out, state)
     if args.stage in ('1', 'all'):
         run(STAGE1, sections, text, sections_by_key, questions, args.out, state)
     if args.stage in ('2', 'all'):
+        # Stage 2 refines the stage-1 winners, so on a resume it must rank over everything
+        # measured so far, not only over what this invocation happened to run.
         ranked = sorted(state['scores'], key=lambda r: -r['Recall@5'])
-        best = [Config(r['strategy'], r['size'], r['overlap'], r['prepend_title'], r['model'])
-                for r in ranked]
+        best = [config_of(r) for r in ranked]
         run(stage2(best), sections, text, sections_by_key, questions, args.out, state)
 
     table = pd.DataFrame(state['scores']).sort_values('Recall@5', ascending=False)
