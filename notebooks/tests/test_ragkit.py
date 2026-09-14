@@ -218,7 +218,10 @@ def test_ndcg_at_k_with_no_relevant_docs():
 import os
 
 from ragkit import config, theme
+from ragkit.chunk import wiki_headings_to_markdown
 from ragkit.crawl import _NOT_A_PHOTO, licence_ok
+from ragkit.embed import _check_image_was_seen
+from ragkit.viz import image_grid, thumbnail_sheet
 
 
 def test_setup_non_strict_reports_missing_key_and_file():
@@ -741,6 +744,152 @@ def test_submit_state_keeps_one_handle():
         first = submit.load_state(path)
         assert first['handle'].count('-') == 2
         assert submit.load_state(path)['handle'] == first['handle']
+def test_wiki_headings_to_markdown():
+    md = wiki_headings_to_markdown('# Rotkehlchen\n\n== Beschreibung ==\nText\n=== Merkmale ===\n==== Gesang ====\nx == y')
+    assert md.split('\n')[2] == '## Beschreibung'
+    assert '### Merkmale' in md and '#### Gesang' in md and 'x == y' in md
+
+
+def test_image_figures_have_one_axis_per_photo(tmp_path=None):
+    from pathlib import Path
+
+    import matplotlib
+    import numpy as np
+    from PIL import Image
+    folder = Path('/tmp') / 'ragkit_test_imgs'
+    folder.mkdir(exist_ok=True)
+    paths = []
+    for i in range(3):
+        path = folder / f'p{i}.jpg'
+        Image.fromarray(np.full((8, 8, 3), 90 + 50 * i, dtype=np.uint8)).save(path)
+        paths.append(path)
+    fig = image_grid(paths[0], paths[1:], [0.9, 0.8], labels=['a', 'b'], credit='Photos: test')
+    assert len(fig.axes) == 3
+    sheet = thumbnail_sheet(paths, ['a', 'b', 'c'], cols=2)
+    assert len(sheet.axes) == 4
+    matplotlib.pyplot.close('all')
+
+
+def test_image_embedding_guard_detects_text_tokenisation():
+    class _Usage:
+        def __init__(self, n):
+            self.prompt_tokens = n
+
+    class _Resp:
+        def __init__(self, n):
+            self.usage = _Usage(n)
+
+    _check_image_was_seen(_Resp(340), uri_chars=43_000)   # genuine vision tokens: fine
+    try:
+        _check_image_was_seen(_Resp(31_964), uri_chars=43_000)
+    except RuntimeError as e:
+        assert 'as text' in str(e)
+    else:
+        raise AssertionError('base64-as-text must be detected')
+
+
+
+# --- the w2_00 cascade offers only measured configurations --------------------
+
+def _cascade_leaves(scores):
+    """Every configuration reachable by walking the playground's chained dropdowns."""
+
+    def options(frame, column):
+        return sorted(frame[column].dropna().unique()) or [None]
+
+    def narrow(frame, column, value):
+        return frame if value is None else frame[frame[column] == value]
+
+    leaves = []
+    for strategy in options(scores, 'strategy'):
+        after_strategy = narrow(scores, 'strategy', strategy)
+        for model in options(after_strategy, 'model'):
+            after_model = narrow(after_strategy, 'model', model)
+            for size in options(after_model, 'size'):
+                after_size = narrow(after_model, 'size', size)
+                for overlap in options(after_size, 'overlap'):
+                    after_overlap = narrow(after_size, 'overlap', overlap)
+                    for title in options(after_overlap, 'prepend_title'):
+                        leaves.append((strategy, model, size, overlap, title))
+    return leaves
+
+
+def test_every_reachable_playground_configuration_was_measured():
+    """No participant can build a combination the grid cannot score."""
+    import pandas as pd
+
+    grid = Path(__file__).resolve().parent.parent / 'data' / 'grid' / 'grid_scores.parquet'
+    if not grid.exists():                      # the tables are rebuilt, not committed everywhere
+        return
+    scores = pd.read_parquet(grid)
+
+    leaves = _cascade_leaves(scores)
+    assert leaves, 'the cascade produced no configuration at all'
+
+    for strategy, model, size, overlap, title in leaves:
+        match = scores[(scores.strategy == strategy) & (scores.model == model)
+                       & (scores.overlap == overlap) & (scores.prepend_title == title)]
+        if size is not None:
+            match = match[match['size'] == size]
+        assert not match.empty, f'dead end: {strategy} {model} {size} {overlap} {title}'
+
+    # Every measured configuration is also reachable, so nothing is hidden from the participant.
+    assert len({leaf[:2] for leaf in leaves}) == len(scores.groupby(['strategy', 'model']))
+
+
+# --- the grid runner can be stopped and picked up again ----------------------
+
+def test_grid_resume_keeps_what_was_measured():
+    """Without a seeded state a restart would truncate the tables to the new run's progress."""
+    import pandas as pd
+
+    from tools.run_grid import read_state, write
+
+    with tempfile.TemporaryDirectory() as tmp:
+        out = Path(tmp)
+        first = {'scores': [{'config_id': 'chars_1200__octen', 'strategy': 'chars', 'size': 1200.0,
+                             'overlap': 0, 'prepend_title': False, 'model': 'octen', 'Recall@5': 0.63}],
+                 'hits': [{'config_id': 'chars_1200__octen', 'qid': 'q1', 'rank': 1}],
+                 'lengths': [{'config_id': 'chars_1200__octen', 'bin_left': 0.0,
+                              'bin_right': 1.0, 'count': 3}]}
+        write(out, first)
+
+        resumed = read_state(out)
+        assert [r['config_id'] for r in resumed['scores']] == ['chars_1200__octen']
+        assert len(resumed['hits']) == 1 and len(resumed['lengths']) == 1
+
+        # A second configuration appends rather than replacing.
+        resumed['scores'].append({**first['scores'][0], 'config_id': 'chars_600__octen', 'size': 600.0})
+        write(out, resumed)
+        assert len(pd.read_parquet(out / 'grid_scores.parquet')) == 2
+
+        # A run with no seed is what used to shrink the table.
+        write(out, {'scores': [], 'hits': [], 'lengths': []})
+        assert len(pd.read_parquet(out / 'grid_scores.parquet')) == 0
+
+
+def test_grid_config_of_survives_a_round_trip_through_parquet():
+    """A size read back from parquet is NaN, which is truthy and would render as 'nan'."""
+    from tools.run_grid import config_of
+
+    assert config_of({'strategy': 'chars', 'size': 1200.0, 'overlap': 200,
+                      'prepend_title': True, 'model': 'octen'}).id == 'chars_1200_ov200_title__octen'
+    assert config_of({'strategy': 'paragraph', 'size': float('nan'), 'overlap': 0,
+                      'prepend_title': False, 'model': 'miniLM'}).id == 'paragraph__miniLM'
+
+
+def test_dense_grid_covers_everything_already_measured():
+    """Densifying must not orphan a row the playground can still reach."""
+    import pandas as pd
+
+    from tools.run_grid import config_of, dense
+
+    grid = Path(__file__).resolve().parent.parent / 'data' / 'grid' / 'grid_scores.parquet'
+    if not grid.exists():
+        return
+    measured = {config_of(r).id for r in pd.read_parquet(grid).to_dict('records')}
+    assert measured <= {cfg.id for cfg in dense()}
+
 
 
 if __name__ == '__main__':

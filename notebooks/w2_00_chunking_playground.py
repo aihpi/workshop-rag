@@ -71,43 +71,81 @@ def _(BUDGET, mo, questions, scores):
     return
 
 
+# The controls form a chain: each one offers only the values still reachable given the ones above
+# it, so every configuration a participant can build is one the grid has measured. The chain needs
+# one cell per control, because a marimo cell cannot read a variable it defines itself.
+
+
 @app.cell(hide_code=True)
 def _(mo, scores, submit):
     state = submit.load_state()
 
-    def _dropdown(column, label_of=str, prefer=None, **kwargs):
-        """A dropdown over what was actually measured, starting on `prefer` when it exists."""
-        options = {label_of(v): v for v in sorted(scores[column].dropna().unique())}
+    def choose(frame, column, label_of=str, prefer=None, **kwargs):
+        """A dropdown over what `frame` still offers, starting on `prefer` when that survives."""
+        options = {label_of(v): v for v in sorted(frame[column].dropna().unique())}
+        options = options or {'not applicable': None}
         start = prefer if prefer in options else next(iter(options))
         return mo.ui.dropdown(options, value=start, **kwargs)
 
-    def _int_label(value):
+    def narrow(frame, column, value):
+        """The rows still reachable once `column` is fixed. A `None` value fixes nothing."""
+        return frame if value is None else frame[frame[column] == value]
+
+    def int_label(value):
         return str(int(value))
 
+    def title_label(value):
+        return 'yes' if value else 'no'
+
     ui_round = mo.ui.dropdown({'First try': '1', 'Second try': '2'}, value='First try', label='round')
-    ui_strategy = _dropdown('strategy', prefer='chars', label='strategy')
-    ui_size = _dropdown('size', _int_label, prefer='1200', label='size')
-    ui_overlap = _dropdown('overlap', _int_label, prefer='0', label='overlap')
-    ui_model = _dropdown('model', prefer='octen', label='model')
-    ui_title = mo.ui.checkbox(value=False, label='prepend the section title')
+    ui_strategy = choose(scores, 'strategy', prefer='chars', label='strategy')
+    return choose, int_label, narrow, state, title_label, ui_round, ui_strategy
+
+
+@app.cell(hide_code=True)
+def _(choose, narrow, scores, ui_strategy):
+    after_strategy = narrow(scores, 'strategy', ui_strategy.value)
+    ui_model = choose(after_strategy, 'model', prefer='octen', label='model')
+    return after_strategy, ui_model
+
+
+@app.cell(hide_code=True)
+def _(after_strategy, choose, int_label, narrow, ui_model):
+    # `paragraph` cuts on the text's own breaks, so it has no size; the dropdown then reads
+    # 'not applicable' and the lookup below leaves size out of the filter.
+    after_model = narrow(after_strategy, 'model', ui_model.value)
+    ui_size = choose(after_model, 'size', int_label, prefer='1200', label='size')
+    return after_model, ui_size
+
+
+@app.cell(hide_code=True)
+def _(after_model, choose, int_label, narrow, ui_size):
+    after_size = narrow(after_model, 'size', ui_size.value)
+    ui_overlap = choose(after_size, 'overlap', int_label, prefer='0', label='overlap')
+    return after_size, ui_overlap
+
+
+@app.cell(hide_code=True)
+def _(after_size, choose, narrow, title_label, ui_overlap):
+    after_overlap = narrow(after_size, 'overlap', ui_overlap.value)
+    ui_title = choose(after_overlap, 'prepend_title', title_label, prefer='no',
+                      label='prepend the section title')
+    return ui_title
+
+
+@app.cell(hide_code=True)
+def _(mo, state, ui_model, ui_overlap, ui_round, ui_size, ui_strategy, ui_title):
     ui_evaluate = mo.ui.run_button(label='Evaluate')
 
     mo.vstack([
         mo.md(f'You are **{state["handle"]}**. That name is all anyone will ever see.'),
         mo.hstack([ui_round], justify='start'),
-        mo.hstack([ui_strategy, ui_size, ui_overlap, ui_model], justify='start'),
+        mo.hstack([ui_strategy, ui_model, ui_size, ui_overlap], justify='start'),
         mo.hstack([ui_title, ui_evaluate], justify='start'),
+        mo.md('*Each control offers only what the ones before it leave available, so every '
+              'configuration you can build here has been measured.*'),
     ])
-    return (
-        state,
-        ui_evaluate,
-        ui_model,
-        ui_overlap,
-        ui_round,
-        ui_size,
-        ui_strategy,
-        ui_title,
-    )
+    return (ui_evaluate,)
 
 
 @app.cell(hide_code=True)
@@ -131,29 +169,22 @@ def _(
 ):
     mo.stop(not ui_evaluate.value)
 
+    # The cascading controls cannot produce a combination that is absent from the table, so this
+    # always matches. `size` is left out when the strategy has none, which is the `paragraph` case.
     _match = scores[(scores.strategy == ui_strategy.value) & (scores.model == ui_model.value)
                     & (scores.overlap == ui_overlap.value) & (scores.prepend_title == ui_title.value)]
-    if ui_strategy.value != 'paragraph':
+    if ui_size.value is not None:
         _match = _match[_match['size'] == ui_size.value]
 
     _round = ui_round.value
-    if _match.empty:
-        # Not every combination of the four controls was measured; saying so is better than
-        # leaving the previous result on screen, and it costs no evaluation.
-        _view = mo.callout(mo.md(
-            'That combination was not measured, so it costs you nothing. Try another one.'),
-            kind='neutral')
-    else:
-        _row = _match.iloc[0]
-        set_log(lambda log: {**log, _round: log.get(_round, []) + [{
-            'config_id': _row.config_id, 'Recall@5': float(_row['Recall@5']),
-            'MRR': float(_row.MRR), 'nDCG@5': float(_row['nDCG@5']),
-            'Recall@5_easy': float(_row['Recall@5_easy']),
-            'Recall@5_complex': float(_row['Recall@5_complex']),
-            'chunks': int(_row.chunks),
-        }]})
-        _view = mo.md('')
-    _view
+    _row = _match.iloc[0]
+    set_log(lambda log: {**log, _round: log.get(_round, []) + [{
+        'config_id': _row.config_id, 'Recall@5': float(_row['Recall@5']),
+        'MRR': float(_row.MRR), 'nDCG@5': float(_row['nDCG@5']),
+        'Recall@5_easy': float(_row['Recall@5_easy']),
+        'Recall@5_complex': float(_row['Recall@5_complex']),
+        'chunks': int(_row.chunks),
+    }]})
     return
 
 
