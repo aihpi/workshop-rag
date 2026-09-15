@@ -84,8 +84,8 @@ def _():
     OPENAI_API_KEY_SET = bool(os.getenv('OPENAI_API_KEY'))
 
     # Adjust model names to your LiteLLM deployment if needed
-    EXTERNAL_VLM_MODEL = os.getenv('EXTERNAL_VLM_MODEL', 'openai/qwen3-vl-32b')
-    DOCLING_API_VLM_MODEL = os.getenv('DOCLING_API_VLM_MODEL', "qwen3-vl-32b")
+    EXTERNAL_VLM_MODEL = os.getenv('EXTERNAL_VLM_MODEL', 'openai/gemma-4-31b')
+    DOCLING_API_VLM_MODEL = os.getenv('DOCLING_API_VLM_MODEL', "gemma-4-31b")
     DOCLING_API_VLM_URL = os.getenv('DOCLING_API_VLM_URL', API_BASE_URL.rstrip('/') + '/v1/chat/completions')
 
     # Docling VLM configuration
@@ -612,6 +612,7 @@ def _(
     EXTERNAL_VLM_MODEL,
     OUT_DIR,
     PDF_PATH,
+    RERUN_OCR,
     describe_picture_with_external_vlm,
     docling_api_vlm_text,
     extract_docling_pictures,
@@ -620,22 +621,39 @@ def _(
 ):
     # Base for the merge: OCR output from step 5
     base_md_for_merge = docling_api_vlm_text
-    pictures = extract_docling_pictures(PDF_PATH)
-    print(f'Extracted picture items: {len(pictures)}')
-    picture_descriptions = []
-    for _pic in pictures:
-        try:
-            desc = describe_picture_with_external_vlm(_pic['pil_image'], model=EXTERNAL_VLM_MODEL)
-        except Exception as exc:
-            desc = f'(external VLM unavailable: {exc.__class__.__name__})'
-        picture_descriptions.append({'picture_index': _pic['picture_index'], 'page_numbers': _pic['page_numbers'], 'description': desc})
-    merged_md = merge_image_descriptions_into_markdown(base_md_for_merge, picture_descriptions)
     merge_out = OUT_DIR / '04_s06_docling_api_with_vlm_image_desc.md'
     desc_out = OUT_DIR / '04_s06_external_vlm_image_descriptions.json'
-    merge_out.write_text(merged_md, encoding='utf-8')
-    desc_out.write_text(json.dumps(picture_descriptions, ensure_ascii=False, indent=2), encoding='utf-8')
-    print('Saved merged markdown:', merge_out)
-    print('Saved picture descriptions:', desc_out)
+    if not RERUN_OCR and desc_out.exists():
+        picture_descriptions = json.loads(desc_out.read_text(encoding='utf-8'))
+        merged_md = merge_out.read_text(encoding='utf-8')
+        print(f'[cache] loaded {desc_out.name} (set RERUN_OCR = True to run live)')
+    else:
+        pictures = extract_docling_pictures(PDF_PATH)
+        print(f'Extracted picture items: {len(pictures)}')
+        picture_descriptions = []
+        failed = []
+        for _pic in pictures:
+            try:
+                desc = describe_picture_with_external_vlm(_pic['pil_image'], model=EXTERNAL_VLM_MODEL)
+            except Exception as exc:
+                desc = f'(external VLM unavailable: {exc.__class__.__name__})'
+                failed.append(_pic['picture_index'])
+            picture_descriptions.append({'picture_index': _pic['picture_index'], 'page_numbers': _pic['page_numbers'], 'description': desc})
+        merged_md = merge_image_descriptions_into_markdown(base_md_for_merge, picture_descriptions)
+        # Never let a failed call overwrite good pre-computed descriptions: a placeholder
+        # string is not a result. Fall back to the cache if there is one (issue #23).
+        if failed and desc_out.exists():
+            print(f'Live run failed for pictures {failed}; keeping the pre-computed descriptions.')
+            picture_descriptions = json.loads(desc_out.read_text(encoding='utf-8'))
+            merged_md = merge_out.read_text(encoding='utf-8')
+            print(f'[cache] falling back to {desc_out.name}')
+        else:
+            if failed:
+                print(f'Live run failed for pictures {failed} and there is no cache to fall back to.')
+            merge_out.write_text(merged_md, encoding='utf-8')
+            desc_out.write_text(json.dumps(picture_descriptions, ensure_ascii=False, indent=2), encoding='utf-8')
+            print('Saved merged markdown:', merge_out)
+            print('Saved picture descriptions:', desc_out)
     if picture_descriptions:
         print('\nFirst description preview:\n')
         for picture in picture_descriptions:
