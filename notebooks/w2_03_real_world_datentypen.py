@@ -1,4 +1,4 @@
-# ruff: noqa: PLR1711,F821,F841,I001,RUF100  marimo returns; remaining codes are legacy notebook code kept as is
+# ruff: noqa: PLR1711,F841,I001,RUF100  marimo returns; remaining codes are legacy notebook code kept as is
 import marimo
 
 __generated_with = "0.24.0"
@@ -10,10 +10,6 @@ def _():
     import marimo as mo
 
     return (mo,)
-
-@app.cell(hide_code=True)
-def _():
-    return dict, list
 
 
 
@@ -187,7 +183,7 @@ def _(mo):
 
 
 @app.cell(hide_code=True)
-def _(EMBED_MODEL_NAME, embed, np):
+def _(EMBED_MODEL_NAME, embed, fix_german_umlauts, np):
     # One question, two versions of the same chunk — only the encoding differs
     demo_query = 'Wie werden Schlüssel verwaltet?'  # German query on purpose — the corpus is German
     broken_chunk = 'Die Verwaltung der Schl/C231ssel und die Verschl/C231sselung sind zentrale Aufgaben des ISMS.'
@@ -297,12 +293,12 @@ def _():
 
     from ragkit.chunk import records_from_markdown_header_chunks
 
-    return Any, dict, records_from_markdown_header_chunks
+    return Any, records_from_markdown_header_chunks
 
 
 @app.cell(hide_code=True)
-def _(Any, Dict, List, PDF_PATH, normalize_text):
-    def records_from_docling_json_text_fields(doc_json: dict) -> List[Dict[str, Any]]:
+def _(Any, PDF_PATH, normalize_text):
+    def records_from_docling_json_text_fields(doc_json: dict) -> list[dict[str, Any]]:
         """One record per JSON text field, incl. page numbers from prov.page_no."""
         items = []
 
@@ -400,7 +396,7 @@ def _(mo):
 
 
 @app.cell(hide_code=True)
-def _(Any, Dict, List, PDF_PATH, docling_json, format_citation):
+def _(Any, PDF_PATH, docling_json, format_citation):
     import tiktoken
     from docling.chunking import HybridChunker
     from docling_core.transforms.chunker.tokenizer.openai import OpenAITokenizer
@@ -410,7 +406,7 @@ def _(Any, Dict, List, PDF_PATH, docling_json, format_citation):
     hybrid_chunker = HybridChunker(tokenizer=_hybrid_tokenizer, merge_peers=True)
     doc_norm = DoclingDocument.model_validate(docling_json)
 
-    def records_from_hybrid_chunker(dl_doc) -> List[Dict[str, Any]]:
+    def records_from_hybrid_chunker(dl_doc) -> list[dict[str, Any]]:
         chunks = list(hybrid_chunker.chunk(dl_doc=dl_doc))
         records = []
         for i, chunk in enumerate(chunks):
@@ -455,9 +451,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(
     Any,
-    Dict,
     EMBED_MODEL_NAME,
-    List,
     PDF_PATH,
     cached_embed,
     embed,
@@ -467,13 +461,13 @@ def _(
 ):
     SEMANTIC_BREAKPOINT_PERCENTILE = 20
 
-    def split_sentences_de(text: str, min_len: int=25) -> List[str]:  # the lowest 20% of neighbor similarities become breakpoints
+    def split_sentences_de(text: str, min_len: int=25) -> list[str]:  # the lowest 20% of neighbor similarities become breakpoints
         """Simple German-aware sentence splitter: breaks after . ! ? when an uppercase letter/digit follows.
         Very short fragments (often abbreviation artifacts like 'z. B.') are appended to the previous sentence."""
         text = re.sub('(?m)^#{1,6}\\s*', '', normalize_text(text))
         text = re.sub('\\s+', ' ', text).strip()
         parts = re.split('(?<=[.!?])\\s+(?=[A-ZÄÖÜ0-9])', text)  # strip Markdown heading markers
-        sentences: List[str] = []
+        sentences: list[str] = []
         for p in parts:
             p = p.strip()
             if not p:
@@ -484,7 +478,7 @@ def _(
                 sentences.append(p)
         return sentences
 
-    def semantic_chunk_text(text: str, percentile: float=SEMANTIC_BREAKPOINT_PERCENTILE, model: str=EMBED_MODEL_NAME) -> Dict[str, Any]:
+    def semantic_chunk_text(text: str, percentile: float=SEMANTIC_BREAKPOINT_PERCENTILE, model: str=EMBED_MODEL_NAME) -> dict[str, Any]:
         sentences = split_sentences_de(text)
         vecs = cached_embed(f'w203_sentences_{len(sentences)}', lambda: embed(sentences, model=model)).astype(np.float32)
         vecs = vecs / np.linalg.norm(vecs, axis=1, keepdims=True)
@@ -498,7 +492,7 @@ def _(
         chunks.append(' '.join(sentences[start:]))
         return {'chunks': chunks, 'sentences': sentences, 'similarities': sims, 'threshold': threshold, 'breakpoints': breakpoints, 'percentile': percentile}
 
-    def records_from_semantic_chunks(result: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def records_from_semantic_chunks(result: dict[str, Any]) -> list[dict[str, Any]]:
         chunks = result['chunks']
         return [{'chunk_id': i, 'text': chunk_text, 'metadata': {'source_file': PDF_PATH.name, 'source_path': str(PDF_PATH), 'doc_type': 'pdf', 'converter': 'docling', 'chunking_mode': 'semantic', 'max_chunk': None, 'overlap': 0, 'breakpoint_percentile': result['percentile'], 'total_chunks': len(chunks), 'page_numbers': [], 'citation_hint': None}} for i, chunk_text in enumerate(chunks)]  # Markdown-based: no reliable page mapping
 

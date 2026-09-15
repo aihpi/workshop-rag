@@ -17,6 +17,19 @@ from ragkit import config
 
 CONFIG_NAMES = sorted(n for n in dir(config) if not n.startswith('_') and n not in ('os', 'Path', 'dataclass', 'field', 'load_dotenv'))
 
+# `marimo convert` rewrites duplicated `from typing import List, Dict` statements to the
+# builtin generics but leaves the annotations alone, which leaves `List`/`Dict` unbound.
+# Lower them here, before the conversion, so the deprecated aliases never reach marimo.
+TYPING_ALIAS = re.compile(r'\b(List|Dict|Tuple|Set|FrozenSet|Type)\[')
+TYPING_IMPORT = re.compile(r'^from typing import (.+)$', re.MULTILINE)
+LOWERED = {'List', 'Dict', 'Tuple', 'Set', 'FrozenSet', 'Type'}
+
+
+def drop_lowered_aliases(match: re.Match) -> str:
+    """Remove the now-unused aliases from `from typing import ...`, dropping empty imports."""
+    names = [n.strip() for n in match.group(1).split(',') if n.strip() not in LOWERED]
+    return f'from typing import {", ".join(names)}' if names else ''
+
 
 def rewrite(nb_path: Path, out_path: Path) -> None:
     nb = json.loads(nb_path.read_text(encoding='utf-8'))
@@ -25,6 +38,10 @@ def rewrite(nb_path: Path, out_path: Path) -> None:
     new_cells = []
     for cell in nb['cells']:
         src = ''.join(cell['source'])
+        if cell['cell_type'] == 'code':
+            src = TYPING_ALIAS.sub(lambda m: m.group(1).lower() + '[', src)
+            src = TYPING_IMPORT.sub(drop_lowered_aliases, src)
+            cell['source'] = src
         if cell['cell_type'] == 'markdown' and '00_aisc/img/logo' in src:
             title = re.search(r'<h1>\s*(.*?)\s*(</h1>|\n)', src)
             cell = {'cell_type': 'code', 'metadata': {}, 'outputs': [], 'execution_count': None,
