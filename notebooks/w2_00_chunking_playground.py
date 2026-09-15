@@ -220,13 +220,12 @@ def _(BUDGET, get_log, md_table, mo, ui_round):
 @app.cell(hide_code=True)
 def _(get_log, mo, questions, ui_round):
     _tried = get_log().get(ui_round.value, [])
-    mo.stop(not _tried, mo.md(''))
 
     ui_question = mo.ui.dropdown(
         {f'{q.difficulty}: {q.question[:90]}': q.qid for q in questions.itertuples()},
         value=f'{questions.iloc[0].difficulty}: {questions.iloc[0].question[:90]}',
         label='inspect one question', full_width=True)
-    ui_question
+    ui_question if _tried else mo.md('')
     return (ui_question,)
 
 
@@ -280,15 +279,18 @@ def _(get_log, state):
 
 @app.cell(hide_code=True)
 def _(get_log, get_sent, mo, ui_round):
+    # Both controls are defined whatever happens and only the rendering is conditional: a cell
+    # that stops before defining what its dependents read leaves them with a NameError as soon as
+    # marimo runs them without re-running this one.
     _tried = get_log().get(ui_round.value, [])
-    mo.stop(not _tried, mo.md('*Evaluate something first.*'))
 
     # One submission per round. Once this round has gone in the button is spent, and the way to
     # change the score is the overwrite button underneath.
     _done = get_sent().get(ui_round.value)
     ui_consent = mo.ui.checkbox(value=False, label='submit my best score for this round')
     ui_send = mo.ui.run_button(label='Submitted' if _done else 'Submit', disabled=bool(_done))
-    mo.hstack([ui_consent, ui_send], justify='start')
+    (mo.hstack([ui_consent, ui_send], justify='start') if _tried
+     else mo.md('*Evaluate something first.*'))
     return ui_consent, ui_send
 
 
@@ -323,6 +325,8 @@ def _(get_sent, mo, submit, ui_round):
     # The outcome is rendered from the state rather than from the cell that did the work, because
     # that cell re-runs and stops as soon as the button it depends on is rebuilt.
     sent = get_sent().get(ui_round.value)
+    ui_overwrite = (mo.ui.run_button(label='Overwrite my submission', kind='warn')
+                    if sent and sent['issue'] else None)
     mo.stop(not sent, mo.md(''))
 
     if sent['status'] == 'nogh':
@@ -343,8 +347,6 @@ def _(get_sent, mo, submit, ui_round):
         _word = 'Submitted' if sent['status'] == 'created' else 'Overwritten'
         _view = mo.md(f'{_word}: {sent["url"]}')
 
-    ui_overwrite = (mo.ui.run_button(label='Overwrite my submission', kind='warn')
-                    if sent['issue'] else None)
     mo.vstack([_view, mo.md(f'`{submit.encode_body(sent["payload"])}`')]
               + ([ui_overwrite] if ui_overwrite else []))
     return sent, ui_overwrite
@@ -352,7 +354,7 @@ def _(get_sent, mo, submit, ui_round):
 
 @app.cell(hide_code=True)
 def _(best_payload, mo, sent, set_sent, submit, ui_overwrite, ui_round):
-    mo.stop(ui_overwrite is None or not ui_overwrite.value, mo.md(''))
+    mo.stop(not sent or ui_overwrite is None or not ui_overwrite.value, mo.md(''))
 
     _payload = best_payload(ui_round.value)
     with mo.status.spinner(title='Updating your issue...'):

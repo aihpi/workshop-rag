@@ -1170,16 +1170,22 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(grid_questions, grid_scores, mo):
-    mo.stop(grid_scores is None or grid_questions is None, mo.md('*The measured tables are missing.*'))
-    ui_config = mo.ui.dropdown(
-        {c: c for c in sorted(grid_scores.config_id)},
-        value=grid_scores.sort_values('Recall@5', ascending=False).config_id.iloc[0],
-        label='configuration')
-    ui_pick = mo.ui.dropdown(
-        {f'{q.difficulty}: {q.question[:88]}': q.qid for q in grid_questions.itertuples()},
-        value=f'{grid_questions.iloc[0].difficulty}: {grid_questions.iloc[0].question[:88]}',
-        label='question', full_width=True)
-    mo.vstack([ui_config, ui_pick])
+    # Both dropdowns exist whatever the tables look like, and only the rendering is conditional.
+    # A cell that stops before defining what its dependents read leaves them with a NameError the
+    # moment marimo runs them without re-running this one.
+    _ready = grid_scores is not None and grid_questions is not None
+    _configs = {c: c for c in sorted(grid_scores.config_id)} if _ready else {}
+    _best = (grid_scores.sort_values('Recall@5', ascending=False).config_id.iloc[0]
+             if _ready else None)
+    _questions = ({f'{q.difficulty}: {q.question[:88]}': q.qid
+                   for q in grid_questions.itertuples()} if _ready else {})
+    _first = (f'{grid_questions.iloc[0].difficulty}: {grid_questions.iloc[0].question[:88]}'
+              if _ready else None)
+
+    ui_config = mo.ui.dropdown(_configs, value=_best, label='configuration')
+    ui_pick = mo.ui.dropdown(_questions, value=_first, label='question', full_width=True)
+    (mo.vstack([ui_config, ui_pick]) if _ready
+     else mo.md('*The measured tables are missing.*'))
     return ui_config, ui_pick
 
 

@@ -938,3 +938,40 @@ if __name__ == '__main__':
     for test in tests:
         test()
     print(f'{len(tests)} tests passed')
+
+
+def _controls_defined_after_a_stop(path):
+    """Names a marimo cell exports, defined only after the cell can stop.
+
+    A cell that stops before defining what its dependents read leaves them with a NameError as
+    soon as marimo runs them without re-running that cell, which is what reloading a changed file
+    into a live notebook does. Controls must therefore exist whatever happens, and only their
+    rendering may be conditional.
+    """
+    import ast
+
+    late = []
+    for cell in [n for n in ast.walk(ast.parse(Path(path).read_text(encoding='utf-8')))
+                 if isinstance(n, ast.FunctionDef) and n.name == '_']:
+        if not isinstance(cell.body[-1], ast.Return) or cell.body[-1].value is None:
+            continue
+        exported = {n.id for n in ast.walk(cell.body[-1]) if isinstance(n, ast.Name)}
+        if not any(name.startswith('ui_') for name in exported):
+            continue
+        stops = [i for i, node in enumerate(cell.body)
+                 if any(isinstance(s, ast.Attribute) and s.attr == 'stop'
+                        and isinstance(s.value, ast.Name) and s.value.id == 'mo'
+                        for s in ast.walk(node))]
+        if not stops:
+            continue
+        defined_late = {n.id for node in cell.body[stops[0] + 1:] for n in ast.walk(node)
+                        if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Store)}
+        late += [f'{path.name}:{cell.lineno} defines {name} after a stop'
+                 for name in sorted(defined_late & exported)]
+    return late
+
+
+def test_the_notebooks_define_their_controls_before_they_can_stop():
+    notebooks = sorted((Path(__file__).resolve().parents[1]).glob('w2_*.py'))
+    assert notebooks, 'no notebooks found'
+    assert [late for nb in notebooks for late in _controls_defined_after_a_stop(nb)] == []
