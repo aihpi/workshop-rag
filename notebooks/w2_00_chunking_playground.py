@@ -59,7 +59,10 @@ def _(BUDGET, mo, questions, scores):
 
     - **Corpus**: all 111 Bausteine of the Kompendium, about 2.5 million characters.
     - **Questions**: {len(questions)} real questions with a known answer passage.
-    - **Score**: Recall@5, the share of questions whose answer passage is in the top five.
+    - **Score**: three numbers, measured on the same questions. Your submission is ranked on Recall@5.
+        - **Recall@5**: how often the passage that answers a question is among the five chunks that come back.
+        - **MRR**: how high up that passage sits when it does come back, first place counting for more than fifth.
+        - **nDCG@5**: the same idea as MRR, but it also rewards having several useful chunks among the five rather than only one.
     - **Budget**: {BUDGET} evaluations per round, because in real life every experiment costs time.
 
     You have five minutes. Find the best configuration you can, then submit your score.
