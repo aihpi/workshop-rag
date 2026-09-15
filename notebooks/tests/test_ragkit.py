@@ -975,3 +975,22 @@ def test_the_notebooks_define_their_controls_before_they_can_stop():
     notebooks = sorted((Path(__file__).resolve().parents[1]).glob('w2_*.py'))
     assert notebooks, 'no notebooks found'
     assert [late for nb in notebooks for late in _controls_defined_after_a_stop(nb)] == []
+
+
+def test_preconvert_lowers_typing_aliases():
+    """The conversion must not leave `List`/`Dict` unbound (see w2_03 NameError)."""
+    from tools.preconvert import (
+        LOWERED,
+        TYPING_ALIAS,
+        TYPING_IMPORT,
+        drop_lowered_aliases,
+    )
+
+    src = 'from typing import Any, Dict, List\n\ndef f(x) -> List[Dict[str, Any]]:\n    return []\n'
+    src = TYPING_ALIAS.sub(lambda m: m.group(1).lower() + '[', src)
+    src = TYPING_IMPORT.sub(drop_lowered_aliases, src)
+    assert 'List[' not in src and 'Dict[' not in src
+    assert 'list[dict[str, Any]]' in src
+    assert 'from typing import Any' in src
+    assert TYPING_IMPORT.sub(drop_lowered_aliases, 'from typing import List\n') == '\n'
+    assert LOWERED >= {'List', 'Dict'}
