@@ -82,6 +82,8 @@ Submission needs a **GitHub account**, and nothing else. No access has to be gra
 
 If neither works, the notebook prints the lines to paste manually.
 
+**One submission per round.** Before it sends anything the notebook looks for an issue you already opened for this round, in your local state first and on GitHub second. If it finds one it creates nothing and offers **Overwrite my submission** instead, which replaces the body of that same issue. So a second press cannot put a second score in the room, and a better configuration found late still gets in. The pre-filled link is the exception: without `gh` nothing can be looked up, so open that form once.
+
 **Check it worked:** the notebook confirms the submission, or hands you a link that opens a pre-filled issue.
 
 ---
@@ -199,7 +201,15 @@ The bird set was fetched once with `uv run python -m ragkit.crawl`. Participants
 
 `w2_00` submits one GitHub issue per score to the public repository named by `SCORES_REPO` in `ragkit/submit.py`. Participants need an account and nothing more: no write access is granted, and no two submissions can collide.
 
-Confirm a session by applying a `session-YYYY-MM-DD` label to its issues. Unlabelled issues are ignored, so a score submitted after the workshop cannot change a past session. The results view at the bottom of `w2_00` reads the labelled issues back and plots the two rounds against the best known configuration.
+Confirm a session by applying a `session-YYYY-MM-DD` label to its issues. Unlabelled issues are ignored, so a score submitted after the workshop cannot change a past session.
+
+The labelling and the room plot live in the scores repository, not here. Clone [`aihpi/workshop-rag-scores`](https://github.com/aihpi/workshop-rag-scores) and run its instructor notebook:
+
+```bash
+uv run marimo run instructor.py
+```
+
+It lists every submission, flags anything that does not match the template, creates and applies the session label, and plots the two rounds against the best known configuration. Labelling needs `gh` logged in as someone with triage rights on that repository; reading needs nothing. Project it at the end of the session: participants no longer see the plot in their own copy of `w2_00`.
 
 ---
 

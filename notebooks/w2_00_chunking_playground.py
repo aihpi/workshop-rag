@@ -23,8 +23,6 @@ def _(mo, theme):
 @app.cell(hide_code=True)
 def _():
     import marimo as mo  # the reactive notebook itself
-    import matplotlib.pyplot as plt  # the before-and-after plot
-    import numpy as np  # medians
     import pandas as pd  # the precomputed result tables
 
     from ragkit import submit, theme  # anonymous score submission, HPI look
@@ -32,7 +30,7 @@ def _():
     from ragkit.viz import md_table
 
     theme.apply_mpl()
-    return DATA_DIR, md_table, mo, np, pd, plt, submit, theme
+    return DATA_DIR, md_table, mo, pd, submit, theme
 
 
 @app.cell(hide_code=True)
@@ -260,89 +258,110 @@ def _(mo):
 
 
 @app.cell(hide_code=True)
-def _(get_log, mo, ui_round):
+def _(mo):
+    # What went in for each round, which is what greys the button out and what the message below
+    # is drawn from. The workers write it; nothing else does.
+    get_sent, set_sent = mo.state({})
+    return get_sent, set_sent
+
+
+@app.cell(hide_code=True)
+def _(get_log, state):
+    def best_payload(attempt):
+        """The best evaluation of one round, in the shape the issue body takes."""
+        tried = get_log().get(attempt, [])
+        best = max(tried, key=lambda row: row['Recall@5'])
+        return {'handle': state['handle'], 'try': attempt,
+                'config': best['config_id'], 'recall_at_5': round(best['Recall@5'], 4),
+                'mrr': round(best['MRR'], 4), 'ndcg_at_5': round(best['nDCG@5'], 4),
+                'evaluations_used': len(tried)}
+    return (best_payload,)
+
+
+@app.cell(hide_code=True)
+def _(get_log, get_sent, mo, ui_round):
     _tried = get_log().get(ui_round.value, [])
     mo.stop(not _tried, mo.md('*Evaluate something first.*'))
 
+    # One submission per round. Once this round has gone in the button is spent, and the way to
+    # change the score is the overwrite button underneath.
+    _done = get_sent().get(ui_round.value)
     ui_consent = mo.ui.checkbox(value=False, label='submit my best score for this round')
-    ui_send = mo.ui.run_button(label='Submit')
+    ui_send = mo.ui.run_button(label='Submitted' if _done else 'Submit', disabled=bool(_done))
     mo.hstack([ui_consent, ui_send], justify='start')
     return ui_consent, ui_send
 
 
 @app.cell(hide_code=True)
-def _(get_log, mo, state, submit, ui_consent, ui_round, ui_send):
+def _(best_payload, mo, set_sent, state, submit, ui_consent, ui_round, ui_send):
     mo.stop(not ui_send.value or not ui_consent.value, mo.md(''))
 
-    _tried = get_log().get(ui_round.value, [])
-    _best = max(_tried, key=lambda r: r['Recall@5'])
-    _payload = {'handle': state['handle'], 'try': ui_round.value,
-                'config': _best['config_id'], 'recall_at_5': round(_best['Recall@5'], 4),
-                'mrr': round(_best['MRR'], 4), 'ndcg_at_5': round(_best['nDCG@5'], 4),
-                'evaluations_used': len(_tried)}
-    _created = submit.submit_with_gh(_payload)
-    _view = (mo.md(f'Submitted: {_created}') if _created else mo.md(
-        f'[**Open the pre-filled issue and press the green button**]({submit.issue_url(_payload)})'))
-    mo.vstack([_view, mo.md(f'`{submit.encode_body(_payload)}`')])
+    _payload = best_payload(ui_round.value)
+
+    # marimo runs one cell at a time, so the button cannot grey out while this cell is working:
+    # the spinner is what says the notebook is busy, and the search is what makes a second press
+    # harmless whatever the buttons look like.
+    with mo.status.spinner(title='Talking to GitHub...'):
+        _found = submit.find_existing(state['handle'], ui_round.value, state=state)
+        _created = None if _found else submit.submit_with_gh(_payload)
+
+    if _found:
+        _outcome = {**_found, 'status': 'existing'}
+    elif _created:
+        _outcome = {'issue': submit.issue_number(_created), 'url': _created, 'status': 'created'}
+        submit.remember_submission(state, ui_round.value, _outcome['issue'], _created)
+    else:
+        _outcome = {'issue': None, 'url': None, 'status': 'nogh'}
+
+    set_sent(lambda sent: {**sent, ui_round.value: {**_outcome, 'payload': _payload}})
+    mo.md('')
     return
 
 
 @app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    ---
-    ### How the room did
+def _(get_sent, mo, submit, ui_round):
+    # The outcome is rendered from the state rather than from the cell that did the work, because
+    # that cell re-runs and stops as soon as the button it depends on is rebuilt.
+    sent = get_sent().get(ui_round.value)
+    mo.stop(not sent, mo.md(''))
 
-    For the instructor. A session appears here once its submissions carry a `session-YYYY-MM-DD` label, so a score sent in afterwards cannot change a past session.
-    """)
-    return
+    if sent['status'] == 'nogh':
+        _view = mo.callout(mo.md(
+            f'[**Open the pre-filled issue and press the green button**]'
+            f'({submit.issue_url(sent["payload"])})\n\n'
+            'Without `gh` the notebook cannot tell whether you already submitted this round, so '
+            'open that form once and no more.'), kind='info')
+    elif sent['status'] == 'existing':
+        _view = mo.callout(mo.md(
+            f'**Try {ui_round.value} is already in.** It is issue [#{sent["issue"]}]({sent["url"]}), '
+            'opened by you. Overwrite it if what you have now is better.'), kind='warn')
+    elif sent['status'] == 'failed':
+        _view = mo.callout(mo.md(
+            f'**That did not go through.** Issue [#{sent["issue"]}]({sent["url"]}) is unchanged; '
+            'edit it on GitHub, or try the button again.'), kind='danger')
+    else:
+        _word = 'Submitted' if sent['status'] == 'created' else 'Overwritten'
+        _view = mo.md(f'{_word}: {sent["url"]}')
+
+    ui_overwrite = (mo.ui.run_button(label='Overwrite my submission', kind='warn')
+                    if sent['issue'] else None)
+    mo.vstack([_view, mo.md(f'`{submit.encode_body(sent["payload"])}`')]
+              + ([ui_overwrite] if ui_overwrite else []))
+    return sent, ui_overwrite
 
 
 @app.cell(hide_code=True)
-def _(mo):
-    ui_refresh = mo.ui.run_button(label='Load sessions')
-    ui_refresh
-    return (ui_refresh,)
+def _(best_payload, mo, sent, set_sent, submit, ui_overwrite, ui_round):
+    mo.stop(ui_overwrite is None or not ui_overwrite.value, mo.md(''))
 
+    _payload = best_payload(ui_round.value)
+    with mo.status.spinner(title='Updating your issue...'):
+        _said = submit.update_with_gh(sent['issue'], _payload)
 
-@app.cell(hide_code=True)
-def _(mo, submit, ui_refresh):
-    mo.stop(not ui_refresh.value, mo.md('*Press Load sessions.*'))
-    try:
-        _labels = submit.session_labels()
-    except OSError as exc:
-        _labels = []
-        mo.output.append(mo.callout(mo.md(f'GitHub is not reachable: `{exc}`'), kind='warn'))
-    ui_session = mo.ui.dropdown({lab: lab for lab in _labels},
-                                value=_labels[0] if _labels else None, label='session')
-    ui_session
-    return (ui_session,)
-
-
-@app.cell(hide_code=True)
-def _(mo, np, plt, scores, submit, theme, ui_session):
-    mo.stop(ui_session.value is None, mo.md('*No confirmed session yet.*'))
-
-    _paired = submit.pair_tries(submit.fetch_session(ui_session.value))
-    mo.stop(not _paired, mo.md('*No paired submissions in this session yet.*'))
-
-    _gold = float(scores['Recall@5'].max())
-    _fig, _ax = plt.subplots(figsize=(6.4, 4.0))
-    for _row in _paired:
-        _ax.plot([0, 1], [_row['first'], _row['second']], color=theme.GREY, linewidth=1, alpha=0.7)
-    _medians = [float(np.median([r['first'] for r in _paired])),
-                float(np.median([r['second'] for r in _paired]))]
-    _ax.plot([0, 1], _medians, color=theme.ACCENT, linewidth=2.5, marker='o', label='group median')
-    _ax.axhline(_gold, linestyle='--', color=theme.INK, linewidth=1, label=f'best known {_gold:.1%}')
-    _ax.set_xticks([0, 1], ['first try', 'second try'])
-    _ax.set_xlim(-0.15, 1.15)
-    _ax.set_ylabel('Recall@5')
-    _ax.legend(frameon=False, loc='lower right')
-    mo.vstack([
-        _fig,
-        mo.md(f'*{len(_paired)} participants. Median {_medians[0]:.1%} to {_medians[1]:.1%}, '
-              f'best known configuration {_gold:.1%}.*'),
-    ])
+    set_sent(lambda state_: {**state_, ui_round.value: {
+        **state_[ui_round.value], 'payload': _payload,
+        'status': 'overwritten' if _said else 'failed'}})
+    mo.md('')
     return
 
 

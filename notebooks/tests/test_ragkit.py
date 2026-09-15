@@ -744,6 +744,47 @@ def test_submit_state_keeps_one_handle():
         first = submit.load_state(path)
         assert first['handle'].count('-') == 2
         assert submit.load_state(path)['handle'] == first['handle']
+
+
+def test_submit_finds_a_remembered_round_without_asking_github():
+    import subprocess as _sub
+
+    def _explode(*args, **kwargs):
+        raise AssertionError('the remembered round must not cost a network call')
+
+    real, _sub.run = _sub.run, _explode
+    try:
+        state = {'handle': 'lime-crane-07', 'rounds': {'1': {'issue': 12, 'url': 'u'}}}
+        assert submit.find_existing('lime-crane-07', '1', state=state) == {'issue': 12, 'url': 'u'}
+    finally:
+        _sub.run = real
+
+
+def test_submit_ignores_a_title_the_search_only_half_matched():
+    import subprocess as _sub
+
+    listed = '[{"number": 9, "title": "score lime-crane-07 try10", "url": "u"}]'
+    real, _sub.run = _sub.run, lambda *a, **k: _sub.CompletedProcess(a, 0, listed, '')
+    try:
+        assert submit.find_existing('lime-crane-07', '1', state={}) is None
+    finally:
+        _sub.run = real
+
+
+def test_submit_remembers_which_issue_carries_a_round():
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / 'state.json'
+        state = submit.load_state(path)
+        submit.remember_submission(state, '1', 12, 'https://example.invalid/issues/12', path)
+        assert submit.load_state(path)['rounds']['1']['issue'] == 12
+        assert submit.find_existing(state['handle'], '1', state=state)['issue'] == 12
+
+
+def test_submit_reads_the_issue_number_off_the_url():
+    assert submit.issue_number('https://github.com/aihpi/workshop-rag-scores/issues/12') == 12
+    assert submit.issue_number('') is None
+
+
 def test_wiki_headings_to_markdown():
     md = wiki_headings_to_markdown('# Rotkehlchen\n\n== Beschreibung ==\nText\n=== Merkmale ===\n==== Gesang ====\nx == y')
     assert md.split('\n')[2] == '## Beschreibung'

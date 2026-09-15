@@ -70,9 +70,14 @@ def decode_body(body: str) -> dict[str, str]:
     return out
 
 
+def issue_title(handle: str, attempt: str) -> str:
+    """The one title format, so the submission, the update and the search cannot drift apart."""
+    return f'score {handle} try{attempt}'
+
+
 def issue_url(payload: dict[str, Any], repo: str = SCORES_REPO) -> str:
     """A link that opens GitHub's new-issue form with everything already filled in."""
-    query = urlencode({'title': f"score {payload['handle']} try{payload['try']}",
+    query = urlencode({'title': issue_title(payload['handle'], payload['try']),
                        'body': encode_body(payload), 'labels': 'score'})
     return f'https://github.com/{repo}/issues/new?{query}'
 
@@ -82,12 +87,71 @@ def submit_with_gh(payload: dict[str, Any], repo: str = SCORES_REPO) -> str | No
     try:
         done = subprocess.run(
             ['gh', 'issue', 'create', '--repo', repo, '--label', 'score',
-             '--title', f"score {payload['handle']} try{payload['try']}",
+             '--title', issue_title(payload['handle'], payload['try']),
              '--body', encode_body(payload)],
             capture_output=True, text=True, timeout=30, check=False)
     except (OSError, subprocess.SubprocessError):
         return None
     return done.stdout.strip() or None
+
+
+def update_with_gh(number: int, payload: dict[str, Any], repo: str = SCORES_REPO) -> str | None:
+    """Replace the body of an issue the participant opened themselves, or None if that fails."""
+    try:
+        done = subprocess.run(
+            ['gh', 'issue', 'edit', str(number), '--repo', repo,
+             '--body', encode_body(payload)],
+            capture_output=True, text=True, timeout=30, check=False)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return done.stdout.strip() or None
+
+
+# --- one submission per round -----------------------------------------------
+
+def find_existing(handle: str, attempt: str, repo: str = SCORES_REPO,
+                  state: dict[str, Any] | None = None) -> dict[str, Any] | None:
+    """The participant's own submission for this round, from local state or from GitHub.
+
+    The local state answers without a network call and survives a restart. A fresh clone has
+    none, so `gh` is asked as well, restricted to issues this account opened: a handle two
+    people happen to draw cannot put one of them in reach of the other's issue.
+    """
+    remembered = (state or {}).get('rounds', {}).get(str(attempt))
+    if remembered:
+        return remembered
+
+    title = issue_title(handle, attempt)
+    try:
+        done = subprocess.run(
+            ['gh', 'issue', 'list', '--repo', repo, '--state', 'all', '--author', '@me',
+             '--search', f'in:title "{title}"', '--json', 'number,title,url'],
+            capture_output=True, text=True, timeout=30, check=False)
+        if done.returncode != 0:
+            return None
+        found = json.loads(done.stdout or '[]')
+    except (OSError, subprocess.SubprocessError, json.JSONDecodeError):
+        return None
+
+    # The search is a full-text match, so `try1` also returns `try10`-shaped titles: compare.
+    for issue in found:
+        if issue.get('title') == title:
+            return {'issue': issue['number'], 'url': issue['url']}
+    return None
+
+
+def issue_number(url: str) -> int | None:
+    """The number at the end of an issue URL, which is all `gh issue create` prints."""
+    tail = (url or '').rstrip('/').rsplit('/', 1)[-1]
+    return int(tail) if tail.isdigit() else None
+
+
+def remember_submission(state: dict[str, Any], attempt: str, number: int | None, url: str,
+                        path: Path | None = None) -> dict[str, Any]:
+    """Record which issue carries this round, so the next session finds it without asking GitHub."""
+    state.setdefault('rounds', {})[str(attempt)] = {'issue': number, 'url': url}
+    save_state(state, path)
+    return state
 
 
 # --- reading a session back -------------------------------------------------
