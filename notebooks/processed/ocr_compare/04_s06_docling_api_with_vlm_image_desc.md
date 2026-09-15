@@ -48,34 +48,19 @@ The differentiable function $g$ squashes $net\_{c\_j}$; the differentiable funct
 
 **VLM image description (pages: 2)**
 
-```markdown
-# Neural Network Unit Diagram
+This figure illustrates the architecture of a **Long Short-Term Memory (LSTM)** cell or a similar gated recurrent unit.
 
-## Structure
-This diagram represents a single neuron or processing unit in a neural network, showing the flow of signals and weights.
+### Structure
+*   **Input/Output:** The cell takes an input $\text{net}_{c_i}$ (weighted by $w_{c_i l}$) and produces an output $y^{c_i}$ (weighted by $w_{ic_j}$).
+*   **Internal Components:**
+    *   **Gates:** Represented by circles with sigmoid-like curves ($g$ and $h$).
+    *   **State Update:** A central linear unit with a weight of $1.0$ representing the cell state memory.
+    *   **External Inputs:** Additional inputs $\text{net}_{in_j}$ and $\text{net}_{out_j}$ modulate the flow via $y^{in_j}$ and $y^{out_j}$.
+*   **Formula:** The state update is defined as:
+    $$s_{c_i} = s_{c_i} + g y^{in_j}$$
 
-- **Inputs**: `net_c` (context input) and `y_in` (previous output or recurrent input) enter the unit.
-- **Weights**: 
-  - `w_c,i` connects `net_c` to gate `g`.
-  - `w_in,i` connects `y_in` to `net_in`.
-  - `w_out,i` connects `y_out` to `net` (output).
-- **Gates**:
-  - `g` (gate) modulates the context input.
-  - `h` (gate) modulates the output.
-- **Operations**:
-  - `g * y_in` → multiplied by 1.0 (identity) → passed to `h`.
-  - `s_c = s_c + g * y_in` (state update).
-- **Outputs**: `y_out` (activated output) and `net` (final output signal).
-
-## Key Takeaway
-This is a **gated recurrent unit (GRU)**-like structure, where:
-- The context `net_c` is gated by `g`.
-- The previous output `y_in` is gated and added to the state `s_c`.
-- The output `y_out` is gated by `h` before being passed to the next layer or time step.
-- The unit combines recurrent feedback (`y_in`) with gated control over state updates and outputs.
-
-This design enables selective memory and information flow, crucial for sequence modeling.
-```
+### Key Takeaway
+The diagram depicts a **gated memory mechanism**. The cell state ($s_{c_i}$) is updated additively, controlled by a gate ($g$) and an input signal ($y^{in_j}$), allowing the network to selectively remember or forget information over time to mitigate the vanishing gradient problem.
 
 
 Figure 1: Architecture of memory cell $c\_j$ (the box) and its gate units $in\_j, out\_j$. The self-recurrent connection (with weight 1.0) indicates feedback with a delay of 1 time step. It builds the basis of the “constant error carousel” CEC. The gate units open and close access to CEC. See text and appendix A.1 for details.
