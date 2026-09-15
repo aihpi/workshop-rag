@@ -38,7 +38,7 @@ def _(mo):
     1. Turn a real PDF into clean, searchable text
     2. Explain five chunking strategies and pick one with good reasons
     3. Run RAG queries with reliable citations (page numbers!)
-    4. Compare chunking strategies systematically — and experiment yourself in three exercises
+    4. Compare chunking strategies systematically and pick one on the evidence
     """)
     return
 
@@ -402,7 +402,7 @@ def _(Any, PDF_PATH, docling_json, format_citation):
     from docling_core.transforms.chunker.tokenizer.openai import OpenAITokenizer
     from docling_core.types.doc.document import DoclingDocument
     HYBRID_MAX_TOKENS = 512
-    _hybrid_tokenizer = OpenAITokenizer(tokenizer=tiktoken.get_encoding('cl100k_base'), max_tokens=HYBRID_MAX_TOKENS)  # token budget per chunk (Exercise 1: change this value!)
+    _hybrid_tokenizer = OpenAITokenizer(tokenizer=tiktoken.get_encoding('cl100k_base'), max_tokens=HYBRID_MAX_TOKENS)  # token budget per chunk; halve it to 256 and the chunk count roughly doubles
     hybrid_chunker = HybridChunker(tokenizer=_hybrid_tokenizer, merge_peers=True)
     doc_norm = DoclingDocument.model_validate(docling_json)
 
@@ -561,7 +561,7 @@ def _(markdown_text, semantic_chunk_text):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    **What you are looking at — the "cut by meaning" moment.** The plot is the mechanism: similarity between neighboring sentences, and every dip below the threshold becomes a chunk boundary. The two cards show its extremes. The *clearest* cut usually lands on a real transition — often rediscovering a chapter boundary that the structure-based strategies get for free from the headings (semantic chunking earns its keep on text *without* such structure). The *weakest* cut is a judgment call that may split related content — and that has a real RAG cost: the answer to one question can end up spread across two chunks, so retrieval returns only half the picture (exactly what the parent-child pattern in Exercise 3 repairs).
+    **What you are looking at — the "cut by meaning" moment.** The plot is the mechanism: similarity between neighboring sentences, and every dip below the threshold becomes a chunk boundary. The two cards show its extremes. The *clearest* cut usually lands on a real transition — often rediscovering a chapter boundary that the structure-based strategies get for free from the headings (semantic chunking earns its keep on text *without* such structure). The *weakest* cut is a judgment call that may split related content — and that has a real RAG cost: the answer to one question can end up spread across two chunks, so retrieval returns only half the picture (the parent-child pattern — retrieve small, then hand the model the surrounding section — is the usual repair).
 
     Don't confuse the two "semantics" in this notebook: **semantic chunking** cuts the document by meaning at *ingestion* time (here), while **semantic search** finds chunks by meaning at *query* time (section 6). They use the same embedding model but are independent steps — section 8 pairs semantic search with all five chunking strategies.
     """)
@@ -992,226 +992,7 @@ def _(mo):
 
     **A rule of thumb that this notebook's own data supports: structure first when you have it, semantic when you don't.** The cross-check in section 4d showed it concretely: at the real chapter boundary, the semantic cut only confirmed what the headings already knew — and at its weakest cut it split a coherent section that the HybridChunker kept together, spreading the answer to one question across two chunks. On a well-structured document like this standard, `hybrid_docling` wins (and brings pages, headings, and the token budget along for free). Semantic chunking is the specialist for text *without* usable structure: transcripts, chat logs, emails, flat OCR output.
 
-    The head-to-head comparison in section 8 shows: **there is no universally best strategy.** The right choice depends on the document type (highly structured vs. running text) and on the question type (detail question vs. overview question). That is exactly why it pays off to compare strategies systematically instead of grabbing the first one that works — and that is precisely what you will practice now in the exercises.
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    ---
-    ## 11) Exercises
-
-    Three exercises in increasing difficulty — from "just change some values" to "build your own retrieval strategy". Pick whatever matches your level; nobody has to finish all three. Every exercise comes with a fold-out solution: **try it yourself first, then compare!**
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    ### Exercise 1 (Easy) — Turn the knobs, watch the effect
-
-    No new code needed — just change values, re-run cells, and observe:
-
-    1. In section 4c, set `HYBRID_MAX_TOKENS = 256` (instead of 512) and re-run the cell. How does the number of hybrid chunks change?
-    2. In section 4d, set `SEMANTIC_BREAKPOINT_PERCENTILE = 5` (instead of 20) and re-run the cells in 4d (quick: the sentence embeddings come from the cache). What happens to the number of breakpoints in the plot?
-    3. Re-run the statistics cell in section 8 and compare the table with before.
-
-    At each step, take a moment to think about *why* the number changes the way it does before opening the solution.
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    # TODO: Exercise 1 — no new code needed, just change parameters and re-run cells
-    # 1. Change HYBRID_MAX_TOKENS in section 4c -> re-run the 4c cell
-    # 2. Change SEMANTIC_BREAKPOINT_PERCENTILE in section 4d -> re-run the 4d cells
-    # 3. Re-run the statistics cell in section 8 and compare the table with before
-    # Note your observations here:
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    <details>
-    <summary><b>Show solution (Exercise 1)</b></summary>
-
-    Expected observations:
-
-    - `HYBRID_MAX_TOKENS = 256`: The chunk count rises noticeably (roughly toward doubling), because fewer neighboring sections fit into the token budget together and large sections have to be split more often.
-    - `SEMANTIC_BREAKPOINT_PERCENTILE = 5`: Only the 5% most dissimilar transitions become breakpoints — most of the orange lines disappear from the plot and you get a few very long chunks. Conversely, `40`, for example, produces many small chunks.
-    - Rule of thumb: **both parameters control the same trade-off** — small chunks = precise hits but little context; large chunks = plenty of context but blurrier embeddings.
-
-    ```python
-    # Section 4c:
-    HYBRID_MAX_TOKENS = 256
-    # Section 4d:
-    SEMANTIC_BREAKPOINT_PERCENTILE = 5
-    ```
-
-    </details>
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    ### Exercise 2 (Medium) — Search with a metadata filter
-
-    Our chunks carry page numbers (`page_numbers`) in their payload — at least for the strategies `json_structured_sections`, `json_text_no_chunk`, and `hybrid_docling`. We can use this for more targeted searches: first narrow down by metadata, then search semantically.
-
-    Write a function `rag_search_filtered(query, top_k, page_from, page_to)` that combines the semantic search from section 6 with a Qdrant filter: only chunks whose page numbers lie within the range `[page_from, page_to]` should be found.
-
-    Test it with a question and compare the hits with the unfiltered search from section 6.
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    # TODO: Exercise 2
-    # Hints:
-    # 1. from qdrant_client.models import Filter, FieldCondition, Range
-    # 2. client.query_points(...) accepts the parameter query_filter=Filter(must=[...])
-    # 3. A Range condition on 'page_numbers' matches if ANY page number lies within the range
-    # 4. Prerequisite: a CHUNKING_MODE with page metadata (e.g. 'json_structured_sections' or 'hybrid_docling')
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    <details>
-    <summary><b>Show solution (Exercise 2)</b></summary>
-
-    ```python
-    from qdrant_client.models import Filter, FieldCondition, Range
-
-    def rag_search_filtered(query: str, top_k: int = 5, page_from: int = 1, page_to: int = 10):
-        q_vec = embed(query)[0].tolist()
-        response = client.query_points(
-            collection_name=COLLECTION_NAME,
-            query=q_vec,
-            limit=top_k,
-            with_payload=True,
-            query_filter=Filter(must=[
-                FieldCondition(key='page_numbers', range=Range(gte=page_from, lte=page_to)),
-            ]),
-        )
-        for i, h in enumerate(response.points, start=1):
-            payload = h.payload or {}
-            print(f"[{i}] score={h.score:.4f} | pages={payload.get('page_numbers')} "
-                  f"| cite={payload.get('citation_hint')}")
-            print(' ', (payload.get('text') or '')[:200].replace('\n', ' '), '\n')
-
-    # German query on purpose — the corpus is German
-    rag_search_filtered('Welche Rolle spielt das Risikomanagement?', top_k=5, page_from=1, page_to=15)
-    ```
-
-    **Why this is useful:** In real systems this is exactly how you filter by source, chapter, date, or access rights — the vector search then only runs over the permitted subset. By the way, the `Range` condition on `page_numbers` matches as soon as *any* page number of the chunk lies within the range.
-
-    </details>
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    ### Exercise 3 (Hard) — Parent-child retrieval ("small-to-big")
-
-    A dilemma from section 8: small chunks are *found* more precisely, large chunks give the LLM more *context*. Parent-child retrieval combines both — you search on small cards but deliver the whole page:
-
-    1. **Parents**: the structured sections from 4b (`records_from_docling_json_structured_sections`)
-    2. **Children**: additionally split each parent section into small pieces (e.g. `parser_aware_split` with `max_chunk=400`); each child remembers its `parent_id`
-    3. **Search**: only the children are embedded and searched — but what gets returned is the full **parent** section (deduplicated)
-
-    Implement the flow in its own collection and compare the results with the normal search from section 6.
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    # TODO: Exercise 3
-    # Hints:
-    # 1. parents = records_from_docling_json_structured_sections(docling_json, PDF_PATH)
-    # 2. Create children with parser_aware_split(parent_text, max_chunk=400, overlap=0),
-    #    carrying parent_id + page metadata over into the payload
-    # 3. Embed the children (embed) and load them into a new collection
-    # 4. small_to_big_search(): search over the children, keep only the best hit per parent_id,
-    #    return the parent text as the result
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    <details>
-    <summary><b>Show solution (Exercise 3)</b></summary>
-
-    ```python
-    parents = records_from_docling_json_structured_sections(docling_json, PDF_PATH)
-    parent_texts = {p['chunk_id']: p['text'] for p in parents}
-
-    children = []
-    for p in parents:
-        for piece in parser_aware_split(p['text'], max_chunk=400, overlap=0):
-            children.append({
-                'child_id': len(children),
-                'text': piece,
-                'parent_id': p['chunk_id'],
-                'page_numbers': p['metadata']['page_numbers'],
-                'citation_hint': p['metadata']['citation_hint'],
-            })
-    print(f'{len(parents)} parents -> {len(children)} children')
-
-    child_vectors = [v.tolist() for v in embed([c['text'] for c in children])]
-
-    PC_COLLECTION = 'it_grundschutz_parent_child'
-    if client.collection_exists(PC_COLLECTION):
-        client.delete_collection(PC_COLLECTION)
-    client.create_collection(
-        collection_name=PC_COLLECTION,
-        vectors_config=VectorParams(size=len(child_vectors[0]), distance=Distance.COSINE),
-    )
-    points = [PointStruct(id=c['child_id'], vector=v, payload=c)
-              for c, v in zip(children, child_vectors)]
-    for batch_points in batched(points, 64):
-        client.upsert(collection_name=PC_COLLECTION, points=batch_points)
-
-    def small_to_big_search(query: str, top_k_children: int = 10, top_k_parents: int = 3):
-        q_vec = embed(query)[0].tolist()
-        resp = client.query_points(collection_name=PC_COLLECTION, query=q_vec,
-                                   limit=top_k_children, with_payload=True)
-        seen, results = set(), []
-        for h in resp.points:
-            payload = h.payload or {}
-            pid = payload.get('parent_id')
-            if pid in seen:
-                continue
-            seen.add(pid)
-            results.append({'score': h.score, 'parent_id': pid,
-                            'citation_hint': payload.get('citation_hint'),
-                            'text': parent_texts[pid]})
-            if len(results) >= top_k_parents:
-                break
-        return results
-
-    # German query on purpose — the corpus is German
-    for r in small_to_big_search('Welche Aufgaben hat die Leitungsebene im Sicherheitsprozess?'):
-        print(f"score={r['score']:.4f} | parent={r['parent_id']} | cite={r['citation_hint']}")
-        print(r['text'][:300].replace('\n', ' '), '\n' + '-' * 90)
-    ```
-
-    **Observation:** The child hits are often more precise (a short, focused text matches the question better), but the LLM still receives the full section as context — the best of both worlds. This exact pattern is what powers "small-to-big" retrievers in frameworks like LlamaIndex or LangChain.
-
-    </details>
+    The head-to-head comparison in section 8 shows: **there is no universally best strategy.** The right choice depends on the document type (highly structured vs. running text) and on the question type (detail question vs. overview question). That is exactly why it pays off to compare strategies systematically instead of grabbing the first one that works.
     """)
     return
 
