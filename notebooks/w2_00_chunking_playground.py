@@ -81,9 +81,10 @@ def _(BUDGET, mo, questions, scores):
 def _(mo, scores, submit):
     state = submit.load_state()
 
-    def choose(frame, column, label_of=str, prefer=None, **kwargs):
+    def choose(frame, column, label_of=str, prefer=None, order=None, **kwargs):
         """A dropdown over what `frame` still offers, starting on `prefer` when that survives."""
-        options = {label_of(v): v for v in sorted(frame[column].dropna().unique())}
+        values = frame[column].dropna().unique()
+        options = {label_of(v): v for v in sorted(values, key=order.index if order else None)}
         options = options or {'not applicable': None}
         start = prefer if prefer in options else next(iter(options))
         return mo.ui.dropdown(options, value=start, **kwargs)
@@ -99,14 +100,16 @@ def _(mo, scores, submit):
         return 'yes' if value else 'no'
 
     ui_round = mo.ui.dropdown({'First try': '1', 'Second try': '2'}, value='First try', label='round')
-    ui_strategy = choose(scores, 'strategy', prefer='chars', label='strategy')
+    # chars to words to paragraph to section: the coarsening order, not the alphabet.
+    ui_strategy = choose(scores, 'strategy', prefer='chars', label='strategy',
+                         order=['chars', 'words', 'paragraph', 'section'])
     return choose, int_label, narrow, state, title_label, ui_round, ui_strategy
 
 
 @app.cell(hide_code=True)
 def _(choose, narrow, scores, ui_strategy):
     after_strategy = narrow(scores, 'strategy', ui_strategy.value)
-    ui_model = choose(after_strategy, 'model', prefer='octen', label='model')
+    ui_model = choose(after_strategy, 'model', prefer='miniLM', label='model')
     return after_strategy, ui_model
 
 
@@ -115,14 +118,14 @@ def _(after_strategy, choose, int_label, narrow, ui_model):
     # `paragraph` cuts on the text's own breaks, so it has no size; the dropdown then reads
     # 'not applicable' and the lookup below leaves size out of the filter.
     after_model = narrow(after_strategy, 'model', ui_model.value)
-    ui_size = choose(after_model, 'size', int_label, prefer='1200', label='size')
+    ui_size = choose(after_model, 'size', int_label, label='size')
     return after_model, ui_size
 
 
 @app.cell(hide_code=True)
 def _(after_model, choose, int_label, narrow, ui_size):
     after_size = narrow(after_model, 'size', ui_size.value)
-    ui_overlap = choose(after_size, 'overlap', int_label, prefer='0', label='overlap')
+    ui_overlap = choose(after_size, 'overlap', int_label, label='overlap')
     return after_size, ui_overlap
 
 
