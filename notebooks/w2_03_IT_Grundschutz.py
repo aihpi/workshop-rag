@@ -58,14 +58,6 @@ def _(mo):
     - **Embeddings** turn every snippet into a point on a map of meanings (section 5).
     - **Qdrant** stores those points and finds the nearest ones fast (section 5).
     - **RAG answer** comes back with page citations (sections 6 and 7). That works only because each chunk carried its `prov.page_no` and its source metadata along from Docling onward.
-
-    The PDF on the left is the input, not a step. Sections 1 and 2 set up the tools the boxes need.
-
-    By the end you can:
-    1. Turn a real PDF into clean, searchable text
-    2. Explain five chunking strategies and pick one with reasons
-    3. Run RAG queries that cite page numbers
-    4. Compare strategies on evidence
     """)
     return
 
@@ -77,10 +69,11 @@ def _(mo):
 
     Every tuning knob in one place, so an experiment changes one value here instead of hunting through the code.
 
-    - `MAX_CHUNK`: characters per chunk (context window, embedding quality)
-    - `OVERLAP`: overlap between chunks, so context is not lost at the boundary
     - `COLLECTION_NAME`: the Qdrant collection these chunks land in
     - `OPENAI_API_KEY`: needed for LiteLLM embeddings, read from `notebooks/.env`
+    - paths, the embedding model and the LLM
+
+    Each chunking strategy keeps its own knob in its own section instead: `MAX_CHUNK` and `OVERLAP` in 4a, `HYBRID_MAX_TOKENS` in 4d, `SEMANTIC_BREAKPOINT_PERCENTILE` in 4e.
     """)
     return
 
@@ -110,16 +103,11 @@ def _():
     EMBED_MODEL_NAME = "openai/octen-embedding-8b"
     LLM_MODEL_NAME = "openai/gpt-oss-120b"
     API_BASE_URL = os.getenv("OPENAI_API_BASE", "https://api.aisc.hpi.de/")
-
-    MAX_CHUNK = 1200
-    OVERLAP = 200
     return (
         COLLECTION_NAME,
         EMBED_MODEL_NAME,
         LLM_MODEL_NAME,
-        MAX_CHUNK,
         OUT_DIR,
-        OVERLAP,
         PDF_PATH,
         Path,
         QDRANT_HOST,
@@ -141,9 +129,7 @@ def _(
     COLLECTION_NAME,
     EMBED_MODEL_NAME,
     LLM_MODEL_NAME,
-    MAX_CHUNK,
     OUT_DIR,
-    OVERLAP,
     PDF_PATH,
     panel,
 ):
@@ -161,8 +147,6 @@ def _(
                 f"Collection       {COLLECTION_NAME}",
                 f"Embedding model  {EMBED_MODEL_NAME}",
                 f"LLM model        {LLM_MODEL_NAME}",
-                f"MAX_CHUNK        {MAX_CHUNK}",
-                f"OVERLAP          {OVERLAP}",
             ]
         ),
     )
@@ -250,11 +234,13 @@ def _(EMBED_MODEL_NAME, embed, fix_german_umlauts, np, panel):
         "The same chunk, two encodings",
         "\n".join(
             [
-                f"broken      {broken_chunk}",
-                f"normalized  {clean_chunk}",
+                f"query:       {demo_query}",
                 "",
-                f"similarity(question, broken chunk)      {cos(q_vec, broken_vec):.4f}",
-                f"similarity(question, normalized chunk)  {cos(q_vec, clean_vec):.4f}",
+                f"broken:      {broken_chunk}",
+                f"normalized:  {clean_chunk}",
+                "",
+                f"similarity(query, broken chunk)      {cos(q_vec, broken_vec):.4f}",
+                f"similarity(query, normalized chunk)  {cos(q_vec, clean_vec):.4f}",
             ]
         ),
     )
@@ -268,9 +254,14 @@ def _(mo):
 
     A PDF stores where each letter sits on the page, not what is a heading, a paragraph or a table. Docling reconstructs that lost structure.
 
-    Two outputs:
-    - **Markdown**: readable, good for heading and paragraph chunking
-    - **JSON**: provenance, page references, bounding boxes, for the structure-driven strategies
+    The PDF is parsed **once**. Markdown and JSON are two exports of that single result, not two conversions:
+
+    - **Markdown**: readable, good for heading and paragraph chunking. Page numbers do not survive it.
+    - **JSON**: keeps `label`, `content_layer` and `prov.page_no`, so chunks built from it can cite a page.
+
+    That split is what decides which strategies can cite: 4a and 4e read the Markdown and have no page numbers, 4b, 4c and 4d read the JSON and do.
+
+    Both exports get their `/C231` placeholders repaired, but separately: the Markdown as one string, the JSON only in its `text` and `orig` fields, so no label or bounding box is touched by a stray match.
     """)
     return
 
@@ -354,6 +345,8 @@ def _(mo):
 
     The simplest strategy. Cut the Markdown wherever a heading starts, then split any section that overruns `MAX_CHUNK` further along paragraph boundaries, with `OVERLAP` characters carried over.
 
+    Both knobs are defined in this section and measured in **characters**. No other strategy reads them: 4b and 4c take their boundaries from the document, 4d counts tokens, 4e cuts on similarity.
+
     Cheap and robust. The cost: plain Markdown carries no page numbers, so these chunks cannot cite a page.
     """)
     return
@@ -365,10 +358,15 @@ def _(mo):
 
     from ragkit.chunk import chunk_markdown_by_headers
 
+    # This strategy's two knobs live here rather than in section 1, next to the only
+    # strategy that reads them. 4d and 4e keep their own knobs the same way.
+    MAX_CHUNK = 1200
+    OVERLAP = 200
+
     # The heading split itself, straight from ragkit/chunk.py. A section longer than
     # max_chunk falls through to parser_aware_split(), which cuts on paragraph breaks.
     mo.md(f"```python\n{_inspect_md.getsource(chunk_markdown_by_headers)}```")
-    return
+    return MAX_CHUNK, OVERLAP
 
 
 @app.cell(hide_code=True)
@@ -476,19 +474,14 @@ def _():
 
 @app.cell(hide_code=True)
 def _(
-    PDF_PATH,
-    docling_json,
     mo,
     normalize_text,
-    panel,
-    records_from_docling_json_structured_sections,
 ):
     import inspect
 
     def structured_sections(texts):
         """One chunk per section, heading to heading. No length limit, no overlap."""
-        HEADINGS = {"section_header", "section_heading", "heading",
-                    "title", "page_header"}
+        HEADINGS = {"section_header", "section_heading", "heading", "title", "page_header"}
         sections, heading, parts, pages = [], "", [], []
 
         def flush():
@@ -518,33 +511,9 @@ def _(
         flush()
         return sections
 
-    # ragkit/chunk.py holds the production version: same logic, plus defensive checks
-    # and the full metadata payload. Confirm the two agree before trusting the short one.
-    _teaching = structured_sections(docling_json.get("texts", []))
-    _production = records_from_docling_json_structured_sections(docling_json, PDF_PATH)
-    _same_text = sum(1 for a, b in zip(_teaching, _production) if a["text"] == b["text"])
-    _same_pages = sum(
-        1
-        for a, b in zip(_teaching, _production)
-        if a["page_numbers"] == b["metadata"]["page_numbers"]
-    )
-
-    mo.vstack(
-        [
-            mo.md(f"```python\n{inspect.getsource(structured_sections)}```"),
-            panel(
-                "Checked against the production version in ragkit/chunk.py",
-                "\n".join(
-                    [
-                        f"sections, short version   {len(_teaching)}",
-                        f"sections, production      {len(_production)}",
-                        f"identical section text    {_same_text}/{len(_production)}",
-                        f"identical page numbers    {_same_pages}/{len(_production)}",
-                    ]
-                ),
-            ),
-        ]
-    )
+    # ragkit/chunk.py holds the production version: the same logic, plus defensive
+    # checks and the full metadata payload. This short one is for reading.
+    mo.md(f"```python\n{inspect.getsource(structured_sections)}```")
     return
 
 
@@ -912,16 +881,49 @@ def _(mo):
 
 
 @app.cell(hide_code=True)
+def _(mo):
+    # A run_button resets to False after the cell runs, so the choice is held in
+    # mo.state instead. That keeps the default working on a fresh open and means
+    # picking from the dropdown costs nothing until Apply is pressed.
+    get_chunking_mode, set_chunking_mode = mo.state("json_structured_sections")
+
+    chunking_choice = mo.ui.dropdown(
+        options=[
+            "markdown_headers",
+            "json_text_no_chunk",
+            "json_structured_sections",
+            "hybrid_docling",
+            "semantic",
+        ],
+        value=get_chunking_mode(),
+        label="Strategy",
+    )
+    apply_chunking = mo.ui.run_button(label="Apply")
+    mo.hstack([chunking_choice, apply_chunking], justify="start")
+    return apply_chunking, chunking_choice, get_chunking_mode, set_chunking_mode
+
+
+@app.cell(hide_code=True)
+def _(apply_chunking, chunking_choice, set_chunking_mode):
+    # Applying is deliberate: it deletes and refills the Qdrant collection, and
+    # re-embeds unless those vectors are already in embedding_cache/.
+    if apply_chunking.value:
+        set_chunking_mode(chunking_choice.value)
+    return
+
+
+@app.cell(hide_code=True)
 def _(
+    doc_norm,
+    docling_json,
+    get_chunking_mode,
+    json,
+    markdown_text,
     MAX_CHUNK,
     OUT_DIR,
     OVERLAP,
-    PDF_PATH,
-    doc_norm,
-    docling_json,
-    json,
-    markdown_text,
     panel,
+    PDF_PATH,
     records_from_docling_json_structured_sections,
     records_from_docling_json_text_fields,
     records_from_hybrid_chunker,
@@ -930,7 +932,7 @@ def _(
     semantic_result,
 ):
     # Options: 'markdown_headers' | 'json_text_no_chunk' | 'json_structured_sections' | 'hybrid_docling' | 'semantic'
-    CHUNKING_MODE = "json_structured_sections"
+    CHUNKING_MODE = get_chunking_mode()
 
     if CHUNKING_MODE == "markdown_headers":
         records = records_from_markdown_header_chunks(markdown_text, PDF_PATH, MAX_CHUNK, OVERLAP)
@@ -1031,11 +1033,17 @@ def _(
         _batches.append(f"  batch {batch_idx}: {len(batch_points)} points")
 
     info = client.get_collection(COLLECTION_NAME)
+    # marimo tracks Python values, not Qdrant. Sections 6, 7 and 9 read the collection
+    # through ragkit's own client, so nothing links them to this rebuild and they would
+    # keep showing hits from the previous strategy. Exporting a marker they depend on
+    # gives marimo the edge it cannot infer.
+    collection_version = f"{CHUNKING_MODE}:{info.points_count}"
     panel(
         "Uploaded to Qdrant",
         "\n".join(
             [
                 f"Collection         {COLLECTION_NAME}",
+                f"Chunking mode      {CHUNKING_MODE}",
                 f"Vectors count      {info.points_count}",
                 f"Vector size        {vector_size}",
                 f"Points uploaded    {len(points)}",
@@ -1044,7 +1052,14 @@ def _(
             ]
         ),
     )
-    return Distance, PointStruct, VectorParams, batched, client
+    return (
+        Distance,
+        PointStruct,
+        VectorParams,
+        batched,
+        client,
+        collection_version,
+    )
 
 
 @app.cell(hide_code=True)
@@ -1088,7 +1103,13 @@ def _(mo, rag_search):
 
 
 @app.cell(hide_code=True)
-def _(COLLECTION_NAME, HTML, display, html):
+def _(
+    COLLECTION_NAME,
+    collection_version,
+    display,
+    HTML,
+    html,
+):
     from ragkit.search import rag_search
 
     query = (
@@ -1131,13 +1152,104 @@ def _(mo):
 
 
 @app.cell(hide_code=True)
-def _(display, hits, query):
-    from IPython.display import Markdown
+def _(mo):
+    # The default that ragkit/search.py would use if we passed nothing. Spelled out
+    # here so it is on screen and editable rather than hidden in the library.
+    DEFAULT_SYSTEM_PROMPT = (
+        "You are a RAG assistant for IT-Grundschutz. "
+        "Answer only based on the provided context. "
+        "If the information is missing, say so clearly. "
+        "List the sources with page numbers at the end. "
+        "Answer in the language of the question."
+    )
 
-    from ragkit.search import answer_with_llm
+    # Held in state, so typing in the box does not fire an LLM call per keystroke.
+    get_llm_cfg, set_llm_cfg = mo.state((DEFAULT_SYSTEM_PROMPT, 0.2))
 
-    llm_answer = answer_with_llm(query, hits)
-    display(Markdown(f"**LLM answer**\n\n{llm_answer}"))
+    system_prompt_box = mo.ui.text_area(
+        value=DEFAULT_SYSTEM_PROMPT,
+        label="System prompt",
+        rows=5,
+        full_width=True,
+    )
+    temperature_slider = mo.ui.slider(
+        start=0.0, stop=1.0, step=0.1, value=0.2, label="temperature", show_value=True
+    )
+    generate_answer = mo.ui.run_button(label="Generate answer")
+
+    mo.vstack(
+        [
+            system_prompt_box,
+            mo.hstack([temperature_slider, generate_answer], justify="start", gap=1),
+        ]
+    )
+    return (
+        DEFAULT_SYSTEM_PROMPT,
+        generate_answer,
+        get_llm_cfg,
+        set_llm_cfg,
+        system_prompt_box,
+        temperature_slider,
+    )
+
+
+@app.cell(hide_code=True)
+def _(generate_answer, set_llm_cfg, system_prompt_box, temperature_slider):
+    if generate_answer.value:
+        set_llm_cfg((system_prompt_box.value, temperature_slider.value))
+    return
+
+
+@app.cell(hide_code=True)
+def _(
+    collection_version,
+    display,
+    get_llm_cfg,
+    hits,
+    mo,
+    panel,
+    query,
+):
+    from ragkit.search import answer_with_llm, build_rag_context
+
+    _system_prompt, _temperature = get_llm_cfg()
+    llm_answer = answer_with_llm(
+        query, hits, system_prompt=_system_prompt, temperature=_temperature
+    )
+
+    # Exactly what went to the model: the instructions, the settings, and the
+    # context assembled from section 6's hits. Nothing else reaches it.
+    _context = build_rag_context(hits)
+    display(
+        panel(
+            "What was sent to the model",
+            "\n".join(
+                [
+                    f"temperature   {_temperature}",
+                    f"context       {len(_context):,} characters from {len(hits)} retrieved chunks",
+                    "",
+                    "system prompt",
+                    _system_prompt,
+                    "",
+                    "context",
+                    _context,
+                ]
+            ),
+        )
+    )
+    # The answer is the only text on this page the model wrote. Everything else is
+    # ours, so give it a frame instead of letting it blend into the prose.
+    display(
+        mo.Html(
+            '<div style="border:2px solid #0969da33;border-left:5px solid #0969da;'
+            'border-radius:8px;overflow:hidden;margin:14px 0;">'
+            '<div style="padding:7px 14px;background:#0969da12;font-family:system-ui,sans-serif;'
+            "font-size:12px;font-weight:600;letter-spacing:0.03em;text-transform:uppercase;"
+            'color:#0969da;">Generated answer</div>'
+            f'<div style="padding:4px 16px 12px;">{mo.md(llm_answer).text}</div>'
+            "</div>"
+        )
+    )
     return (answer_with_llm,)
 
 
@@ -1151,7 +1263,9 @@ def _(mo):
     - *"List the sources with page numbers"*: verifiability. Anyone in doubt opens the cited page.
     - *"Answer in the language of the question"*: the corpus is German, your question may not be.
 
-    **Try it:** delete the first instruction from `system_prompt` and compare the answers. Does the model still stick to the document?
+    **Try it:** delete the first instruction from the box above and press **Generate answer**. Without the grounding line the model starts filling gaps from training knowledge, and the answer stops being checkable against the document.
+
+    **`temperature`** controls how much the model is allowed to vary its wording: 0 is as close to deterministic as it gets, 1 wanders. The default here is 0.2, because the job is to repeat the document accurately, not to write well. Turn it up and the same question starts producing different answers.
     """)
     return
 
@@ -1165,7 +1279,9 @@ def _(mo):
     Five filing systems, the same questions: which one surfaces the best index cards? First how differently they cut the document, then how they answer.
 
     1. **Chunk statistics**, free and offline: count and length distribution per strategy
-    2. **Retrieval comparison**: one Qdrant collection per strategy (`it_grundschutz_cmp_<strategy>`), then the same questions to all five
+    2. **Retrieval comparison**: one Qdrant collection per strategy (`it_grundschutz_cmp_<strategy>`, where `cmp` is for comparison), then the same questions to all five
+
+    Those five are separate from the `it_grundschutz_docling` collection section 5 filled, which still holds only the one strategy `CHUNKING_MODE` picked. So the Qdrant dashboard shows six.
 
     **A higher score does not mean a better strategy.** Each strategy produces different chunk lengths and embeds different text (`hybrid_docling` embeds heading-enriched text), so the cosine scores live on different scales. 0.70 for a one-line chunk is not better than 0.63 for a full section. Compare within a strategy. Across strategies, judge the content: does the top hit answer the question, does it carry enough context, do the page numbers agree?
 
@@ -1241,6 +1357,50 @@ def _(
 
 
 @app.cell(hide_code=True)
+def _(mo):
+    DEFAULT_Q1 = (
+        "Welche Anforderungen stellt der Standard an Informationssicherheit und Risikomanagement?"
+    )
+    DEFAULT_Q2 = "Welche Aufgaben und Verantwortung hat die Leitungsebene im Sicherheitsprozess?"
+
+    # Held in state: editing a query would otherwise embed it again on every keystroke,
+    # and re-run five Qdrant searches per query while you are still typing.
+    get_cmp_cfg, set_cmp_cfg = mo.state((DEFAULT_Q1, DEFAULT_Q2, 3, "Query 1"))
+
+    cmp_query_1 = mo.ui.text(value=DEFAULT_Q1, label="Query 1", full_width=True)
+    cmp_query_2 = mo.ui.text(value=DEFAULT_Q2, label="Query 2", full_width=True)
+    # One question at a time by default: five strategies times two questions is ten
+    # cards, which is more than fits on a projector.
+    cmp_which = mo.ui.dropdown(options=["Query 1", "Query 2", "Both"], value="Query 1", label="Ask")
+    cmp_top_k = mo.ui.slider(start=1, stop=5, step=1, value=3, label="top_k", show_value=True)
+    cmp_apply = mo.ui.run_button(label="Compare")
+
+    mo.vstack(
+        [
+            cmp_query_1,
+            cmp_query_2,
+            mo.hstack([cmp_which, cmp_top_k, cmp_apply], justify="start", gap=1),
+        ]
+    )
+    return (
+        cmp_apply,
+        cmp_query_1,
+        cmp_query_2,
+        cmp_top_k,
+        cmp_which,
+        get_cmp_cfg,
+        set_cmp_cfg,
+    )
+
+
+@app.cell(hide_code=True)
+def _(cmp_apply, cmp_query_1, cmp_query_2, cmp_top_k, cmp_which, set_cmp_cfg):
+    if cmp_apply.value:
+        set_cmp_cfg((cmp_query_1.value, cmp_query_2.value, cmp_top_k.value, cmp_which.value))
+    return
+
+
+@app.cell(hide_code=True)
 def _(
     batched,
     cached_embed,
@@ -1249,6 +1409,7 @@ def _(
     Distance,
     embed,
     EMBED_MODEL_NAME,
+    get_cmp_cfg,
     HTML,
     html,
     panel,
@@ -1256,11 +1417,10 @@ def _(
     strategy_records,
     VectorParams,
 ):
-    COMPARE_QUERIES = [
-        "Welche Anforderungen stellt der Standard an Informationssicherheit und Risikomanagement?",
-        "Welche Aufgaben und Verantwortung hat die Leitungsebene im Sicherheitsprozess?",
-    ]
-    TOP_K_COMPARE = 3
+    _q1, _q2, TOP_K_COMPARE, _which = get_cmp_cfg()
+    _chosen = {"Query 1": [_q1], "Query 2": [_q2], "Both": [_q1, _q2]}[_which]
+    # An emptied box just drops that query rather than searching for "".
+    COMPARE_QUERIES = [q for q in _chosen if q.strip()]
 
     def ingest_records_to_collection(recs, collection_name):
         texts = [r.get("embed_text", r["text"]) for r in _recs]
@@ -1301,12 +1461,27 @@ def _(
         q_vec = embed([query], model=EMBED_MODEL_NAME)[0]
         columns = []
         for _name in strategy_records:
-            resp = client.query_points(
-                collection_name=f"it_grundschutz_cmp_{_name}",
-                query=q_vec,
-                limit=top_k,
-                with_payload=True,
-            )
+            # One strategy failing must not take the other four with it. A collection can
+            # be missing if a previous run was interrupted between delete and create, and
+            # the gateway occasionally returns a 500.
+            try:
+                resp = client.query_points(
+                    collection_name=f"it_grundschutz_cmp_{_name}",
+                    query=q_vec,
+                    limit=top_k,
+                    with_payload=True,
+                )
+            except Exception as exc:  # noqa: BLE001 - any failure degrades to one red card
+                columns.append(
+                    f'<div style="border:1px solid #cf222e55;border-radius:8px;overflow:hidden;">'
+                    f'<div style="padding:5px 10px;background:#ffebe9;font-size:12px;font-weight:600;">'
+                    f"{html.escape(_name)}</div>"
+                    f'<div style="padding:8px 10px;font-size:12px;">could not be queried: '
+                    f'{html.escape(type(exc).__name__)}<br><span style="opacity:0.7;">'
+                    f"re-run this cell; if it persists, re-run the notebook to rebuild the collection"
+                    f"</span></div></div>"
+                )
+                continue
             hits_html = []
             for rank, p in enumerate(resp.points, start=1):
                 payload = p.payload or {}
@@ -1354,11 +1529,12 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(
-    COLLECTION_NAME,
-    LLM_MODEL_NAME,
     answer_with_llm,
     chat_ask,
     chat_question,
+    COLLECTION_NAME,
+    collection_version,
+    LLM_MODEL_NAME,
     mo,
     rag_search,
 ):
