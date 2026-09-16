@@ -121,10 +121,13 @@ def _(env, mo):
     return
 
 @app.cell(hide_code=True)
-def _(PDF_PATH):
+def _(
+    PDF_PATH,
+    show_panel,
+):
     if not PDF_PATH.exists():
         raise FileNotFoundError(f'PDF not found: {PDF_PATH}')
-    print('PDF found. Ready for OCR comparison.')
+    show_panel('Input document', f'{PDF_PATH.name}\nReady for OCR comparison.')
     return
 
 
@@ -186,11 +189,36 @@ def _(OUT_DIR, Path):
     def show_text(title: str, text: str, max_chars: int = 1500, height: int = 260) -> None:
         display(HTML(f'<div style="margin:8px 0;">{text_card(title, text, max_chars, height)}</div>'))
 
+    def show_panel(title: str, body: str) -> None:
+        """Render text as a cell OUTPUT rather than printing it.
+
+        print() goes to marimo's console channel: the editor tucks it into a small grey
+        box and `marimo run` drops it altogether. Rendering makes it visible in both
+        modes and in the exported HTML.
+        """
+        display(HTML(
+            '<div style="border:1px solid #8b949e55;border-radius:8px;overflow:hidden;'
+            'font-family:system-ui,sans-serif;margin:8px 0;">'
+            '<div style="padding:6px 12px;font-size:12px;font-weight:600;opacity:0.75;'
+            f'border-bottom:1px solid #8b949e55;">{_html.escape(title)}</div>'
+            '<pre style="margin:0;padding:10px 12px;font-size:13px;line-height:1.55;'
+            f'white-space:pre-wrap;overflow-x:auto;">{_html.escape(body)}</pre></div>'
+        ))
+
+    def metrics_body(name: str, text: str, timing_key: str) -> str:
+        """Source (cache or live) plus the naive metrics, as panel text."""
+        src = f"live run, {TIMINGS[timing_key]:.1f}s" if timing_key in TIMINGS else 'pre-computed cache'
+        rows = [f'approach   {name}', f'source     {src}']
+        rows += [f'{k:<10} {v}' for k, v in basic_metrics(text).items()]
+        return chr(10).join(rows)
+
     return (
         HTML,
         TIMINGS,
         basic_metrics,
         display,
+        metrics_body,
+        show_panel,
         normalize_text,
         save_text,
         show_text,
@@ -216,16 +244,18 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(
-    OUT_DIR,
-    PDF_PATH,
-    Path,
-    RERUN_OCR,
-    TIMINGS: dict[str, float],
     basic_metrics,
     json,
+    metrics_body,
+    OUT_DIR,
+    Path,
+    PDF_PATH,
+    RERUN_OCR,
     save_text,
+    show_panel,
     show_text,
     time,
+    TIMINGS: dict[str, float],
 ):
     from docling.datamodel.base_models import InputFormat
     from docling.datamodel.pipeline_options import (
@@ -277,8 +307,7 @@ def _(
                 print(f'[cache] falling back to {_cache_md.name}')
             else:
                 raise
-    print('OCR engine:', OCR_ENGINE)
-    print('Metrics:', basic_metrics(docling_ocr_text))
+    show_panel(f'docling_{OCR_ENGINE}', metrics_body(f'docling_{OCR_ENGINE}', docling_ocr_text, f'docling_{OCR_ENGINE}'))
     show_text(f'Preview — docling_{OCR_ENGINE}', docling_ocr_text, max_chars=600, height=200)
     return (
         DocumentConverter,
@@ -306,21 +335,23 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(
+    basic_metrics,
     DocumentConverter,
     InputFormat,
+    json,
+    metrics_body,
     OUT_DIR,
-    PDF_PATH,
     Path,
+    PDF_PATH,
     PdfFormatOption,
     RERUN_OCR,
+    save_text,
+    show_panel,
+    show_text,
+    time,
     TIMINGS: dict[str, float],
     VLM_PRESET,
     VLM_USE_MLX,
-    basic_metrics,
-    json,
-    save_text,
-    show_text,
-    time,
 ):
     from docling.datamodel.pipeline_options import VlmConvertOptions, VlmPipelineOptions
     from docling.pipeline.vlm_pipeline import VlmPipeline
@@ -364,7 +395,7 @@ def _(
                 docling_vlm_json = json.loads(_cache_json.read_text(encoding='utf-8')) if _cache_json.exists() else None
                 print(f'[cache] falling back to {_cache_md.name}')
     if docling_vlm_text:
-        print('Metrics:', basic_metrics(docling_vlm_text))
+        show_panel('docling_vlm (granite)', metrics_body('docling_vlm', docling_vlm_text, 'docling_vlm'))
         show_text('Preview — docling_vlm (granite)', docling_vlm_text, max_chars=600, height=200)
     return VlmPipeline, VlmPipelineOptions, docling_vlm_text
 
@@ -393,11 +424,12 @@ def _(
     DOCLING_API_VLM_URL,
     DocumentConverter,
     InputFormat,
+    os,
     Path,
     PdfFormatOption,
+    show_panel,
     VlmPipeline,
     VlmPipelineOptions,
-    os,
 ):
 
     from docling.datamodel.pipeline_options_vlm_model import (
@@ -413,7 +445,7 @@ def _(
         if not os.getenv('OPENAI_API_KEY'):
             raise ValueError('OPENAI_API_KEY is missing for the external VLM.')
         images = convert_from_path(str(pdf_path))
-        print(f'Extracted {len(images)} page images for external VLM OCR.')
+        show_panel('Page images for the external VLM', f'{len(images)} page images extracted')
         outputs = []
         for i, img in enumerate(images, start=1):
             img_url = pil_to_base64_data_url(img)
@@ -446,16 +478,18 @@ def _(
 
 @app.cell(hide_code=True)
 def _(
+    basic_metrics,
     EXTERNAL_VLM_MODEL,
+    metrics_body,
+    ocr_with_external_vlm,
     OUT_DIR,
     PDF_PATH,
     RERUN_OCR,
-    TIMINGS: dict[str, float],
-    basic_metrics,
-    ocr_with_external_vlm,
     save_text,
+    show_panel,
     show_text,
     time,
+    TIMINGS: dict[str, float],
 ):
     # 1) direct LiteLLM call
     _cache_md = OUT_DIR / '04_s05_external_vlm_direct_ocr.md'
@@ -477,24 +511,26 @@ def _(
                 print(f'[cache] falling back to {_cache_md.name}')
             else:
                 raise
-    print('Metrics:', basic_metrics(external_vlm_text))
+    show_panel('external_vlm (direct LiteLLM call)', metrics_body('external_vlm', external_vlm_text, 'external_vlm'))
     show_text('Preview — external_vlm (direct)', external_vlm_text, max_chars=600, height=200)
     return (external_vlm_text,)
 
 
 @app.cell(hide_code=True)
 def _(
+    basic_metrics,
     DOCLING_API_VLM_MODEL,
+    json,
+    metrics_body,
+    ocr_with_docling_api_vlm,
     OUT_DIR,
     PDF_PATH,
     RERUN_OCR,
-    TIMINGS: dict[str, float],
-    basic_metrics,
-    json,
-    ocr_with_docling_api_vlm,
     save_text,
+    show_panel,
     show_text,
     time,
+    TIMINGS: dict[str, float],
 ):
     # 2) Docling ApiVlmOptions (incl. JSON output)
     _cache_md = OUT_DIR / '04_s05_docling_api_vlm_ocr.md'
@@ -520,7 +556,7 @@ def _(
                 print(f'[cache] falling back to {_cache_md.name}')
             else:
                 raise
-    print('Metrics:', basic_metrics(docling_api_vlm_text))
+    show_panel('docling_api_vlm (ApiVlmOptions)', metrics_body('docling_api_vlm', docling_api_vlm_text, 'docling_api_vlm'))
     show_text('Preview — docling_api_vlm', docling_api_vlm_text, max_chars=600, height=200)
     return docling_api_vlm_json, docling_api_vlm_text
 
@@ -609,15 +645,16 @@ def _(
 
 @app.cell(hide_code=True)
 def _(
-    EXTERNAL_VLM_MODEL,
-    OUT_DIR,
-    PDF_PATH,
-    RERUN_OCR,
     describe_picture_with_external_vlm,
     docling_api_vlm_text,
+    EXTERNAL_VLM_MODEL,
     extract_docling_pictures,
     json,
     merge_image_descriptions_into_markdown,
+    OUT_DIR,
+    PDF_PATH,
+    RERUN_OCR,
+    show_panel,
 ):
     # Base for the merge: OCR output from step 5
     base_md_for_merge = docling_api_vlm_text
@@ -626,10 +663,10 @@ def _(
     if not RERUN_OCR and desc_out.exists():
         picture_descriptions = json.loads(desc_out.read_text(encoding='utf-8'))
         merged_md = merge_out.read_text(encoding='utf-8')
-        print(f'[cache] loaded {desc_out.name} (set RERUN_OCR = True to run live)')
+        _source = f'pre-computed cache ({desc_out.name})'
     else:
         pictures = extract_docling_pictures(PDF_PATH)
-        print(f'Extracted picture items: {len(pictures)}')
+        _source = f'live run, {len(pictures)} picture items extracted'
         picture_descriptions = []
         failed = []
         for _pic in pictures:
@@ -643,28 +680,32 @@ def _(
         # Never let a failed call overwrite good pre-computed descriptions: a placeholder
         # string is not a result. Fall back to the cache if there is one (issue #23).
         if failed and desc_out.exists():
-            print(f'Live run failed for pictures {failed}; keeping the pre-computed descriptions.')
             picture_descriptions = json.loads(desc_out.read_text(encoding='utf-8'))
             merged_md = merge_out.read_text(encoding='utf-8')
-            print(f'[cache] falling back to {desc_out.name}')
+            _source = f'live run failed for pictures {failed}, kept the pre-computed descriptions'
         else:
             if failed:
-                print(f'Live run failed for pictures {failed} and there is no cache to fall back to.')
+                _source = f'live run failed for pictures {failed}, no cache to fall back to'
             merge_out.write_text(merged_md, encoding='utf-8')
             desc_out.write_text(json.dumps(picture_descriptions, ensure_ascii=False, indent=2), encoding='utf-8')
-            print('Saved merged markdown:', merge_out)
-            print('Saved picture descriptions:', desc_out)
-    if picture_descriptions:
-        print('\nFirst description preview:\n')
-        for picture in picture_descriptions:
-            print(f"Picture {picture['picture_index']} (pages: {', '.join(map(str, picture['page_numbers']))}):")
-            print(picture['description'])
-            print('---')
+            _source += f'; saved {merge_out.name} and {desc_out.name}'
+    show_panel('VLM image descriptions', f'source     {_source}\npictures   {len(picture_descriptions)}')
+    for picture in picture_descriptions:
+        show_panel(
+            f"Picture {picture['picture_index']}  (pages {', '.join(map(str, picture['page_numbers']))})",
+            picture['description'],
+        )
     return (picture_descriptions,)
 
 
 @app.cell(hide_code=True)
-def _(OUT_DIR, docling_api_vlm_json, json, picture_descriptions):
+def _(
+    docling_api_vlm_json,
+    json,
+    OUT_DIR,
+    picture_descriptions,
+    show_panel,
+):
     enriched_json = dict(docling_api_vlm_json)  # copy
     enriched_json['external_vlm_picture_descriptions'] = picture_descriptions
     # 1) keep all annotations in one clear place
@@ -679,7 +720,7 @@ def _(OUT_DIR, docling_api_vlm_json, json, picture_descriptions):
     json_out = OUT_DIR / '04_s06_docling_api_with_vlm_image_desc.json'
     json_out.write_text(json.dumps(enriched_json, ensure_ascii=False, indent=2), encoding='utf-8')
     # save
-    print('Saved:', json_out)
+    show_panel('Enriched Docling JSON', f'{json_out.name}\nimage descriptions attached to {len(picture_descriptions)} picture items')
     return
 
 
