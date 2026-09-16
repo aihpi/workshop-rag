@@ -217,7 +217,8 @@ def build_rag_context(hits, max_chars_per_chunk: int = 1400) -> str:
 
 
 def answer_with_llm(query: str, hits, model: str | None = None,
-                    system_prompt: str | None = None) -> str:
+                    system_prompt: str | None = None,
+                    temperature: float = 0.2) -> str:
     """Answer `query` from the retrieved `hits`, refusing to go beyond them."""
     from litellm import completion
 
@@ -239,6 +240,6 @@ def answer_with_llm(query: str, hits, model: str | None = None,
         ],
         api_base=API_BASE_URL,
         api_key=os.getenv('OPENAI_API_KEY'),
-        temperature=0.2,
+        temperature=temperature,
     )
     return resp.choices[0].message.content
