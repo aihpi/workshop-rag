@@ -122,12 +122,36 @@ def _(env, mo):
 
 @app.cell(hide_code=True)
 def _(
+    DOCLING_API_VLM_MODEL,
+    DOCLING_API_VLM_URL,
+    EXTERNAL_VLM_MODEL,
+    OUT_DIR,
     PDF_PATH,
+    RERUN_OCR,
     show_panel,
+    VLM_PRESET,
+    VLM_USE_MLX,
 ):
     if not PDF_PATH.exists():
         raise FileNotFoundError(f"PDF not found: {PDF_PATH}")
-    show_panel("Input document", f"{PDF_PATH.name}\nReady for OCR comparison.")
+    # Everything the comparison was configured with, on screen. The API base, the key and
+    # the data files are in the status table above, so they are not repeated here.
+    show_panel(
+        "Configuration",
+        "\n".join(
+            [
+                f"PDF                    {PDF_PATH}",
+                f"PDF exists             {PDF_PATH.exists()}",
+                f"OUT_DIR                {OUT_DIR}",
+                f"EXTERNAL_VLM_MODEL     {EXTERNAL_VLM_MODEL}",
+                f"DOCLING_API_VLM_MODEL  {DOCLING_API_VLM_MODEL}",
+                f"DOCLING_API_VLM_URL    {DOCLING_API_VLM_URL}",
+                f"Docling VLM preset     {VLM_PRESET}",
+                f"Docling VLM uses MLX   {VLM_USE_MLX}",
+                f"RERUN_OCR              {RERUN_OCR}",
+            ]
+        ),
+    )
     return
 
 
