@@ -11,10 +11,6 @@ def _():
 
     return (mo,)
 
-@app.cell(hide_code=True)
-def _():
-    return list,
-
 
 
 @app.cell(hide_code=True)
@@ -188,7 +184,6 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(
     API_BASE_URL,
-    List,
     RAG_MODEL_NAME,
     TOP_K,
     chunks,
@@ -198,7 +193,7 @@ def _(
     np,
     os,
 ):
-    def retrieve(question: str, top_k: int=TOP_K) -> List[str]:
+    def retrieve(question: str, top_k: int=TOP_K) -> list[str]:
         """Retrieve the top-k most relevant chunks by cosine similarity.
 
         Args:
@@ -217,7 +212,7 @@ def _(
         ranked_idx = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)
         return [chunks[_i] for _i in ranked_idx[:top_k]]  # Kosinus-Ähnlichkeit
 
-    def generate(question: str, contexts: List[str]) -> str:
+    def generate(question: str, contexts: list[str]) -> str:
         """Generate an answer from retrieved contexts via LLM.  # Nach Score absteigend sortieren, Top-K zurückgeben
       # Indizes nach Score sortiert
         Args:
@@ -406,7 +401,6 @@ def _(
     ContextPrecision,
     EMBED_MODEL_NAME,
     EVALUATOR_MODEL_NAME,
-    List,
     LiteLLMEmbeddings,
     TOP_K,
     generate,
@@ -422,7 +416,7 @@ def _(
     context_precision = ContextPrecision(llm=evaluator_llm)
     answer_correctness = AnswerCorrectness(llm=evaluator_llm, embeddings=evaluator_embeddings)
 
-    async def run_evaluation(questions: List[str], references: List[str], label: str='') -> pd.DataFrame:
+    async def run_evaluation(questions: list[str], references: list[str], label: str='') -> pd.DataFrame:
         """Run the full RAG pipeline (retrieve + generate) and evaluate with RAGAS.  # default = 1024. Erhöht, da lange Referenzantworten viele Claims erzeugen
 
         Args:

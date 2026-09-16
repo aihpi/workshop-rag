@@ -21,7 +21,7 @@ Teaching material of the HPI AI Service Centre for a workshop series on retrieva
 
 ### Prerequisites
 
-[`aihpi/workshop-getting-started`](https://github.com/aihpi/workshop-getting-started) installs `uv`, Docker and `git`, and is the preparation for this repository. Work through it first.
+[`aihpi/workshop-getting-started`](https://github.com/aihpi/workshop-getting-started) installs `uv`, Docker and `git`, and is the preparation for this repository. Work through it first. Docker has to be started as well as installed, since the vector database runs in a container.
 
 On top of that you need an API key for the AISC inference API, which is handed out at the workshop, and a GitHub account if you want to submit a score.
 
@@ -43,7 +43,7 @@ uv sync
 uv run marimo run w2_00_chunking_playground.py
 ```
 
-That first notebook needs no key, no Docker and no network. The key and Qdrant come in at `w2_02`, and [notebooks/README.md](notebooks/README.md) is the step-by-step guide that takes you the rest of the way.
+That first notebook needs no key, no Docker and no network. The key comes in at `w2_02` and Qdrant at `w2_03`; Qdrant runs in Docker, so from `w2_03` onwards Docker has to be running before you start a notebook. [notebooks/README.md](notebooks/README.md) is the step-by-step guide that takes you the rest of the way.
 
 ## User Guide
 

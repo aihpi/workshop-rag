@@ -108,7 +108,7 @@ Open `.env` in any editor and replace `your_openai_api_key_here` with the key yo
 
 ## Step 5: start Qdrant
 
-Qdrant is the vector database the notebooks store embeddings in. It runs in Docker. From the **repository root**, one level above `notebooks/`:
+Qdrant is the vector database the notebooks store embeddings in. It runs in Docker, so Docker itself has to be running first. `w2_03`, `w2_04`, `w3_02`, `w3_03` and `w3_04` all need it; the earlier notebooks do not. From the **repository root**, one level above `notebooks/`:
 
 ```bash
 docker compose up -d
