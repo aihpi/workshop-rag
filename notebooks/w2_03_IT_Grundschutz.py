@@ -51,12 +51,15 @@ def _(mo):
 
     <img src="/public/img/w2_03_pipeline.svg" alt="The RAG pipeline: PDF, Docling, chunking, embeddings, Qdrant, cited answer" style="max-width:100%; width:860px">
 
-    The five steps:
-    - **Docling** pulls structure out of the PDF
-    - **Normalization** repairs encoding artifacts (`/C231` instead of `ü`)
-    - **Chunking** cuts it into searchable pieces; we build five strategies
-    - **Metadata** keeps every hit traceable (source, strategy, parameters)
-    - **Page numbers** from the JSON (`prov.page_no`) make citations checkable
+    Each box in that diagram is one step of this notebook, left to right:
+
+    - **Docling** turns the PDF into readable text and structure (section 3). Normalisation belongs here too: it repairs `/C231` back into `ü` before anything downstream sees it.
+    - **Chunking** cuts that text into knowledge snippets (sections 4a to 4f). Five strategies, compared head to head in section 8.
+    - **Embeddings** turn every snippet into a point on a map of meanings (section 5).
+    - **Qdrant** stores those points and finds the nearest ones fast (section 5).
+    - **RAG answer** comes back with page citations (sections 6 and 7). That works only because each chunk carried its `prov.page_no` and its source metadata along from Docling onward.
+
+    The PDF on the left is the input, not a step. Sections 1 and 2 set up the tools the boxes need.
 
     By the end you can:
     1. Turn a real PDF into clean, searchable text
