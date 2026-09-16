@@ -36,7 +36,7 @@ def _(mo):
     3. **External VLM** via LiteLLM (API, on page images)
     4. **Docling ApiVlmOptions** (same API, but with structured Docling output)
 
-    At the end we compare the outputs quantitatively (metrics, **runtime**, similarity matrix), take a close look at tables and formulas — and you deepen all of it in three exercises.
+    At the end we compare the outputs quantitatively (metrics, **runtime**, similarity matrix) and take a close look at tables and formulas.
 
     **Workshop note:** all four outputs ship pre-computed (in `processed/ocr_compare/`) and load instantly by default. Set `RERUN_OCR = True` in section 1 to run the approaches yourself — the runtime column in section 7 only fills up for live runs.
     """)
@@ -84,8 +84,8 @@ def _():
     OPENAI_API_KEY_SET = bool(os.getenv('OPENAI_API_KEY'))
 
     # Adjust model names to your LiteLLM deployment if needed
-    EXTERNAL_VLM_MODEL = os.getenv('EXTERNAL_VLM_MODEL', 'openai/qwen3-vl-32b')
-    DOCLING_API_VLM_MODEL = os.getenv('DOCLING_API_VLM_MODEL', "qwen3-vl-32b")
+    EXTERNAL_VLM_MODEL = os.getenv('EXTERNAL_VLM_MODEL', 'openai/gemma-4-31b')
+    DOCLING_API_VLM_MODEL = os.getenv('DOCLING_API_VLM_MODEL', "gemma-4-31b")
     DOCLING_API_VLM_URL = os.getenv('DOCLING_API_VLM_URL', API_BASE_URL.rstrip('/') + '/v1/chat/completions')
 
     # Docling VLM configuration
@@ -612,6 +612,7 @@ def _(
     EXTERNAL_VLM_MODEL,
     OUT_DIR,
     PDF_PATH,
+    RERUN_OCR,
     describe_picture_with_external_vlm,
     docling_api_vlm_text,
     extract_docling_pictures,
@@ -620,22 +621,39 @@ def _(
 ):
     # Base for the merge: OCR output from step 5
     base_md_for_merge = docling_api_vlm_text
-    pictures = extract_docling_pictures(PDF_PATH)
-    print(f'Extracted picture items: {len(pictures)}')
-    picture_descriptions = []
-    for _pic in pictures:
-        try:
-            desc = describe_picture_with_external_vlm(_pic['pil_image'], model=EXTERNAL_VLM_MODEL)
-        except Exception as exc:
-            desc = f'(external VLM unavailable: {exc.__class__.__name__})'
-        picture_descriptions.append({'picture_index': _pic['picture_index'], 'page_numbers': _pic['page_numbers'], 'description': desc})
-    merged_md = merge_image_descriptions_into_markdown(base_md_for_merge, picture_descriptions)
     merge_out = OUT_DIR / '04_s06_docling_api_with_vlm_image_desc.md'
     desc_out = OUT_DIR / '04_s06_external_vlm_image_descriptions.json'
-    merge_out.write_text(merged_md, encoding='utf-8')
-    desc_out.write_text(json.dumps(picture_descriptions, ensure_ascii=False, indent=2), encoding='utf-8')
-    print('Saved merged markdown:', merge_out)
-    print('Saved picture descriptions:', desc_out)
+    if not RERUN_OCR and desc_out.exists():
+        picture_descriptions = json.loads(desc_out.read_text(encoding='utf-8'))
+        merged_md = merge_out.read_text(encoding='utf-8')
+        print(f'[cache] loaded {desc_out.name} (set RERUN_OCR = True to run live)')
+    else:
+        pictures = extract_docling_pictures(PDF_PATH)
+        print(f'Extracted picture items: {len(pictures)}')
+        picture_descriptions = []
+        failed = []
+        for _pic in pictures:
+            try:
+                desc = describe_picture_with_external_vlm(_pic['pil_image'], model=EXTERNAL_VLM_MODEL)
+            except Exception as exc:
+                desc = f'(external VLM unavailable: {exc.__class__.__name__})'
+                failed.append(_pic['picture_index'])
+            picture_descriptions.append({'picture_index': _pic['picture_index'], 'page_numbers': _pic['page_numbers'], 'description': desc})
+        merged_md = merge_image_descriptions_into_markdown(base_md_for_merge, picture_descriptions)
+        # Never let a failed call overwrite good pre-computed descriptions: a placeholder
+        # string is not a result. Fall back to the cache if there is one (issue #23).
+        if failed and desc_out.exists():
+            print(f'Live run failed for pictures {failed}; keeping the pre-computed descriptions.')
+            picture_descriptions = json.loads(desc_out.read_text(encoding='utf-8'))
+            merged_md = merge_out.read_text(encoding='utf-8')
+            print(f'[cache] falling back to {desc_out.name}')
+        else:
+            if failed:
+                print(f'Live run failed for pictures {failed} and there is no cache to fall back to.')
+            merge_out.write_text(merged_md, encoding='utf-8')
+            desc_out.write_text(json.dumps(picture_descriptions, ensure_ascii=False, indent=2), encoding='utf-8')
+            print('Saved merged markdown:', merge_out)
+            print('Saved picture descriptions:', desc_out)
     if picture_descriptions:
         print('\nFirst description preview:\n')
         for picture in picture_descriptions:
@@ -774,7 +792,7 @@ def _(HTML, display, fuzz, normalize_text, results):
 
     def find_snippet(text: str, query: str, context: int=60) -> tuple[float, str]:
         """Find the line most similar to the reference snippet and cut out the
-        matching passage (± context characters). Used again in Exercise 2."""
+        matching passage (± context characters)."""
         min_len = max(10, len(query) // 2)
         lines = [l.strip() for l in normalize_text(text, fix_umlauts=False).splitlines() if len(l.strip()) >= min_len]
         best_score, best_line = (-1.0, '')  # drop mini-lines like '1'
@@ -860,269 +878,7 @@ def _(mo):
 
     **The middle ground (what production pipelines actually do):** most real workloads are neither pure volume nor pure quality. A common hybrid: run the fast local OCR over everything first, score each page (confidence values, character statistics, or checks like our umlaut count), and re-process only the low-confidence or business-critical pages with the external VLM. That buys VLM quality where it matters, at a fraction of the cost.
 
-    The logical next step — ingesting the best OCR output into Qdrant and thereby closing the loop back to notebook 03 — is **Exercise 3**.
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    ---
-    ## 10) Exercises
-
-    Three exercises of increasing difficulty — pick whatever matches your level; nobody has to finish all three. Each one comes with a fold-out solution: **try it yourself first, then compare!**
-
-    All exercises use variables from the previous sections (`results`, `basic_metrics`, `ocr_with_external_vlm`, `find_snippet`, …) — so run the whole notebook once beforehand.
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    ### Exercise 1 (Easy) — Different PDF, same pipeline
-
-    The `raw_data/` folder contains a second 6-page paper: `curioussingapore.pdf` (Schmidhuber 1991, *"Curious Model-Building Control Systems"*). What makes it special: this PDF's embedded text layer is broken (corrupted font encoding) — without OCR/VLM all you get is character salad. A perfect test case!
-
-    Task: run the **external VLM** (approach C) over this PDF and compare the metrics with the LSTM paper.
-    1. Build the path to the new PDF (`RAW_DIR / 'curioussingapore.pdf'`)
-    2. Call `ocr_with_external_vlm(...)` on it (takes about as long as in section 5)
-    3. Print `basic_metrics(...)` and the first 1000 characters
-
-    Food for thought: why do `math_markers` and `table_markers` differ between the two papers?
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    # TODO: Exercise 1
-    # 1. new_pdf = RAW_DIR / 'curioussingapore.pdf'
-    # 2. text = ocr_with_external_vlm(...)
-    # 3. print(basic_metrics(text)) and print(normalize_text(text)[:1000])
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    <details>
-    <summary><b>Show solution (Exercise 1)</b></summary>
-
-    ```python
-    new_pdf = RAW_DIR / 'curioussingapore.pdf'
-    print('PDF exists:', new_pdf.exists())
-
-    curious_text = ocr_with_external_vlm(new_pdf, model=EXTERNAL_VLM_MODEL)
-    save_text('04_ex1_external_vlm_curioussingapore', curious_text)
-
-    print('Metrics curioussingapore:', basic_metrics(curious_text))
-    print('Metrics lstm_tables:     ', basic_metrics(external_vlm_text))
-    print()
-    print(normalize_text(curious_text)[:1000])
-    ```
-
-    The curiosity paper contains fewer tables and formulas than the LSTM paper, so `math_markers` and `table_markers` come out lower. The metrics therefore depend strongly on the document type — which is exactly why you should always evaluate OCR approaches on your *own* documents, not on someone else's benchmark.
-
-    </details>
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    ### Exercise 2 (Medium) — Umlaut scorecard
-
-    In section 8 we saw that umlauts are a surprisingly good quality indicator. In the original, the authors' address line contains exactly **6 umlauts**: 2× "ä" (Fakultät, Universität) and 4× "ü" (für, 2× München, Jürgen).
-
-    Task (no API calls needed — we work with the existing outputs in `results`):
-    1. Write a function `umlaut_count(text)` that counts the occurrences of `äöüÄÖÜ`
-    2. Apply it to all four outputs and build a `pandas` table from the result
-    3. Bonus: add each approach's `find_snippet` score against the reference snippet `'Fakultät für Informatik Technische Universität München'`
-
-    Which approach wins? Does the result match the impression from section 8?
-
-    Going further (optional): umlauts test *character* fidelity — invent a second metric for a *different* failure mode, e.g. count preserved math markers (`≈`, `$…$`) or compare table row counts across the outputs. Different metrics test different quality dimensions (the lesson from section 8).
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    # TODO: Exercise 2
-    # UMLAUTS = 'äöüÄÖÜ'
-    # def umlaut_count(text): ...
-    # pd.DataFrame(...)  # one row per approach from results
-    # Bonus: find_snippet(text, 'Fakultät für Informatik Technische Universität München')
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    <details>
-    <summary><b>Show solution (Exercise 2)</b></summary>
-
-    ```python
-    UMLAUTS = 'äöüÄÖÜ'
-    REFERENCE = 'Fakultät für Informatik Technische Universität München'
-
-    def umlaut_count(text: str) -> int:
-        return sum(text.count(c) for c in UMLAUTS)
-
-    rows = []
-    for name, text in results.items():
-        score, snippet = find_snippet(text, REFERENCE)
-        rows.append({'approach': name, 'umlauts': umlaut_count(text), 'fuzz_score': round(score, 1)})
-
-    pd.DataFrame(rows).set_index('approach').sort_values('umlauts', ascending=False)
-    ```
-
-    **Expected result:** `external_vlm` and `docling_api_vlm` find all 6 umlauts, RapidOCR only 2 (the "ä"s), the local Granite VLM **0**. A single counted character reveals more about quality here than `chars` or `words` — good quality metrics have to fit the document.
-
-    </details>
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    ### Exercise 3 (Hard) — From the best OCR output to a RAG pipeline
-
-    Now we close the loop back to notebook 03: the best OCR output gets chunked, embedded, and stored in Qdrant — after which a retrieval query answers a question about the paper. This is exactly what the real workflow looks like: first compare OCR approaches, then take the winner into the pipeline.
-
-    **Prerequisite:** Qdrant is running locally on `localhost:6333` (as in notebook 03, e.g. via Docker).
-
-    Task:
-    1. Pick the best output (e.g. `docling_api_vlm_text` or `external_vlm_text`)
-    2. Chunk it along the Markdown headings (`## …`), max. ~1200 characters per chunk
-    3. Embed the chunks with `openai/octen-embedding-8b` via LiteLLM
-    4. Create a Qdrant collection `ocr_compare_best` and upload the chunks
-    5. Ask a retrieval question, e.g. *"What is the computational complexity of LSTM per time step?"*, and print the top-3 hits
-
-    Tip: the complete procedure is in notebook 03 (sections 4–6) — a simplified version is enough here.
-
-    The code cell below is a **working skeleton** — only the two `TODO` lines are missing. If you get stuck, the complete flow is in notebook 03.
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(docling_api_vlm_text, mo, normalize_text):
-    EXERCISE_3_READY = False  # set to True after filling in the two TODO lines below
-    mo.stop(not EXERCISE_3_READY, mo.md('*Exercise 3 skeleton: fill in the two TODO lines in this cell, set `EXERCISE_3_READY = True` and re-run.*'))
-    from qdrant_client import QdrantClient
-
-    # Exercise 3 — skeleton: fill in the two TODO lines; everything else already works.
-    from qdrant_client.models import Distance, PointStruct, VectorParams
-
-    from ragkit.embed import embed
-    COLLECTION = 'ocr_compare_best'
-    MAX_CHUNK = 1200
-    best_text = normalize_text(docling_api_vlm_text)
-    sections = ...
-    chunks = []
-    for sec in sections:
-        sec = sec.strip()  # or external_vlm_text — your pick
-        while len(sec) > MAX_CHUNK:
-    # TODO 1: split best_text into sections at Markdown headings ('## ...').
-    # Hint: re.split with a pattern that looks ahead for lines starting with '#' characters
-            cut = sec.rfind('\n\n', 0, MAX_CHUNK)
-            cut = cut if cut > 200 else MAX_CHUNK
-            chunks.append(sec[:cut].strip())
-            sec = sec[cut:].strip()
-        if sec:
-            chunks.append(sec)
-    print(f'{len(chunks)} chunks created')
-    vectors = embed(chunks)
-    client = QdrantClient(host='localhost', port=6333)
-    if client.collection_exists(COLLECTION):
-        client.delete_collection(COLLECTION)
-    client.create_collection(COLLECTION, vectors_config=VectorParams(size=len(vectors[0]), distance=Distance.COSINE))
-    points = [PointStruct(id=i, vector=v, payload={'text': c, 'source': 'lstm_tables.pdf/docling_api_vlm'}) for i, (c, v) in enumerate(zip(chunks, vectors))]
-    client.upsert(collection_name=COLLECTION, points=points)
-    print('Collection ready:', client.get_collection(COLLECTION).points_count, 'points')
-    question = 'What is the computational complexity of LSTM per time step?'
-    hits = ...
-    for h in hits:
-        print(f'\n--- Score {h.score:.3f} ---')
-    # TODO 3: embed the question and fetch the top-3 hits
-    #         (client.query_points(..., limit=3, with_payload=True).points)
-        print(h.payload['text'][:400])
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    <details>
-    <summary><b>Show solution (Exercise 3)</b></summary>
-
-    ```python
-    import re
-    from litellm import embedding
-    from qdrant_client import QdrantClient
-    from qdrant_client.models import Distance, VectorParams, PointStruct
-
-    EMBED_MODEL = 'openai/octen-embedding-8b'
-    COLLECTION = 'ocr_compare_best'
-    MAX_CHUNK = 1200
-
-    # 1) Best output from the comparison
-    best_text = normalize_text(docling_api_vlm_text)
-
-    # 2) Simple chunking along Markdown headings
-    sections = re.split(r'(?m)^(?=#{1,6}\s)', best_text)
-    chunks = []
-    for sec in sections:
-        sec = sec.strip()
-        while len(sec) > MAX_CHUNK:
-            cut = sec.rfind('\n\n', 0, MAX_CHUNK)
-            cut = cut if cut > 200 else MAX_CHUNK
-            chunks.append(sec[:cut].strip())
-            sec = sec[cut:].strip()
-        if sec:
-            chunks.append(sec)
-    print(f'Created {len(chunks)} chunks')
-
-    # 3) Embeddings via LiteLLM
-    def embed_texts(texts, batch_size=64):
-        vectors = []
-        for i in range(0, len(texts), batch_size):
-            resp = embedding(model=EMBED_MODEL, input=texts[i:i+batch_size],
-                             api_base=API_BASE_URL, encoding_format='float')
-            vectors += [d['embedding'] if isinstance(d, dict) else d.embedding for d in resp.data]
-        return vectors
-
-    vectors = embed_texts(chunks)
-
-    # 4) Create and fill the Qdrant collection
-    client = QdrantClient(host='localhost', port=6333)
-    if client.collection_exists(COLLECTION):
-        client.delete_collection(COLLECTION)
-    client.create_collection(COLLECTION,
-                             vectors_config=VectorParams(size=len(vectors[0]), distance=Distance.COSINE))
-    points = [PointStruct(id=i, vector=v, payload={'text': c, 'source': 'lstm_tables.pdf/docling_api_vlm'})
-              for i, (c, v) in enumerate(zip(chunks, vectors))]
-    client.upsert(collection_name=COLLECTION, points=points)
-    print('Collection ready:', client.get_collection(COLLECTION).points_count, 'points')
-
-    # 5) Retrieval query
-    question = 'What is the computational complexity of LSTM per time step?'
-    q_vec = embed_texts([question])[0]
-    hits = client.query_points(collection_name=COLLECTION, query=q_vec, limit=3, with_payload=True).points
-    print('QUESTION:', question)
-    for h in hits:
-        print(f'\n--- Score {h.score:.3f} ---')
-        print(h.payload['text'][:400])
-    ```
-
-    This builds the bridge: notebook 03 shows the production-style pipeline, and here we applied it to the qualitatively best OCR output. In practice you decide exactly this way: first compare OCR approaches (this notebook), then ingest the winner (notebook 03).
-
-    </details>
+    The logical next step is ingesting the best OCR output into Qdrant, which closes the loop back to notebook 03.
     """)
     return
 
