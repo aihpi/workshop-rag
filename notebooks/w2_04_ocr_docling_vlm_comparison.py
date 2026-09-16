@@ -144,7 +144,11 @@ def _(mo):
 
 
 @app.cell(hide_code=True)
-def _(OUT_DIR, Path):
+def _(
+    mo,
+    OUT_DIR,
+    Path,
+):
     import time
 
     from ragkit.chunk import normalize_text
@@ -205,6 +209,11 @@ def _(OUT_DIR, Path):
             f'white-space:pre-wrap;overflow-x:auto;">{_html.escape(body)}</pre></div>'
         ))
 
+    def show_markdown(title: str, md_text: str) -> None:
+        """Render Markdown as formatted output. The VLM returns Markdown, so a <pre>
+        panel would show raw ** and ### instead of headings and bold."""
+        display(mo.md(f'**{title}**' + chr(10) * 2 + md_text))
+
     def metrics_body(name: str, text: str, timing_key: str) -> str:
         """Source (cache or live) plus the naive metrics, as panel text."""
         src = f"live run, {TIMINGS[timing_key]:.1f}s" if timing_key in TIMINGS else 'pre-computed cache'
@@ -218,6 +227,7 @@ def _(OUT_DIR, Path):
         basic_metrics,
         display,
         metrics_body,
+        show_markdown,
         show_panel,
         normalize_text,
         save_text,
@@ -654,6 +664,7 @@ def _(
     OUT_DIR,
     PDF_PATH,
     RERUN_OCR,
+    show_markdown,
     show_panel,
 ):
     # Base for the merge: OCR output from step 5
@@ -691,7 +702,7 @@ def _(
             _source += f'; saved {merge_out.name} and {desc_out.name}'
     show_panel('VLM image descriptions', f'source     {_source}\npictures   {len(picture_descriptions)}')
     for picture in picture_descriptions:
-        show_panel(
+        show_markdown(
             f"Picture {picture['picture_index']}  (pages {', '.join(map(str, picture['page_numbers']))})",
             picture['description'],
         )
