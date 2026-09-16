@@ -8,6 +8,7 @@ the lesson stay in the notebooks, where participants read the plotting code.
 
 import base64
 import io
+import textwrap
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -72,7 +73,7 @@ def length_hist_panels(lengths_by_strategy: dict[str, list[int]], bins: int = 40
     edges = np.linspace(0, longest, bins + 1)
     for ax, name in zip(axes[0], names):
         ax.hist(lengths_by_strategy[name], bins=edges, color=theme.GREYS[2], edgecolor='none')
-        ax.set_title(name)
+        ax.set_title(textwrap.fill(name, 14), fontsize=8)
         if log_y:
             ax.set_yscale('log')
     axes[0, 0].set_ylabel('chunks')
@@ -95,7 +96,9 @@ def length_hist_panels_from_bins(bins_by_strategy: dict[str, tuple], log_y: bool
         left, right, counts = bins_by_strategy[name]
         ax.bar(left, counts, width=[b - a for a, b in zip(left, right)], align='edge',
                color=theme.GREYS[2], edgecolor='none')
-        ax.set_title(name)
+        # A six-panel row leaves about an inch per title, and constrained_layout cannot
+        # shrink text: without the wrap, neighbouring titles run into each other.
+        ax.set_title(textwrap.fill(name, 14), fontsize=8)
         ax.set_xlim(0, widest)
         if log_y:
             ax.set_yscale('log')

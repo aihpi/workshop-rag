@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import re
+import time
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -136,8 +137,34 @@ def score_distribution(cfg: Config, sections, text, questions):
     }
 
 
+def search_cost(n_chunks: int, n_queries: int, dims, repeats: int = 5) -> dict:
+    """Seconds to score every query against every chunk, and bytes per stored vector, per d.
+
+    The cost of a brute-force search is the `(n_queries, d) @ (d, n_chunks)` product, whose
+    timing depends on the shapes alone and not on what the vectors contain. Measuring it on
+    random vectors therefore gives the same answer as the real ones, and needs no API call,
+    which is what lets this be re-measured when the embedding cache has been cleared.
+    """
+    rng = np.random.default_rng(0)
+    queries = l2_normalise(rng.standard_normal((n_queries, max(dims))).astype(np.float32))
+    chunks = l2_normalise(rng.standard_normal((n_chunks, max(dims))).astype(np.float32))
+    seconds = []
+    for d in dims:
+        q, c = np.ascontiguousarray(queries[:, :d]), np.ascontiguousarray(chunks[:, :d])
+        q @ c.T  # warm up, so the first timed run is not paying for page faults
+        seconds.append(round(min(_time_matmul(q, c) for _ in range(repeats)), 6))
+    return {'search_seconds': seconds,
+            'bytes_per_vector': [d * queries.dtype.itemsize for d in dims]}
+
+
+def _time_matmul(q: np.ndarray, c: np.ndarray) -> float:
+    start = time.perf_counter()
+    q @ c.T
+    return time.perf_counter() - start
+
+
 def matryoshka(cfg: Config, sections, text, questions, dims=(4096, 2048, 1024, 512, 256, 128, 64)):
-    """Retrieval quality when only the first d dimensions of each vector are kept."""
+    """Retrieval quality, search time and storage when only the first d dimensions are kept."""
     from ragkit.evaluate import evaluate_ranking, relevant_chunks
 
     records = build_records(cfg, sections, text, {})
@@ -157,7 +184,9 @@ def matryoshka(cfg: Config, sections, text, questions, dims=(4096, 2048, 1024, 5
                     for qi in range(len(questions))]
         mrr.append(round(float(np.mean([m['mrr'] for m in measured])), 4))
         recall.append(round(float(np.mean([m['recall'] for m in measured])), 4))
-    return {'config_id': cfg.id, 'dims': list(usable), 'mrr': mrr, 'recall': recall}
+    return {'config_id': cfg.id, 'dims': list(usable), 'mrr': mrr, 'recall': recall,
+            'n_chunks': len(records), 'n_queries': len(questions),
+            **search_cost(len(records), len(questions), usable)}
 
 
 # --- the figures, rendered once and committed ---------------------------------
@@ -196,18 +225,37 @@ def render_density(extras, path):
 
 def render_matryoshka(extras, path):
     data = extras['matryoshka']
-    fig, ax = plt.subplots(figsize=(4.6, 2.6), layout='constrained')
-    ax.plot(data['dims'], data['mrr'], color=theme.INK, marker='o', markersize=4)
-    ax.plot(data['dims'], data['recall'], color=theme.GREY, marker='s', markersize=4, linestyle='--')
-    ax.annotate('MRR', (data['dims'][-1], data['mrr'][-1]), xytext=(8, 0), textcoords='offset points',
-                fontsize=8.5, va='center', color=theme.INK)
-    ax.annotate('Recall@5', (data['dims'][-1], data['recall'][-1]), xytext=(8, 0),
-                textcoords='offset points', fontsize=8.5, va='center', color=theme.GREY)
-    ax.set_xscale('log', base=2)
-    ax.set_xticks(data['dims'], [str(d) for d in data['dims']], fontsize=7.5)
-    ax.set_xlabel('kept dimensions')
+    fig, (ax, ax2) = plt.subplots(1, 2, figsize=(6.5, 2.6), layout='constrained')
+
+    # Two curves per panel that meet at one end and separate at the other, so a label pinned to
+    # either end lands on a line or in the margin. A frameless legend in the empty half is the
+    # one placement that works for both panels.
+    ax.plot(data['dims'], data['mrr'], color=theme.INK, marker='o', markersize=4, label='MRR')
+    ax.plot(data['dims'], data['recall'], color=theme.GREY, marker='s', markersize=4,
+            linestyle='--', label='Recall@5')
+    ax.legend(fontsize=8, frameon=False, loc='lower right')
     ax.set_ylim(0, 1)
-    ax.margins(x=0.18)
+    ax.set_ylabel('score')
+    ax.set_title('quality kept')
+
+    # Plotted as a share of the full-width cost so both fit one axis. Storage falls
+    # linearly in d; search time does not, because below a few hundred dimensions the
+    # product stops being arithmetic-bound and the fixed overheads dominate.
+    full_time, full_bytes = data['search_seconds'][0], data['bytes_per_vector'][0]
+    ax2.plot(data['dims'], [s / full_time for s in data['search_seconds']],
+             color=theme.INK, marker='o', markersize=4, label='search time')
+    ax2.plot(data['dims'], [b / full_bytes for b in data['bytes_per_vector']],
+             color=theme.GREY, marker='s', markersize=4, linestyle='--', label='storage')
+    ax2.legend(fontsize=8, frameon=False, loc='upper left')
+    ax2.set_ylim(0, 1)
+    ax2.set_ylabel(f'share of the {data["dims"][0]}-dimension cost')
+    ax2.set_title('cost paid (lower is cheaper)')
+
+    for axis in (ax, ax2):
+        axis.set_xscale('log', base=2)
+        axis.set_xticks(data['dims'], [str(d) for d in data['dims']], fontsize=7.5)
+        axis.set_xlabel('kept dimensions')
+        axis.margins(x=0.18)
     fig.savefig(path, dpi=200)
     plt.close(fig)
 

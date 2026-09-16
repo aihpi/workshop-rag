@@ -820,12 +820,41 @@ def _(TOY_RELEVANT, TOY_SCORES, evaluate_ranking, mo):
     _toy = evaluate_ranking(list(range(len(TOY_SCORES))), {TOY_RELEVANT}, k=5)
     mo.accordion({
         'Now read this: what the four numbers actually measure': mo.md(rf"""
-    Let $r$ be the rank of the first relevant chunk and $\mathrm{{rel}}_i$ the relevance of the chunk at rank $i$.
+    **The symbols.** Every definition below uses these, and nothing else.
 
-    | metric | definition | moves when |
+    | symbol | meaning |
+    |---|---|
+    | $Q$, $\lvert Q \rvert$ | the set of evaluated questions, and how many there are |
+    | $q$ | one question in $Q$ |
+    | $k$ | the cut-off, 5 throughout this notebook |
+    | $R_q$ | the set of chunks that are **relevant** to $q$, that is, every chunk overlapping a cited section. $\lvert R_q \rvert$ is its size |
+    | $R_q^{{(k)}}$ | the set of chunks the retriever actually returned in the top $k$ |
+    | $r_q$ | the rank of the **first** relevant chunk for $q$, counting from 1 |
+    | $\mathrm{{rel}}_i$ | 1 if the chunk at rank $i$ is relevant, 0 otherwise |
+
+    **The four definitions**, exactly as `ragkit/search.py` computes them:
+
+    $$\mathrm{{MRR}} = \frac{{1}}{{|Q|}} \sum_{{q \in Q}} \frac{{1}}{{r_q}}
+    \qquad\text{{with}}\quad \frac{{1}}{{r_q}} := 0 \;\text{{ if no relevant chunk is retrieved}}$$
+
+    $$\mathrm{{Recall}}@k = \frac{{\left| R_q^{{(k)}} \cap R_q \right|}}{{|R_q|}}
+    \qquad
+    \mathrm{{Precision}}@k = \frac{{\left| R_q^{{(k)}} \cap R_q \right|}}{{k}}$$
+
+    $$\mathrm{{nDCG}}@k = \frac{{\mathrm{{DCG}}@k}}{{\mathrm{{IDCG}}@k}},
+    \qquad
+    \mathrm{{DCG}}@k = \sum_{{i=1}}^{{k}} \frac{{\mathrm{{rel}}_i}}{{\log_2(i+1)}},
+    \qquad
+    \mathrm{{IDCG}}@k = \sum_{{i=1}}^{{\min(|R_q|,\, k)}} \frac{{1}}{{\log_2(i+1)}}$$
+
+    $\mathrm{{IDCG}}@k$ is the same sum for the best ordering possible, namely every relevant chunk placed at the top, which is what makes the ratio at most 1. With **graded** relevance the numerator generalises to $\sum_i (2^{{\mathrm{{rel}}_i}} - 1) / \log_2(i+1)$ ([Järvelin and Kekäläinen 2002](https://doi.org/10.1145/582415.582418)); this corpus labels relevance 0 or 1, so the simpler form above is what runs.
+
+    **Note $|R_q|$ in the Recall@$k$ denominator.** It is not a constant: it is however many chunks the gold passage happened to be cut into, so it changes with the chunking strategy. Section 5.2 comes back to this, because it is the single most misleading thing about the numbers below.
+
+    | metric | reads as | moves when |
     |---|---|---|
-    | **MRR** | $1/r$, averaged over queries; 0 if nothing relevant appears ([Voorhees, TREC-8](https://trec.nist.gov/pubs/trec8/t8_proceedings.html)) | only the *first* relevant chunk changes rank: 1.0 at rank 1, 0.50 at rank 2, 0.33 at rank 3 |
-    | **nDCG@$k$** | $\sum_{{i \le k}} \frac{{2^{{\mathrm{{rel}}_i}} - 1}}{{\log_2(i+1)}}$ divided by the same sum for the ideal order ([Järvelin and Kekäläinen 2002](https://doi.org/10.1145/582415.582418)) | any relevant chunk moves, and it is the only one that notices *grades* and a second relevant chunk |
+    | **MRR** | how high the first relevant chunk sits ([Voorhees, TREC-8](https://trec.nist.gov/pubs/trec8/t8_proceedings.html)) | only the *first* relevant chunk changes rank: 1.0 at rank 1, 0.50 at rank 2, 0.33 at rank 3 |
+    | **nDCG@$k$** | how high *all* the relevant chunks sit | any relevant chunk moves, and it is the only one that notices *grades* and a second relevant chunk |
     | **Recall@$k$** | share of all relevant chunks that are inside the top $k$ | a relevant chunk crosses the cut-off; nothing inside the top $k$ matters |
     | **Precision@$k$** | share of the top $k$ that is relevant | the same crossing, but it is capped at $1/k$ when only one chunk is relevant |
 
@@ -905,39 +934,10 @@ def _(GRID_DIR, TEACHING, length_hist_panels_from_bins, mo, pd):
         return out
 
     _fig = length_hist_panels_from_bins(_bins())
-    _fig.set_size_inches(6.5, 2.4)
     mo.vstack([
         mo.md('#### What each strategy produced\n\nBefore the scores, the shape of what was indexed. This is the variable everything else follows from.'),
         _fig,
         mo.md('*Figure 9. Chunk length per strategy over the full corpus (shared x axis, logarithmic counts). Fixed-size strategies produce one spike; paragraph and section chunks spread over two orders of magnitude.*'),
-    ])
-    return
-
-
-@app.cell(hide_code=True)
-def _(MODEL_ORDER, TEACHING, md_table, mo, pd, score_row):
-    def _results_table():
-        rows = []
-        for chunking_id, label in TEACHING:
-            for model in MODEL_ORDER:
-                r = score_row(chunking_id, model)
-                if r is None:
-                    continue
-                rows.append({
-                    'strategy': label, 'model': model, 'chunks': f"{int(r['chunks']):,}",
-                    'MRR': round(r['MRR'], 3), 'nDCG@5': round(r['nDCG@5'], 3),
-                    'Recall@5': round(r['Recall@5'], 3),
-                    'Recall@5 easy': round(r['Recall@5_easy'], 3),
-                    'Recall@5 complex': round(r['Recall@5_complex'], 3),
-                    'gap': round(r['gap'], 3),
-                    '> 350 chars': f"{100 * r['over_350_chars']:.0f} %",
-                })
-        return pd.DataFrame(rows)
-
-    results = _results_table()
-    mo.vstack([
-        mo.md('#### Results'),
-        mo.md(md_table(results.to_dict('records'))),
     ])
     return
 
@@ -969,6 +969,32 @@ def _(MODEL_ORDER, Patch, TEACHING, mo, np, plt, score_row, theme):
         _grouped_bars(['MRR', 'nDCG@5', 'Recall@5']),
         mo.md('*Figure 10. Retrieval correctness per strategy and model.*'),
     ])
+    return
+
+
+@app.cell(hide_code=True)
+def _(MODEL_ORDER, TEACHING, md_table, mo, pd, score_row):
+    def _results_table():
+        rows = []
+        for chunking_id, label in TEACHING:
+            for model in MODEL_ORDER:
+                r = score_row(chunking_id, model)
+                if r is None:
+                    continue
+                rows.append({
+                    'strategy': label, 'model': model, 'chunks': f"{int(r['chunks']):,}",
+                    'MRR': round(r['MRR'], 3), 'nDCG@5': round(r['nDCG@5'], 3),
+                    'Recall@5': round(r['Recall@5'], 3),
+                    'Recall@5 easy': round(r['Recall@5_easy'], 3),
+                    'Recall@5 complex': round(r['Recall@5_complex'], 3),
+                    '> 350 chars': f"{100 * r['over_350_chars']:.0f} %",
+                })
+        return pd.DataFrame(rows)
+
+    results = _results_table()
+    mo.accordion({
+        'Results: every number behind Figure 10': mo.md(md_table(results.to_dict('records'))),
+    })
     return
 
 
@@ -1012,7 +1038,15 @@ def _(MODEL_ORDER, TEACHING, grid_hits, mo, np, plt, theme):
 
 
 @app.cell(hide_code=True)
-def _(TEACHING, md_table, mo, score_row):
+def _(TEACHING, grid_hits, md_table, mo, score_row):
+    COST = 'Recall@5 lost to miniLM'
+    TRUNCATED = 'chunks longer than miniLM reads'
+
+    def _hit_at_5(config_id):
+        """Share of questions with *any* relevant chunk in the top five."""
+        top5 = grid_hits[(grid_hits.config_id == config_id) & (grid_hits['rank'] <= 5)]
+        return float((top5.groupby('qid')['relevant'].sum() > 0).mean()) if not top5.empty else None
+
     def _pairs():
         rows = []
         for chunking_id, label in TEACHING:
@@ -1020,21 +1054,32 @@ def _(TEACHING, md_table, mo, score_row):
             if octen is None or mini is None:
                 continue
             rows.append({'strategy': label,
-                         'chunks over 350 chars': f"{100 * octen['over_350_chars']:.0f} %",
-                         'octen': round(octen['Recall@5'], 3), 'miniLM': round(mini['Recall@5'], 3),
-                         'what the small model costs': round(octen['Recall@5'] - mini['Recall@5'], 3)})
-        return sorted(rows, key=lambda r: float(r['chunks over 350 chars'].rstrip(' %')))
+                         TRUNCATED: f"{100 * octen['over_350_chars']:.0f} %",
+                         'Recall@5 (octen)': round(octen['Recall@5'], 3),
+                         'Recall@5 (miniLM)': round(mini['Recall@5'], 3),
+                         COST: round(octen['Recall@5'] - mini['Recall@5'], 3)})
+        return sorted(rows, key=lambda r: float(r[TRUNCATED].rstrip(' %')))
 
     _rows = _pairs()
     mo.stop(len(_rows) < 2, mo.md('*The miniLM comparison needs the second stage of `tools.run_grid`.*'))
     _cheapest, _dearest = _rows[0], _rows[-1]
+    _short, _long = _hit_at_5('chars_300__miniLM'), _hit_at_5('chars_1200__miniLM')
+    _by_strategy = {r['strategy']: r for r in _rows}
+    _paradox = (f"""
+    **Then read the 300-character row against the 1 200-character one, and something looks wrong.** miniLM reads the first 350 characters of a chunk and discards the rest, so on 1 200-character chunks it never sees 850 of them, yet it scores *higher* there ({_by_strategy['1 200 characters']['Recall@5 (miniLM)']:.3f}) than on 300-character chunks it reads in full ({_by_strategy['300 characters']['Recall@5 (miniLM)']:.3f}).
+
+    That is the denominator, not the retrieval. Recall@5 divides by $|R_q|$, the number of chunks the gold passage was cut into, and that count falls from about 4.3 at 300 characters to about 1.9 at 1 200. Finding one chunk out of two scores 0.50; finding one out of four scores 0.25, for the same answer found equally well. Ask instead how often *any* relevant chunk reaches the top five, and the order reverses: **{_short:.3f} at 300 characters against {_long:.3f} at 1 200**. miniLM genuinely retrieves better on the short chunks it can read whole. The metric rewards the configuration where most of each chunk is never looked at.
+
+    Recall@$k$ is still the right number to report, because it is the one a RAG pipeline cares about. It is only comparable across chunkings if you remember what its denominator is doing.
+    """ if _short and _long else '')
+
     mo.vstack([
         mo.md('#### What the small model costs, and where'),
         mo.md(md_table(_rows)),
         mo.md(f"""
-    miniLM is worse everywhere, but not evenly. Sorted by how much of each strategy overruns its 350-character window, the price rises with it: **{_cheapest['what the small model costs']:.2f} Recall@5** on `{_cheapest['strategy']}`, where nothing is truncated, against **{_dearest['what the small model costs']:.2f}** on `{_dearest['strategy']}`, where nearly everything is. That is failure 2 turned into a number.
-
-    The tempting conclusion is wrong, though. miniLM's own best result is still a long-chunk strategy, because chunk length helps recall more than truncation hurts it. So the lesson is not "use short chunks with a small model" but: **the penalty you pay for the small model grows with chunk length, and you should know how large it is before you accept it.**
+    miniLM is worse everywhere, but not evenly. Sorted by how much of each strategy overruns miniLM's 350-character window, the price rises with it: **{_cheapest[COST]:.2f} Recall@5** on `{_cheapest['strategy']}`, where nothing is truncated, against **{_dearest[COST]:.2f}** on `{_dearest['strategy']}`, where nearly everything is. That is failure 2 turned into a number.
+    {_paradox}
+    So the lesson is not "use short chunks with a small model" but: **the penalty you pay for the small model grows with chunk length, and you should know how large it is before you accept it.**
     """),
     ])
     return
@@ -1075,7 +1120,7 @@ def _(TEACHING, grid_scores, mo, score_row):
 
         **The line to beat: `{best.config_id}`**, Recall@5 **{best['Recall@5']:.3f}** (MRR {best['MRR']:.3f}, nDCG@5 {best['nDCG@5']:.3f}, {int(best['chunks']):,} chunks, easy {best['Recall@5_easy']:.3f}, complex {best['Recall@5_complex']:.3f}), best of {len(grid_scores)} configurations measured.
 
-        - **Bigger chunks won**, Recall@5 {smallest['Recall@5']:.2f} to {largest['Recall@5']:.2f} across the range. A larger chunk is a wider net; the cost is that a hit points at more text than the answer needs, and generation pays for every character of it.
+        - **Bigger chunks scored better, which is not the same as retrieving better.** Recall@5 runs {smallest['Recall@5']:.2f} to {largest['Recall@5']:.2f} across the range, but how often *any* relevant chunk reaches the top five barely moves, sitting near 0.85 for every octen strategy. What changes is Recall@5's denominator: a large chunk splits the gold passage into fewer pieces, so the same retrieval divides by a smaller number. The real cost of a large chunk is unchanged, namely that a hit points at more text than the answer needs and generation pays for every character of it.
         - **The metrics disagree.** MRR peaks at {best_mrr['MRR']:.2f} on `{best_mrr.chunking_id}`, one of the *weakest* by Recall@5 ({best_mrr['Recall@5']:.2f}): cutting a requirement into fragments makes several of them count as relevant, so one lands at rank 1 while most of the answer never reaches the top five. Optimising MRR in the playground would have pointed you at nearly the worst option.
         - **Structure helps the questions it was shaped for.** {structure_line}
         - **The model decides more than the chunker.** {mini_line} Figure 11 says it from the score side: overlapping densities, no threshold that helps.
@@ -1130,12 +1175,29 @@ def _(EXTRAS, Image, REGENERATE, WORKSHOP_DIR, mo, plt, theme):
         return fig
 
     _matry = EXTRAS['matryoshka']
-    _curve = mo.image(src='/public/img/w201_matryoshka.png', width=480)
+    _curve = mo.image(src='/public/img/w201_matryoshka.png', width=640)
+    _full, _half = _matry['dims'][0], _matry['dims'].index(256)
+    _speedup = _matry['search_seconds'][0] / _matry['search_seconds'][_half]
     _caption = (
-        f"*Figure 14. MRR (solid) and Recall@5 (dashed) for `{_matry['config_id']}` when only the first "
-        f"d dimensions are kept and the vectors are re-normalised. MRR at {_matry['dims'][0]}: "
-        f"{_matry['mrr'][0]:.2f}, at {_matry['dims'][-1]}: {_matry['mrr'][-1]:.2f}.*"
+        f"*Figure 14. Left: MRR (solid) and Recall@5 (dashed) for `{_matry['config_id']}` when only "
+        f"the first d dimensions are kept and the vectors are re-normalised. MRR at {_full}: "
+        f"{_matry['mrr'][0]:.2f}, at {_matry['dims'][-1]}: {_matry['mrr'][-1]:.2f}. Right: what that "
+        f"buys, as a share of the full-width cost, searching {_matry['n_chunks']:,} chunks with "
+        f"{_matry['n_queries']} queries.*"
     )
+    _cost = mo.md(f"""
+    **What "cheaper" means here, precisely.** Cutting to 256 dimensions costs about
+    {_matry['mrr'][0] - _matry['mrr'][_half]:.02f} MRR and buys two different things. Storage falls
+    exactly in proportion: {_matry['bytes_per_vector'][0]:,} bytes per vector become
+    {_matry['bytes_per_vector'][_half]:,}, a {_matry['bytes_per_vector'][0] // _matry['bytes_per_vector'][_half]}-fold
+    reduction, and that is the number your vector database feels. Search time falls by about
+    {_speedup:.1f} times, less than proportionally, and it flattens out below a few hundred dimensions
+    because the comparison stops being arithmetic-bound and the fixed overheads take over.
+
+    **What it does not buy is a faster embedding call.** The model computes all {_full} dimensions
+    whatever you intend to keep; the truncation happens afterwards, on your side. Matryoshka makes
+    storing and searching vectors cheaper, never making them.
+    """)
 
     mo.accordion({
         '6 Bonus: Matryoshka embeddings, or how much of a vector do we need?': mo.vstack([
@@ -1152,6 +1214,7 @@ def _(EXTRAS, Image, REGENERATE, WORKSHOP_DIR, mo, plt, theme):
             """),
             _curve,
             mo.md(_caption),
+            _cost,
             mo.accordion({'How Figure 14 was made': REGENERATE}),
         ]),
     })
