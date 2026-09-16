@@ -17,28 +17,26 @@ def _(mo):
     mo.md(r"""
     # 04 - OCR Comparison: Docling OCR vs. Docling VLM vs. External VLM
 
-    To a computer, many PDFs are just **photos of text**: they contain pixels, but no (usable) searchable text. **OCR** (Optical Character Recognition) turns those pixels back into text — which makes it the very first step of almost every RAG pipeline. If this step is done sloppily, no chunking or embedding strategy, however good, can repair the damage later.
+    To a computer many PDFs are just **photos of text**: pixels, no searchable text. **OCR** turns those pixels back into text, which makes it the first step of almost every RAG pipeline. Do it sloppily and no chunking or embedding strategy can repair the damage later.
 
-    Two philosophies compete here:
-    - **Classical OCR** recognizes letter *shapes* one at a time — fast, free, runs locally.
-    - A **VLM** (Vision-Language Model) looks at the page as a whole, the way a human does, and writes down what it sees — including tables and formulas. Better, but slower and (for external models) with API costs.
+    Two competing philosophies:
+    - **Classical OCR** recognises letter *shapes* one at a time. Fast, free, local.
+    - A **VLM** looks at the whole page the way a person does and writes down what it sees, tables and formulas included. Better, but slower, and for external models it costs API calls.
 
-    This trade-off — **speed & cost versus structural and character fidelity** — is the core theme of this notebook.
+    The trade-off is the theme of this notebook: **speed and cost against structural and character fidelity.**
 
     <img src="/public/img/w2_04_overview.svg" alt="One scanned PDF branches into four OCR approaches that converge into a comparison; an inset shows the speed-versus-fidelity trade-off" style="max-width:100%; width:860px">
 
-    We compare four approaches on a hard-to-read PDF with tables and formulas:
-    - `notebooks/raw_data/lstm_tables.pdf` (6 pages from the LSTM paper by Hochreiter & Schmidhuber)
+    Four approaches on one hard PDF with tables and formulas, `notebooks/raw_data/lstm_tables.pdf` (6 pages from the LSTM paper by Hochreiter & Schmidhuber):
 
-    The four approaches:
-    1. **Docling + RapidOCR** (classical local OCR)
-    2. **Docling VLM pipeline** (local vision-language model, Granite preset)
-    3. **External VLM** via LiteLLM (API, on page images)
-    4. **Docling ApiVlmOptions** (same API, but with structured Docling output)
+    1. **Docling + RapidOCR**, classical local OCR
+    2. **Docling VLM pipeline**, local model, Granite preset
+    3. **External VLM** via LiteLLM, on page images
+    4. **Docling ApiVlmOptions**, same API, structured Docling output
 
-    At the end we compare the outputs quantitatively (metrics, **runtime**, similarity matrix) and take a close look at tables and formulas.
+    Then we compare them: metrics, runtime, similarity matrix, and a close look at tables and formulas.
 
-    **Workshop note:** all four outputs ship pre-computed (in `processed/ocr_compare/`) and load instantly by default. Set `RERUN_OCR = True` in section 1 to run the approaches yourself — the runtime column in section 7 only fills up for live runs.
+    **Workshop note:** all four outputs ship pre-computed in `processed/ocr_compare/` and load instantly. Set `RERUN_OCR = True` in section 1 to run them live. The runtime column in section 7 only fills for live runs.
     """)
     return
 
@@ -48,7 +46,7 @@ def _(mo):
     mo.md(r"""
     ## 1) Configuration
 
-    As in notebook 03, we collect all the **tuning knobs** in one place: paths, API access, and the model names of the three VLM variants. On Apple Silicon, the notebook automatically detects whether MLX acceleration is available for the local VLM.
+    Every tuning knob in one place: paths, API access, and the model names for the three VLM variants. On Apple Silicon the notebook detects MLX acceleration for the local VLM automatically.
     """)
     return
 
@@ -138,9 +136,9 @@ def _(mo):
     mo.md(r"""
     ## 2) Helper functions
 
-    For the comparison to be fair, all four approaches need the same ground rules: the same text cleanup, the same storage format, and the same metrics. From now on we also stop the clock on every OCR run — **runtime** is half the truth in the speed-vs-quality trade-off.
+    A fair comparison needs the same ground rules for all four approaches: same text cleanup, same storage format, same metrics. We also time every run, because **runtime is half the truth** in a speed-versus-quality trade-off.
 
-    The simple metrics (`basic_metrics`) count characters, words, lines, plus math and table markers — a rough first impression only. Fair warning: these numbers are deliberately naive and **will mislead you** — section 8 shows exactly how. Treat them with skepticism from the start.
+    `basic_metrics` counts characters, words, lines, and math and table markers. A rough first impression only. These numbers are deliberately naive and **will mislead you**; section 8 shows exactly how. Distrust them from the start.
     """)
     return
 
@@ -251,12 +249,15 @@ def _(mo):
     mo.md(r"""
     ## 3) OCR A: Docling OCR (RapidOCR / optional OcrMacOptions)
 
-    Classical OCR works like a very fast letter-shape detective: it scans the page image for familiar character *shapes* and assembles them into text. This is surprisingly fast and runs entirely locally — but it reaches its limits as soon as something unusual appears: umlauts, mathematical symbols, or table lines are easily confused or swallowed (the German city name "München" quickly turns into "Minchen").
+    Classical OCR is a fast letter-shape detective: it scans the page image for familiar character shapes and assembles them into text. Fast, and entirely local. It breaks as soon as anything unusual appears:
+
+    - umlauts, where "München" becomes "Minchen"
+    - mathematical symbols
+    - table rules, easily confused or swallowed
 
     <img src="/public/img/w2_04_ocr_vs_vlm.svg" alt="Classic OCR matches letter shapes one by one and misreads München as Minchen; a VLM reads the whole page and preserves heading, table and formula" style="max-width:100%; width:860px">
 
-    Strengths: consistent within the Docling workflow and flexible depending on the workshop hardware.
-    Recommendation: `RapidOcrOptions` as the default, `OcrMacOptions` optionally for macOS (often faster).
+    Consistent inside the Docling workflow and flexible about hardware. `RapidOcrOptions` is the default; `OcrMacOptions` is often faster on macOS.
     """)
     return
 
@@ -359,11 +360,14 @@ def _(mo):
     mo.md(r"""
     ## 4) OCR B: Docling VLM (Granite preset)
 
-    Now for the second philosophy — the right-hand panel of the diagram in section 3: instead of hunting for letter shapes, a **local VLM** looks at the whole page as an image and "reads it out loud" — the way a person would describe a page if you asked them to. The charm: everything runs on **your** machine, no document ever leaves it (important for confidential data). The price: small local models look less closely than large cloud models — we are about to see where that goes wrong.
+    The second philosophy, the right-hand panel of the diagram above. A **local VLM** looks at the whole page as an image and reads it out, the way a person would describe it.
 
-    We use the `granite_docling` preset for the VLM-based extraction. On Apple Silicon, MLX acceleration is enabled automatically when available. If no suitable local VLM setup is available, use the external VLM step (section 5) as a fallback.
+    - **The appeal:** everything runs on your machine. No document leaves it, which matters for confidential data.
+    - **The price:** small local models look less closely than large cloud ones. We are about to see where that goes wrong.
 
-    If the next cell fails, the local VLM is simply not available on your hardware — that is fine: the cached output loads automatically, and three other approaches remain.
+    Uses the `granite_docling` preset. MLX acceleration switches on automatically on Apple Silicon when available.
+
+    If the next cell fails, the local VLM is simply unavailable on your hardware. That is fine: the cached output loads instead and three other approaches remain. Section 5 is the fallback.
     """)
     return
 
@@ -464,15 +468,17 @@ def _(mo):
     mo.md(r"""
     ## 5) OCR C: External VLM (LiteLLM) on page images
 
-    Third route: we take a snapshot of every PDF page and send the images to a **large VLM in the cloud**. This usually delivers the best quality — large models recognize umlauts, LaTeX formulas, and tables far more reliably. The flip side: every page costs one API call (time + money), and the documents leave your machine — for confidential material that is a real data-privacy trade-off!
+    Third route: snapshot every PDF page and send the images to a **large VLM in the cloud**. Usually the best quality, because large models handle umlauts, LaTeX and tables far more reliably.
 
-    We compare two external variants:
-    1. Direct LiteLLM call per page (image → text) — maximally simple and transparent
-    2. Docling `ApiVlmOptions` with the LiteLLM endpoint — same API, but Docling orchestrates and additionally delivers structured JSON output
+    The flip side: one API call per page in time and money, and the documents leave your machine. For confidential material that is a real privacy trade-off.
 
-    Workshop default: `qwen3-vl-32b` on the LiteLLM endpoint.
+    Two external variants:
+    1. **Direct LiteLLM call** per page, image to text. Maximally simple and transparent.
+    2. **Docling `ApiVlmOptions`** against the same endpoint. Docling orchestrates and also returns structured JSON.
 
-    One caveat up front: our prompt asks for "plain markdown text only", but models do not always comply — `qwen3-vl` likes to return tables as raw LaTeX. That is not a bug in your code; section 8 shows the consequences.
+    Configured model: `gemma-4-31b`. The cached outputs below were produced with `qwen3-vl-32b`, which the gateway no longer serves.
+
+    One caveat: the prompt asks for "plain markdown text only" and models do not always comply. The cached `docling_api_vlm` output returns its tables as raw LaTeX. That is not a bug in your code; section 8 shows the consequences.
     """)
     return
 
@@ -671,18 +677,19 @@ def _(mo):
     mo.md(r"""
     ## 6) Bonus: making images searchable (VLM image annotation)
 
-    This section solves a **different problem** than the OCR text-quality comparison — feel free to skip it on a first pass and come back later.
+    A **different problem** from the OCR text-quality comparison. Skip it on a first pass and come back later if you like.
 
-    A blind spot of all approaches so far: **figures.** To text search, images are invisible — a question about "the architecture diagram" finds nothing if the diagram is never described in words anywhere. The solution: we have a VLM describe every image and insert the description as text into the document. That makes the image content searchable.
+    Every approach so far shares one blind spot: **figures.** Images are invisible to text search, so a question about "the architecture diagram" finds nothing if the diagram is never described in words. So we have a VLM describe each image and insert that description into the document as text.
 
     <img src="/public/img/w2_04_image_blindspot.svg" alt="Text extraction leaves an invisible gap where a figure was; a VLM caption fills the gap with searchable text" style="max-width:100%; width:860px">
 
-    For this we do **not** use the VLM picture description inside the VlmPipeline, but the more robust route:
+    Not via the VLM picture description inside the VlmPipeline, but the more robust route:
+
     1. Extract images with the standard PDF pipeline (`generate_picture_images=True`)
-    2. Describe each image externally with `qwen3-vl-32b`
+    2. Describe each image with the configured external VLM
     3. Insert the descriptions, in order, into a copy of the OCR markdown
 
-    Naming convention: `04_sXX_<pipeline>_<artifact>.<ext>` for quick orientation during the workshop.
+    Naming convention: `04_sXX_<pipeline>_<artifact>.<ext>`.
     """)
     return
 
@@ -881,11 +888,17 @@ def _(mo):
     mo.md(r"""
     ## 7) Comparison: metrics, runtime, and agreement
 
-    Which approach is worth it when? Just like buying a car, there is no best answer without context — it depends on whether speed, price, or quality matters. We therefore compare the four outputs along the central trade-off **speed/cost vs. quality**: local OCR (RapidOCR) is fast and free, but loses special characters and formulas. External VLMs deliver the cleanest structure (LaTeX, tables), but cost API calls and waiting time per page.
+    Which approach is worth it when? There is no best answer without context, only a trade-off between **speed and cost** on one side and **quality** on the other:
 
-    The table shows the simple metrics plus the **wall-clock runtime** of each approach.
+    - local OCR (RapidOCR) is fast and free, and loses special characters and formulas
+    - external VLMs give the cleanest structure (LaTeX, tables), and cost an API call and a wait per page
 
-    Caution: the times are orders of magnitude, not benchmarks — the first Docling run includes model downloads/warmup, and API latency depends on gateway load. For cached loads (`RERUN_OCR = False`) the `time_s` column stays empty (NaN): timings exist only for fresh runs.
+    The table below holds the simple metrics plus the **wall-clock runtime** per approach.
+
+    Treat the times as orders of magnitude, not benchmarks:
+    - the first Docling run includes model download and warmup
+    - API latency depends on gateway load
+    - with `RERUN_OCR = False` the `time_s` column stays empty, because timings exist only for fresh runs
     """)
     return
 
@@ -924,9 +937,11 @@ def _(
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The metrics do not tell us, however, whether the approaches recognized **the same text** — two outputs can be equally long and still completely different. For that we compute a pairwise **similarity matrix** (Levenshtein-based, via `rapidfuzz`): 100 = identical, lower = more deviation. How to read it: a score of 85 means roughly 85 % of the characters match once insertions, deletions, and substitutions are accounted for.
+    The metrics do not say whether the approaches recognised **the same text**. Two outputs can be equally long and completely different.
 
-    Typical result: the two external VLM variants agree to more than 95% (same model, same images — reassuring!), while the local VLM pipeline deviates the most from all the others.
+    So we compute a pairwise **similarity matrix** (Levenshtein, via `rapidfuzz`): 100 is identical, lower means more deviation. A score of 85 means roughly 85% of characters match once insertions, deletions and substitutions are counted.
+
+    Typical result: the two external variants agree above 95% (same model, same images), while the local VLM pipeline deviates most from everything else.
     """)
     return
 
@@ -972,18 +987,23 @@ def _(mo):
     mo.md(r"""
     ## 8) Tables & formulas in detail
 
-    Metrics can deceive: `docling_api_vlm` contains **not a single Markdown table** — there, the tables sit in the output as raw LaTeX (`\begin{tabular}{|l|l|...}` with `&` as the column separator). Our pipe count (`table_markers`) misses this completely: it does count the LaTeX column definitions, but overlooks the actual table rows. For this approach, the value in the comparison table therefore says nothing about how well the tables were really extracted. If you only look at the numbers, you draw the wrong conclusions — which is why we now take a look ourselves.
+    Metrics deceive. `docling_api_vlm` contains **not a single Markdown table**: its tables arrive as raw LaTeX (`\begin{tabular}{|l|l|...}` with `&` separating columns). Our pipe count (`table_markers`) counts the LaTeX column definitions and misses the actual rows, so for that approach the number says nothing about how well tables were extracted. Read only the numbers and you draw the wrong conclusion.
 
-    <img src="/public/img/w2_04_latex_tables.svg" alt="The same table as a Markdown table full of pipes and as LaTeX tabular with ampersand separators; a naive pipe count only detects the former" style="max-width:100%; width:860px"> We inspect the same passage in all four outputs directly side by side — the way you would compare two translations of the same sentence.
+    <img src="/public/img/w2_04_latex_tables.svg" alt="The same table as a Markdown table full of pipes and as LaTeX tabular with ampersand separators; a naive pipe count only detects the former" style="max-width:100%; width:860px">
 
-    One problem with that: every OCR mangles the text differently ("München" becomes "Minchen" in one output and "Munchen" in another). An exact text search would therefore find nothing. So we search for the passage **fuzzily** with `rapidfuzz.fuzz.partial_ratio`: we provide a reference snippet and find, in each output, the line that is most similar to it.
+    So we look ourselves, at the same passage in all four outputs side by side.
 
-    Each spot below renders as a small table: one row per approach, showing the passage it produced. Everything that **deviates from the reference is highlighted in red** — so a clean row means a faithful output, and lots of red means heavy mangling. (The fuzzy search score only says how confidently we *located* the passage, not how good the output is — judge quality by the highlights.)
+    One obstacle: every OCR mangles text differently. "München" becomes "Minchen" in one output and "Munchen" in another, so an exact search finds nothing. We search **fuzzily** with `rapidfuzz.fuzz.partial_ratio`: give it a reference snippet, and it finds the most similar line in each output.
+
+    How to read each spot, one row per approach:
+    - **red** marks anything deviating from the reference
+    - a clean row means a faithful output, a lot of red means heavy mangling
+    - the fuzzy score says only how confidently we *located* the passage, not how good it is
 
     Three revealing spots:
-    1. **Umlauts** — the umlaut-heavy authors' address line ("Fakultät für Informatik … München")
-    2. **Formulas** — the complexity statement `O(1)` in the abstract (does the LaTeX survive?)
-    3. **Tables** — the first data row of Table 1 (`RTRL | 3 | ≈ 170 | …`)
+    1. **Umlauts:** the authors' address line ("Fakultät für Informatik ... München")
+    2. **Formulas:** the complexity statement `O(1)` in the abstract. Does the LaTeX survive?
+    3. **Tables:** the first data row of Table 1 (`RTRL | 3 | ≈ 170 | ...`)
     """)
     return
 
@@ -1073,11 +1093,12 @@ def _(HTML, display, fuzz, normalize_text, results):
 def _(mo):
     mo.md(r"""
     **What you should see:**
-    - **Umlauts:** RapidOCR turns "für/München" into "fir/Minchen"; the local Granite VLM loses *all* umlauts ("Fakultt", "Munchen", "Jirger"). Only the external VLM variants reproduce the line without errors.
-    - **Formulas:** RapidOCR and Granite output `O(1)` as plain text, the external VLMs as LaTeX `$O(1)$` — important if formulas are later meant to be rendered or searched for specifically.
-    - **Tables:** Three approaches deliver a Markdown table (RapidOCR with broken quotation marks, Granite loses the "≈"), while `docling_api_vlm` returns raw LaTeX with HTML escapes (`&amp;`) — unusable for RAG chunking without post-processing.
 
-    **Takeaway: high metric values ≠ good quality.** For German-language documents and formula/table preservation, the external VLM pays off; for fast full-text search across many documents, local OCR is often enough.
+    - **Umlauts:** RapidOCR turns "für/München" into "fir/Minchen". The local Granite VLM loses *every* umlaut ("Fakultt", "Munchen", "Jirger"). Only the external variants reproduce the line correctly.
+    - **Formulas:** RapidOCR and Granite give `O(1)` as plain text, the external VLMs as LaTeX `$O(1)$`. That matters if formulas are later rendered or searched for specifically.
+    - **Tables:** three approaches give a Markdown table (RapidOCR with broken quotation marks, Granite losing the "≈"), while `docling_api_vlm` returns raw LaTeX with HTML escapes (`&amp;`), unusable for RAG chunking without post-processing.
+
+    **A high metric value is not good quality.** For German documents, and for preserving formulas and tables, the external VLM pays off. For fast full-text search over many documents, local OCR is often enough.
     """)
     return
 
@@ -1085,7 +1106,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    **By the way — this trick is useful beyond OCR.** `find_snippet` with `rapidfuzz.partial_ratio` is a general-purpose tool for messy text: deduplicating near-identical records, approximate search, or matching user queries against imperfectly extracted text. Worth keeping in your toolbox.
+    **This trick is useful beyond OCR.** `find_snippet` with `rapidfuzz.partial_ratio` is a general tool for messy text: deduplicating near-identical records, approximate search, or matching user queries against imperfectly extracted text. Worth keeping in the toolbox.
     """)
     return
 
@@ -1095,17 +1116,16 @@ def _(mo):
     mo.md(r"""
     ## 9) Conclusion
 
-    What we have seen:
-    - **Docling OCR (RapidOCR/OcrMacOptions):** the fastest, free local baseline — but it loses umlauts and formulas
-    - **Docling VLM (Granite, local):** good structure and full data control (nothing leaves your machine) — but in our test the worst character errors (all umlauts lost)
-    - **External VLM (direct via LiteLLM):** best text and formula fidelity, flexible model choice — costs API calls and time per page
-    - **External VLM via Docling ApiVlmOptions:** same recognition quality plus structured Docling JSON output — but tables may come back as raw LaTeX
+    - **Docling OCR (RapidOCR/OcrMacOptions):** the fastest, free, local baseline. Loses umlauts and formulas.
+    - **Docling VLM (Granite, local):** good structure and full data control, nothing leaves your machine. In our test, the worst character errors, with every umlaut lost.
+    - **External VLM (direct via LiteLLM):** the best text and formula fidelity, and a free choice of model. Costs an API call and time per page.
+    - **External VLM via Docling ApiVlmOptions:** the same recognition quality plus structured Docling JSON. Tables may come back as raw LaTeX.
 
-    Rule of thumb: **volume → local OCR, quality → external VLM.** For RAG on technical or German-language documents, the VLM quality usually pays off, because OCR errors propagate through the entire pipeline: misrecognized words become worse embeddings, which become worse retrieval hits, which become worse answers.
+    Rule of thumb: **volume means local OCR, quality means external VLM.** For RAG on technical or German documents the VLM quality usually pays, because OCR errors propagate through the whole pipeline: misrecognised words become worse embeddings, which become worse retrieval hits, which become worse answers.
 
-    **The middle ground (what production pipelines actually do):** most real workloads are neither pure volume nor pure quality. A common hybrid: run the fast local OCR over everything first, score each page (confidence values, character statistics, or checks like our umlaut count), and re-process only the low-confidence or business-critical pages with the external VLM. That buys VLM quality where it matters, at a fraction of the cost.
+    **What production pipelines actually do.** Most workloads are neither pure volume nor pure quality. A common hybrid: run the fast local OCR over everything, score each page (confidence values, character statistics, or a check like our umlaut count), then re-process only the low-confidence or business-critical pages with the external VLM. That buys VLM quality where it matters, at a fraction of the cost.
 
-    The logical next step is ingesting the best OCR output into Qdrant, which closes the loop back to notebook 03.
+    Next step: ingest the best OCR output into Qdrant, which closes the loop back to notebook 03.
     """)
     return
 
