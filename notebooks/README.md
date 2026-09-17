@@ -137,7 +137,7 @@ Take them in order. Each starts with a table showing whether the key, Qdrant and
 | `w2_01_chunking_and_retrieval` | Preprocessing, chunking strategies, text embeddings, retrieval metrics, and which model to choose. The long version of what you did by feel in `w2_00` | nothing; reads pre-computed tables |
 | `w2_02_embedding_models` | Image and text embeddings over 26 bird species: image-to-image retrieval, text search over the articles, and the shared multimodal space | key |
 | `w2_03_IT_Grundschutz` | A real PDF through Docling: structure-aware chunking, storing it in Qdrant, answering questions from it | key, Qdrant |
-| `w2_04_ocr_docling_vlm_comparison` | OCR compared three ways: Docling OCR, Docling's vision model, an external vision model | key, Qdrant |
+| `w2_04_ocr_docling_vlm_comparison` | OCR compared four ways: Docling OCR, Docling's local vision model, and an external vision model both called directly and through Docling | nothing; every result is pre-computed |
 
 Two notes on speed. `w2_03` downloads Docling's layout models the first time it converts a PDF, which takes a few minutes and only happens once. `w2_04` ships every result pre-computed and loads it instantly; set `RERUN_OCR = True` in its first section only if you want to watch it work for real.
 
