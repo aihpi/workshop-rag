@@ -56,8 +56,8 @@ Run each one from `notebooks/`, in order. `marimo run` gives the app view with t
 | `w2_00_chunking_playground` | Tune a chunking and embedding configuration against a measured score table, twice: once knowing nothing, once at the end |
 | `w2_01_chunking_and_retrieval` | Preprocessing, chunking strategies, text embeddings, retrieval metrics, choosing a model |
 | `w2_02_embedding_models` | Image and text embeddings, and the shared multimodal space |
-| `w2_03_real_world_datentypen` | A real PDF through Docling: structure-aware chunking, Qdrant, RAG answers |
-| `w2_04_ocr_docling_vlm_comparison` | Docling OCR against Docling's vision model against an external one |
+| `w2_03_IT_Grundschutz` | A real PDF through Docling: structure-aware chunking, Qdrant, RAG answers |
+| `w2_04_ocr_docling_vlm_comparison` | Docling OCR against a local vision model against an external one, called directly and through Docling |
 | `w3_01_intro_end_to_end` | A whole pipeline end to end, and what RAGAS measures |
 | `w3_02_ingestion` | PDF to Docling to chunks to embeddings to Qdrant |
 | `w3_03_retrieval_evaluation` | Context precision and recall, and the top-k experiment |
