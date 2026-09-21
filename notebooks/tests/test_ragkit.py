@@ -919,6 +919,29 @@ def test_grid_config_of_survives_a_round_trip_through_parquet():
                       'prepend_title': False, 'model': 'miniLM'}).id == 'paragraph__miniLM'
 
 
+def test_dense_grid_offers_no_setting_the_chunker_ignores():
+    """A control the chunker does not read is not a choice, so the grid must not vary it.
+
+    All three of these were measured as duplicates before: `words` at four overlaps gave the same
+    4891 chunks every time, and `section_1200_title` was byte for byte `section_1200`.
+    """
+    import inspect
+
+    from ragkit import chunk as C
+    from tools.run_grid import dense
+
+    assert 'overlap' not in inspect.signature(C.chunk_by_words).parameters, \
+        'chunk_by_words grew an overlap; dense_overlaps can offer it again'
+
+    for cfg in dense():
+        if cfg.strategy == 'words':
+            assert cfg.overlap == 0, f'{cfg.id}: chunk_by_words takes no overlap'
+        if cfg.strategy == 'section':
+            assert not cfg.prepend_title, f'{cfg.id}: build_records always prefixes the title here'
+        if cfg.size:
+            assert cfg.overlap < cfg.size / 2, f'{cfg.id}: overlaps more than half its size'
+
+
 def test_dense_grid_covers_everything_already_measured():
     """Densifying must not orphan a row the playground can still reach."""
     import pandas as pd

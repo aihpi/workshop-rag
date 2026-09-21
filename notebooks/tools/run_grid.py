@@ -45,6 +45,7 @@ GOLD_SETS = ('123_einfach', '43_komplex')
 DIFFICULTY = {'123_einfach': 'easy', '43_komplex': 'complex'}
 MODELS = {
     'octen': {'model': 'openai/octen-embedding-8b', 'batch_size': 64, 'max_chars': None},
+    'qwen3vl': {'model': 'openai/qwen3-vl-embedding-8b', 'batch_size': 32, 'max_chars': None},
     'miniLM': {'model': 'openai/minilm-embedding', 'batch_size': 32, 'max_chars': 350},
 }
 K = 5
@@ -107,17 +108,40 @@ DENSE_SIZES = {
 DENSE_OVERLAPS = (0, 120, 200, 240)
 
 
+def dense_overlaps(strategy: str, size: int | None) -> tuple[int, ...]:
+    """The overlaps that change anything for this strategy and size.
+
+    `chunk_by_words` takes no overlap, so `words` has exactly one. `paragraph` cuts on the text's
+    own breaks and has no size to overlap. Everything else keeps the overlaps that stay below half
+    the size: at `chars` 300 an overlap of 240 is not a decision, it is a degenerate configuration.
+    """
+    if strategy == 'words' or not size:
+        return (0,)
+    return tuple(ov for ov in DENSE_OVERLAPS if ov < size / 2)
+
+
+def dense_titles(strategy: str) -> tuple[bool, ...]:
+    """Whether prepending the section title is a decision for this strategy.
+
+    `build_records` already prefixes the Baustein title on every `section` chunk, so the flag
+    changes nothing there and both values would measure the same chunks.
+    """
+    return (False,) if strategy == 'section' else (False, True)
+
+
 def dense() -> list[Config]:
     """Every combination the playground's controls can offer, so the cascade never narrows to one.
 
     The chained dropdowns in `w2_00` only ever offer what this table holds, so a partial run is
     never wrong, only narrower. That is what makes this safe to build up over several sessions.
+    Combinations that no chunker acts on are left out, so every control in the notebook maps to a
+    decision that changes the chunks.
     """
     out = [Config(strategy, size, overlap, title, model)
            for strategy, sizes in DENSE_SIZES.items()
            for size in sizes
-           for overlap in (DENSE_OVERLAPS if size else (0,))  # no size, no overlap to speak of
-           for title in (False, True)
+           for overlap in dense_overlaps(strategy, size)
+           for title in dense_titles(strategy)
            for model in MODELS]
     return _dedupe_configs(out)
 

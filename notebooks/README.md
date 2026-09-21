@@ -241,6 +241,7 @@ uv run ruff check .
 | Script in `tools/` | Purpose |
 |---|---|
 | `run_grid.py` | Measures chunking and embedding configurations over the full corpus and writes `data/grid/*.parquet` |
+| `run_grid.sbatch` | The same run as a batch job. Written for the HPI sc cluster and requires SLURM; every line that another cluster would have to change is marked `# ADJUST:` |
 | `run_extras.py` | The few measured facts a figure needs but a table cannot hold: the header projection, the token-limit error, the score densities, the Matryoshka curve |
 | `make_metric_animations.py` | Renders the three metric GIFs in `public/img/` |
 | `convert_nb.py`, `preconvert.py` | Convert a Jupyter notebook to a themed marimo notebook and report what still needs attention |
@@ -270,3 +271,5 @@ uv run python -m tools.run_grid --stage dense --resume
 ```
 
 The tables are rewritten after every single configuration, so the run can be stopped at any point and `--resume` picks it up, measuring only what is missing. A partly finished run leaves the playground correct, just with fewer options. Add `--dry-run` to list what is planned and what is already done.
+
+A cold dense run is 198 configurations and about ten hours, all of it waiting on the embedding API rather than on the local machine. `tools/run_grid.sbatch` runs it as a batch job on the HPI sc cluster (SLURM, `cpu-batch`, no GPU); it needs `notebooks/.env` copied across, since that file is gitignored and holds the API key.
