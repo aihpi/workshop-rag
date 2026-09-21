@@ -901,7 +901,10 @@ def _(grid_questions, grid_scores, mo):
         ('chars_1200_ov200', '1 200 chars, 200 overlap'),
         ('section_1200', 'section'),
     ]
-    MODEL_ORDER = ('octen', 'miniLM')  # the large model solid, the small one hatched
+    # Two 8B models and one 22M model. The size is the variable that matters, so the labels carry it.
+    MODEL_ORDER = ('octen', 'qwen3vl', 'miniLM')
+    MODEL_LABEL = {'octen': 'octen (8B)', 'qwen3vl': 'qwen3-vl (8B)', 'miniLM': 'miniLM (22M)'}
+    LARGE = ('octen', 'qwen3vl')
 
     def score_row(chunking_id, model):
         match = grid_scores[grid_scores.config_id == f'{chunking_id}__{model}']
@@ -916,7 +919,7 @@ def _(grid_questions, grid_scores, mo):
 
     Two of the 166 gold rows are not here: they cite BSI-Standard 200-2, which is not indexed, so no chunking could ever retrieve them. Counting them as failures would punish every strategy equally and tell us nothing.
     """)
-    return MODEL_ORDER, TEACHING, score_row
+    return LARGE, MODEL_LABEL, MODEL_ORDER, TEACHING, score_row
 
 
 @app.cell(hide_code=True)
@@ -943,37 +946,84 @@ def _(GRID_DIR, TEACHING, length_hist_panels_from_bins, mo, pd):
 
 
 @app.cell(hide_code=True)
-def _(MODEL_ORDER, Patch, TEACHING, mo, np, plt, score_row, theme):
-    def _grouped_bars(metrics):
-        labels = [label for _, label in TEACHING]
-        fig, axes = plt.subplots(1, len(metrics), figsize=(6.6, 2.6), sharey=True)
-        x = np.arange(len(labels))
-        width = 0.38
-        for ax, metric in zip(axes, metrics):
-            for offset, model in zip((-width / 2, width / 2), MODEL_ORDER):
-                values = [(score_row(c, model)[metric] if score_row(c, model) is not None else np.nan)
-                          for c, _ in TEACHING]
-                ax.bar(x + offset, values, width, color=theme.GREYS[1], edgecolor=theme.INK,
-                       linewidth=0.7, hatch='' if model == 'octen' else '///')
-            ax.set_title(metric, fontsize=9)
-            ax.set_xticks(x, labels, rotation=45, ha='right', fontsize=7.5)
-            ax.set_ylim(0, 1)
-        axes[0].set_ylabel('score')
-        axes[-1].legend(handles=[Patch(facecolor=theme.GREYS[1], edgecolor=theme.INK, label='octen'),
-                                 Patch(facecolor=theme.GREYS[1], edgecolor=theme.INK, hatch='///',
-                                       label='miniLM')],
-                        fontsize=8, frameon=False, loc='upper right')
-        return fig
-
+def _(mo):
+    ui_predict = mo.ui.radio(
+        ['octen wins clearly', 'qwen3-vl wins clearly', 'the two tie, and miniLM is far behind'],
+        label='Three models embedded the same section chunks. Which wins?')
     mo.vstack([
-        _grouped_bars(['MRR', 'nDCG@5', 'Recall@5']),
-        mo.md('*Figure 10. Retrieval correctness per strategy and model.*'),
+        mo.md(r"""
+    #### Exercise
+
+    Three embedding models saw the same `section` chunks and the same questions:
+
+    - **octen**, 8 billion parameters, text only, the model this workshop uses by default;
+    - **qwen3-vl**, 8 billion parameters, trained on text *and* images;
+    - **miniLM**, 22 million parameters, the small model of Failure 2.
+
+    **Predict before you scroll.** Then open the solution.
+    """),
+        ui_predict,
     ])
+    return (ui_predict,)
+
+
+@app.cell(hide_code=True)
+def _(MODEL_LABEL, MODEL_ORDER, mo, score_row, ui_predict):
+    _rows = {m: score_row('section_1200', m) for m in MODEL_ORDER}
+    _lines = '\n'.join(f"- **{MODEL_LABEL[m]}**: Recall@5 {r['Recall@5']:.3f}, MRR {r['MRR']:.3f}"
+                       for m, r in _rows.items() if r is not None)
+    _picked = ui_predict.value or 'nothing yet'
+    mo.accordion({
+        'Solution': mo.md(f"""
+    You picked *{_picked}*. On `section_1200`:
+
+    {_lines}
+
+    **The two large models are within 0.01 of each other; the small one is 0.45 behind.** The
+    multimodal training cost qwen3-vl nothing on plain text. Figure 10 shows the same on every
+    strategy, and Figure 10b shows it on all 66 chunkings.
+    """),
+    })
     return
 
 
 @app.cell(hide_code=True)
-def _(MODEL_ORDER, TEACHING, md_table, mo, pd, score_row):
+def _(MODEL_LABEL, MODEL_ORDER, Patch, TEACHING, mo, np, plt, score_row, theme):
+    # Fill and hatch, not colour: the two large models are two greys, the small one is white and
+    # hatched, so the figure reads on a greyscale projector.
+    STYLE = {'octen': {'facecolor': theme.GREYS[1]}, 'qwen3vl': {'facecolor': theme.GREYS[3]},
+             'miniLM': {'facecolor': 'white', 'hatch': '///'}}
+
+    def _grouped_bars(metrics):
+        labels = [label for _, label in TEACHING]
+        fig, axes = plt.subplots(1, len(metrics), figsize=(6.6, 2.6), sharey=True)
+        x = np.arange(len(labels))
+        width = 0.26
+        for ax, metric in zip(axes, metrics):
+            for offset, model in zip((-width, 0, width), MODEL_ORDER):
+                values = [(score_row(c, model)[metric] if score_row(c, model) is not None else np.nan)
+                          for c, _ in TEACHING]
+                ax.bar(x + offset, values, width, edgecolor=theme.INK, linewidth=0.7, **STYLE[model])
+            ax.set_title(metric, fontsize=9)
+            ax.set_xticks(x, labels, rotation=45, ha='right', fontsize=7.5)
+            ax.set_ylim(0, 1)
+        axes[0].set_ylabel('score')
+        axes[-1].legend(handles=[Patch(edgecolor=theme.INK, label=MODEL_LABEL[m], **STYLE[m])
+                                 for m in MODEL_ORDER],
+                        fontsize=7.5, frameon=False, loc='upper right')
+        return fig
+
+    mo.vstack([
+        _grouped_bars(['MRR', 'nDCG@5', 'Recall@5']),
+        mo.md('*Figure 10. Retrieval correctness per strategy and model. The two large models sit '
+              'within a hair of each other on every strategy; the small one is far below on all of '
+              'them.*'),
+    ])
+    return (STYLE,)
+
+
+@app.cell(hide_code=True)
+def _(MODEL_LABEL, MODEL_ORDER, TEACHING, md_table, mo, pd, score_row):
     def _results_table():
         rows = []
         for chunking_id, label in TEACHING:
@@ -982,7 +1032,7 @@ def _(MODEL_ORDER, TEACHING, md_table, mo, pd, score_row):
                 if r is None:
                     continue
                 rows.append({
-                    'strategy': label, 'model': model, 'chunks': f"{int(r['chunks']):,}",
+                    'strategy': label, 'model': MODEL_LABEL[model], 'chunks': f"{int(r['chunks']):,}",
                     'MRR': round(r['MRR'], 3), 'nDCG@5': round(r['nDCG@5'], 3),
                     'Recall@5': round(r['Recall@5'], 3),
                     'Recall@5 easy': round(r['Recall@5_easy'], 3),
@@ -999,6 +1049,149 @@ def _(MODEL_ORDER, TEACHING, md_table, mo, pd, score_row):
 
 
 @app.cell(hide_code=True)
+def _(LARGE, MODEL_LABEL, Patch, STYLE, TEACHING, grid_scores, mo, np, plt, score_row, theme):
+    # Figure 10 again without the small model, and the y axis cut to the range the two large models
+    # occupy, so that a difference of a few hundredths is visible at all.
+    large_pivot = grid_scores.pivot_table(index='chunking_id', columns='model', values='Recall@5')
+    large_pivot = large_pivot[list(LARGE)].dropna()
+    large_pivot['strategy'] = [c.split('_')[0] for c in large_pivot.index]
+
+    def _large_bars(metrics):
+        labels = [label for _, label in TEACHING]
+        values = {(m, metric): [score_row(c, m)[metric] if score_row(c, m) is not None else np.nan
+                                for c, _ in TEACHING] for m in LARGE for metric in metrics}
+        lo = np.floor(np.nanmin(list(values.values())) * 10) / 10
+        fig, axes = plt.subplots(1, len(metrics), figsize=(6.6, 2.6), sharey=True)
+        x = np.arange(len(labels))
+        width = 0.38
+        for ax, metric in zip(axes, metrics):
+            for offset, model in zip((-width / 2, width / 2), LARGE):
+                ax.bar(x + offset, values[(model, metric)], width, edgecolor=theme.INK,
+                       linewidth=0.7, **STYLE[model])
+            ax.set_title(metric, fontsize=9)
+            ax.set_xticks(x, labels, rotation=45, ha='right', fontsize=7.5)
+            ax.set_ylim(lo, 0.9)
+        axes[0].set_ylabel('score')
+        axes[-1].legend(handles=[Patch(edgecolor=theme.INK, label=MODEL_LABEL[m], **STYLE[m])
+                                 for m in LARGE],
+                        fontsize=7.5, frameon=False, loc='upper right')
+        return fig, lo
+
+    _fig, _lo = _large_bars(['MRR', 'nDCG@5', 'Recall@5'])
+    _delta = large_pivot['qwen3vl'] - large_pivot['octen']
+    _para = _delta[large_pivot.strategy == 'paragraph'].mean()
+    mo.vstack([
+        mo.md('#### The two large models, side by side'),
+        _fig,
+        mo.md(f"""
+    *Figure 10b. Figure 10 without the small model, y axis cut at {_lo:.1f} so the differences show.
+    Over all {len(large_pivot)} chunkings both measured, the mean absolute difference in Recall@5 is
+    **{_delta.abs().mean():.3f}**; qwen3-vl ahead on {int((_delta > 0).sum())}, octen on
+    {int((_delta < 0).sum())}. The largest gap is on paragraph chunks, octen ahead by {-_para:.2f}:
+    the strategy that indexes 3 192 bare headers is the one where the models differ.*
+    """),
+    ])
+    return (large_pivot,)
+
+
+@app.cell(hide_code=True)
+def _(LARGE, TEACHING, grid_hits, md_table, mo, np):
+    # Per-question comparison on the same chunking, so the questions are paired. hit@5 and MRR are
+    # what the hits table holds per question; Recall@5 needs |R_q|, which it does not.
+    def _per_question(config_id):
+        rows = grid_hits[grid_hits.config_id == config_id]
+        qids = rows.qid.unique()
+        hit5 = (rows[rows['rank'] <= 5].groupby('qid').relevant.any()
+                .reindex(qids, fill_value=False).astype(int))
+        first_rank = rows[rows.relevant].groupby('qid')['rank'].min()
+        mrr = (1.0 / first_rank).reindex(qids, fill_value=0.0)
+        return hit5, mrr
+
+    def _paired_rows():
+        rng = np.random.default_rng(0)
+        out = []
+        for chunking_id, label in TEACHING:
+            a5, am = _per_question(f'{chunking_id}__{LARGE[0]}')
+            b5, bm = _per_question(f'{chunking_id}__{LARGE[1]}')
+            qids = a5.index.intersection(b5.index)
+            if len(qids) == 0:
+                continue
+            only_a = int(((a5[qids] == 1) & (b5[qids] == 0)).sum())
+            only_b = int(((a5[qids] == 0) & (b5[qids] == 1)).sum())
+            d = (bm[qids] - am[qids]).values
+            boot = [rng.choice(d, len(d)).mean() for _ in range(4000)]
+            lo, hi = np.percentile(boot, [2.5, 97.5])
+            out.append({'strategy': label, 'questions': len(qids),
+                        'hit@5 octen': f'{a5[qids].mean():.3f}', 'hit@5 qwen3-vl': f'{b5[qids].mean():.3f}',
+                        'only octen hit / only qwen3-vl hit': f'{only_a} / {only_b}',
+                        'MRR difference (qwen3-vl minus octen)': f'{d.mean():+.3f}',
+                        '95 % interval': f'[{lo:+.3f}, {hi:+.3f}]'})
+        return out
+
+    _rows = _paired_rows()
+    _all_zero = all(r['95 % interval'].startswith('[-') and ', +' in r['95 % interval'] for r in _rows)
+    mo.accordion({
+        'Is the difference between the two large models real?': mo.vstack([
+            mo.md("""
+    Same chunking, same questions, so every question is a **paired** observation. Two checks:
+
+    - **hit@5**: how many questions only one of the two models got into the top five (the
+      *discordant* pairs). Equal counts mean the models trade wins at random.
+    - **MRR**: the per-question difference, with a 95 % interval from 4 000 paired bootstrap samples.
+    """),
+            mo.md(md_table(_rows)),
+            mo.md(('**Every interval contains zero, and the discordant counts are balanced.** '
+                   if _all_zero else '**At least one interval excludes zero.** ')
+                  + 'What separates the two large models on this question set is noise; what '
+                  'separates them from miniLM is not.'),
+            mo.md('*Recall@5 per question is not stored in the tables; hit@5 and MRR are, and they '
+                  'are the two numbers the rest of this section argues from anyway.*'),
+        ]),
+    })
+    return
+
+
+@app.cell(hide_code=True)
+def _(MODEL_LABEL, MODEL_ORDER, grid_scores, md_table, mo):
+    # What the grid measured: seconds to embed the whole corpus, one row per fresh configuration.
+    # The rest is stated from the API's model list and the model cards.
+    CORPUS_CHARS = 2_450_000
+    _seconds = grid_scores.dropna(subset=['embed_seconds']).groupby('model').embed_seconds.median()
+    _facts = {
+        'miniLM': {'parameters': '22 M', 'dimensions': 384, 'input limit': '256 tokens, about 350 characters',
+                   'reads images': 'no'},
+        'octen': {'parameters': '8 B', 'dimensions': 4096, 'input limit': '16 384 tokens', 'reads images': 'no'},
+        'qwen3vl': {'parameters': '8 B', 'dimensions': 4096, 'input limit': '32 768 tokens',
+                    'reads images': 'by design; the workshop API currently embeds image data URIs as text (w2_02)'},
+    }
+    _rows = [{'model': MODEL_LABEL[m], 'parameters': _facts[m]['parameters'],
+              'dimensions': f"{_facts[m]['dimensions']:,}",
+              'bytes per vector': f"{_facts[m]['dimensions'] * 4:,}",
+              'input limit': _facts[m]['input limit'],
+              'characters per second': f'{CORPUS_CHARS / _seconds[m] / 1000:.0f} k' if m in _seconds else 'n/a',
+              'reads images': _facts[m]['reads images']} for m in MODEL_ORDER]
+
+    mo.vstack([
+        mo.md('#### When accuracy does not decide'),
+        mo.md(md_table(_rows)),
+        mo.md(f"""
+    *Throughput is the median over the grid's fresh embeddings of the whole corpus,
+    {CORPUS_CHARS / 1e6:.2f} million characters, against the shared workshop API, so it measures the
+    endpoint as much as the model.*
+
+    - **Storage and search cost are set by the dimensions, not by the accuracy.** A miniLM vector is
+      a tenth the size of the others; that, and three times the throughput, is what the small model
+      buys. Section 6 shows what Matryoshka truncation buys instead, without changing the model.
+    - **The input limit decides which chunkings are admissible at all.** Failure 2 is the 350
+      character window in numbers; the two large models never hit theirs on this corpus.
+    - **Modality is a requirement, not a score.** Figure 10b says the multimodal model costs nothing
+      on text, so if images will ever be indexed the choice is made before any accuracy is measured.
+    """),
+    ])
+    return
+
+
+@app.cell(hide_code=True)
 def _(EXTRAS, REGENERATE, mo):
     mo.vstack([
         mo.image(src='/public/img/w201_score_density.png', width=560),
@@ -1009,10 +1202,10 @@ def _(EXTRAS, REGENERATE, mo):
 
 
 @app.cell(hide_code=True)
-def _(MODEL_ORDER, TEACHING, grid_hits, mo, np, plt, theme):
+def _(MODEL_LABEL, MODEL_ORDER, TEACHING, grid_hits, mo, np, plt, theme):
     def _gap_figure():
         fig, ax = plt.subplots(figsize=(5.4, 2.6))
-        for model, style in zip(MODEL_ORDER, ('-', '--')):
+        for model, style in zip(MODEL_ORDER, ('-', '--', ':')):
             best = f'{TEACHING[-1][0]}__{model}'
             rows = grid_hits[grid_hits.config_id == best]
             if rows.empty:
@@ -1021,7 +1214,7 @@ def _(MODEL_ORDER, TEACHING, grid_hits, mo, np, plt, theme):
             gaps = (top2[1] - top2[2]).dropna()
             counts, edges = np.histogram(gaps, bins=24, range=(0, max(0.2, float(gaps.max()))))
             ax.step(edges[:-1], counts, where='post', color=theme.INK, linestyle=style,
-                    linewidth=1.2, label=f'{model} (median {gaps.median():.3f})')
+                    linewidth=1.2, label=f'{MODEL_LABEL[model]} (median {gaps.median():.3f})')
         ax.set_xlabel('gap between rank 1 and rank 2')
         ax.set_ylabel('questions')
         ax.legend(frameon=False, fontsize=8)
@@ -1065,86 +1258,152 @@ def _(TEACHING, grid_hits, md_table, mo, score_row):
     _cheapest, _dearest = _rows[0], _rows[-1]
     _short, _long = _hit_at_5('chars_300__miniLM'), _hit_at_5('chars_1200__miniLM')
     _by_strategy = {r['strategy']: r for r in _rows}
-    _paradox = (f"""
-    **Then read the 300-character row against the 1 200-character one, and something looks wrong.** miniLM reads the first 350 characters of a chunk and discards the rest, so on 1 200-character chunks it never sees 850 of them, yet it scores *higher* there ({_by_strategy['1 200 characters']['Recall@5 (miniLM)']:.3f}) than on 300-character chunks it reads in full ({_by_strategy['300 characters']['Recall@5 (miniLM)']:.3f}).
+    _paradox = mo.md(f"""
+    **Read the 300-character row against the 1 200-character one.** miniLM reads the first 350
+    characters of a chunk and discards the rest, so on 1 200-character chunks it never sees 850 of
+    them, yet it scores *higher* there ({_by_strategy['1 200 characters']['Recall@5 (miniLM)']:.3f})
+    than on 300-character chunks it reads in full
+    ({_by_strategy['300 characters']['Recall@5 (miniLM)']:.3f}).
 
-    That is the denominator, not the retrieval. Recall@5 divides by $|R_q|$, the number of chunks the gold passage was cut into, and that count falls from about 4.3 at 300 characters to about 1.9 at 1 200. Finding one chunk out of two scores 0.50; finding one out of four scores 0.25, for the same answer found equally well. Ask instead how often *any* relevant chunk reaches the top five, and the order reverses: **{_short:.3f} at 300 characters against {_long:.3f} at 1 200**. miniLM genuinely retrieves better on the short chunks it can read whole. The metric rewards the configuration where most of each chunk is never looked at.
-
-    Recall@$k$ is still the right number to report, because it is the one a RAG pipeline cares about. It is only comparable across chunkings if you remember what its denominator is doing.
-    """ if _short and _long else '')
+    - **That is the denominator, not the retrieval.** Recall@5 divides by $|R_q|$, the number of
+      chunks the gold passage was cut into: about 4.3 at 300 characters, about 1.9 at 1 200. Finding
+      one chunk out of two scores 0.50; finding one out of four scores 0.25, for the same answer
+      found equally well.
+    - **Ask how often *any* relevant chunk reaches the top five and the order reverses**:
+      {_short:.3f} at 300 characters against {_long:.3f} at 1 200. miniLM genuinely retrieves better
+      on the short chunks it can read whole.
+    - *Recall@$k$ is still the number to report, because it is the one a RAG pipeline cares about.
+      It is only comparable across chunkings if you remember what its denominator is doing.*
+    """) if _short and _long else mo.md('')
 
     mo.vstack([
         mo.md('#### What the small model costs, and where'),
+        mo.md('*octen stands for both large models here; Figure 10b shows why either would do.*'),
         mo.md(md_table(_rows)),
         mo.md(f"""
-    miniLM is worse everywhere, but not evenly. Sorted by how much of each strategy overruns miniLM's 350-character window, the price rises with it: **{_cheapest[COST]:.2f} Recall@5** on `{_cheapest['strategy']}`, where nothing is truncated, against **{_dearest[COST]:.2f}** on `{_dearest['strategy']}`, where nearly everything is. That is failure 2 turned into a number.
-    {_paradox}
-    So the lesson is not "use short chunks with a small model" but: **the penalty you pay for the small model grows with chunk length, and you should know how large it is before you accept it.**
+    - **miniLM is worse everywhere, but not evenly.** Sorted by how much of each strategy overruns
+      its 350-character window, the price rises with it: **{_cheapest[COST]:.2f} Recall@5** on
+      `{_cheapest['strategy']}`, where nothing is truncated, against **{_dearest[COST]:.2f}** on
+      `{_dearest['strategy']}`, where nearly everything is. *That is Failure 2 turned into a number.*
+    - **The lesson is not "use short chunks with a small model."** It is: the penalty you pay for
+      the small model grows with chunk length, and you should know how large it is before you
+      accept it.
     """),
+        mo.accordion({'Why the small model scores higher on chunks it cannot read': _paradox}),
     ])
     return
 
 
 @app.cell(hide_code=True)
-def _(TEACHING, grid_scores, mo, score_row):
+def _(LARGE, TEACHING, grid_hits, grid_scores, large_pivot, mo, np, score_row):
     _measured = [label for c, label in TEACHING if score_row(c, 'octen') is not None]
     mo.stop(len(_measured) < len(TEACHING), mo.callout(mo.md(
         f'### 5.3 What to do\n\nOnly {len(_measured)} of the {len(TEACHING)} teaching configurations have been measured. Finish `uv run python -m tools.run_grid --stage all` and this section fills itself in.'), kind='warn'))
+
+    from math import comb  # the sign test for the title effect
 
     def _by_id(config_id):
         match = grid_scores[grid_scores.config_id == config_id]
         return None if match.empty else match.iloc[0]
 
-    def _recommendation():
-        octen = {label: score_row(c, 'octen') for c, label in TEACHING}
-        octen = {k: v for k, v in octen.items() if v is not None}
-        mini = {label: score_row(c, 'miniLM') for c, label in TEACHING}
-        mini = {k: v for k, v in mini.items() if v is not None}
-        best = grid_scores.sort_values('Recall@5', ascending=False).iloc[0]
-        smallest = min(octen.values(), key=lambda r: r['Recall@5'])
-        largest = max(octen.values(), key=lambda r: r['Recall@5'])
-        best_mrr = max(octen.values(), key=lambda r: r['MRR'])
-        section = _by_id('section_1200__octen')
-        words = _by_id('words_400__octen')
+    def _hit_at_5(config_id):
+        top5 = grid_hits[(grid_hits.config_id == config_id) & (grid_hits['rank'] <= 5)]
+        return float((top5.groupby('qid')['relevant'].sum() > 0).mean()) if not top5.empty else None
 
-        mini_line = (
-            f"With octen the teaching strategies span Recall@5 {min(r['Recall@5'] for r in octen.values()):.2f} to {max(r['Recall@5'] for r in octen.values()):.2f}; with miniLM the same six span {min(r['Recall@5'] for r in mini.values()):.2f} to {max(r['Recall@5'] for r in mini.values()):.2f}."
-        ) if mini else 'The miniLM comparison needs the second stage of the grid.'
+    def _title_effect(model):
+        """Paired Recall@5 differences, title minus none, and a one-sided sign test on them."""
+        rows = grid_scores[grid_scores.model == model]
+        deltas = []
+        for _, r in rows[~rows.prepend_title].iterrows():
+            with_title = rows[rows.chunking_id == f'{r.chunking_id}_title']
+            if not with_title.empty:
+                deltas.append(float(with_title.iloc[0]['Recall@5'] - r['Recall@5']))
+        n, positive = len(deltas), sum(d > 0 for d in deltas)
+        p = sum(comb(n, k) for k in range(positive, n + 1)) / 2 ** n if n else float('nan')
+        return {'n': n, 'positive': positive, 'mean': float(np.mean(deltas)) if deltas else float('nan'), 'p': p}
 
-        structure_line = (
-            f"`section_1200` is the best strategy in the room for **easy** questions ({section['Recall@5_easy']:.2f}) and among the worst for **complex** ones ({section['Recall@5_complex']:.2f}), while `words_400` is far more even ({words['Recall@5_easy']:.2f} against {words['Recall@5_complex']:.2f}). The reason is in the question set, not the chunker: a complex question cites a passage that spans several sections, and a chunk that stops at a section boundary can only ever cover part of it. Structure-aware chunking matches the document; it does not match the question."
-        ) if section is not None and words is not None else ''
+    # --- the facts, all from the tables ------------------------------------------------------
+    best = grid_scores.sort_values('Recall@5', ascending=False).iloc[0]
+    large_rows = grid_scores[grid_scores.model.isin(LARGE)]
+    full_pivot = grid_scores.pivot_table(index='chunking_id', columns='model', values='Recall@5').dropna()
+    mini_loss = float((full_pivot[list(LARGE)].mean(axis=1) - full_pivot['miniLM']).mean())
+    large_delta = float((large_pivot['qwen3vl'] - large_pivot['octen']).abs().mean())
+    chars_plain = large_rows[(large_rows.strategy == 'chars') & (large_rows.overlap == 0)
+                             & (~large_rows.prepend_title)]
+    chars_hits = [_hit_at_5(c) for c in chars_plain.config_id]
+    best_mrr = large_rows.sort_values('MRR', ascending=False).iloc[0]
+    section = {m: _by_id(f'section_1200__{m}') for m in LARGE}
+    words = {m: _by_id(f'words_400__{m}') for m in LARGE}
+    ov_plain = {m: _by_id(f'chars_1200__{m}') for m in LARGE}
+    ov_200 = {m: _by_id(f'chars_1200_ov200__{m}') for m in LARGE}
+    sec_plain = {m: _by_id(f'section_1600__{m}') for m in LARGE}
+    sec_200 = {m: _by_id(f'section_1600_ov200__{m}') for m in LARGE}
+    title = {m: _title_effect(m) for m in ('octen', 'qwen3vl', 'miniLM')}
 
-        return f"""
-        ### 5.3 What the measurement says
+    def _pair(d, key='Recall@5', fmt='.2f'):
+        return ' / '.join(f'{d[m][key]:{fmt}}' for m in LARGE)
 
-        **The line to beat: `{best.config_id}`**, Recall@5 **{best['Recall@5']:.3f}** (MRR {best['MRR']:.3f}, nDCG@5 {best['nDCG@5']:.3f}, {int(best['chunks']):,} chunks, easy {best['Recall@5_easy']:.3f}, complex {best['Recall@5_complex']:.3f}), best of {len(grid_scores)} configurations measured.
+    mo.vstack([
+        mo.md(f"""
+    ### 5.3 What the measurement says
 
-        - **Bigger chunks scored better, which is not the same as retrieving better.** Recall@5 runs {smallest['Recall@5']:.2f} to {largest['Recall@5']:.2f} across the range, but how often *any* relevant chunk reaches the top five barely moves, sitting near 0.85 for every octen strategy. What changes is Recall@5's denominator: a large chunk splits the gold passage into fewer pieces, so the same retrieval divides by a smaller number. The real cost of a large chunk is unchanged, namely that a hit points at more text than the answer needs and generation pays for every character of it.
-        - **The metrics disagree.** MRR peaks at {best_mrr['MRR']:.2f} on `{best_mrr.chunking_id}`, one of the *weakest* by Recall@5 ({best_mrr['Recall@5']:.2f}): cutting a requirement into fragments makes several of them count as relevant, so one lands at rank 1 while most of the answer never reaches the top five. Optimising MRR in the playground would have pointed you at nearly the worst option.
-        - **Structure helps the questions it was shaped for.** {structure_line}
-        - **The model decides more than the chunker.** {mini_line} Figure 11 says it from the score side: overlapping densities, no threshold that helps.
-        - **Overlap bought nothing** and cost chunks, matching Chroma and Jina. Prepending the section title bought a little, for free.
-        """
+    **The line to beat: `{best.config_id}`**, Recall@5 **{best['Recall@5']:.3f}** (MRR
+    {best['MRR']:.3f}, nDCG@5 {best['nDCG@5']:.3f}, {int(best['chunks']):,} chunks, easy
+    {best['Recall@5_easy']:.3f}, complex {best['Recall@5_complex']:.3f}), best of {len(grid_scores)}
+    configurations measured.
 
-    mo.md(_recommendation())
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    #### Doing this on your own corpus
-
-    The procedure, not the answer. The answer above is true of the Kompendium and of nothing else.
-
-    1. **Write twenty questions and mark the passage that answers each.** Without them, everything else is opinion.
-    2. **Plot the chunk-length distribution before embedding anything.** Free, and it shows at once whether the strategy fits the model.
-    3. **Check the model's input limit against that distribution.** Whatever is over it is being truncated silently.
-    4. **Sweep chunk size first.** Largest effect, cheapest to change.
-    5. **Report Recall@k next to a rank-sensitive metric.** Disagreement between them is a finding, not noise to average away.
-    6. **Split by question type.** A single mean hid that the best strategy overall is second-worst on complex questions.
-    """)
+    - **Two axes, an order of magnitude apart.** Model *size*: the small model loses
+      **{mini_loss:.2f}** Recall@5 on average against either large one. *Chunking*: within one large
+      model Recall@5 runs **{large_rows['Recall@5'].min():.2f} to {large_rows['Recall@5'].max():.2f}**.
+      Model *choice* among the large ones: **{large_delta:.3f}**, and the paired test above says that
+      is noise.
+    - **Bigger chunks scored better, which is not the same as retrieving better.** Across the
+      character sizes Recall@5 climbs {chars_plain['Recall@5'].min():.2f} → {chars_plain['Recall@5'].max():.2f},
+      while how often *any* relevant chunk reaches the top five stays at
+      {min(chars_hits):.2f} to {max(chars_hits):.2f} for both large models. What moves is the
+      denominator: a large chunk splits the gold passage into fewer pieces. *The real cost of a
+      large chunk is unchanged: a hit points at more text than the answer needs, and generation pays
+      for every character.*
+    - **The metrics disagree.** MRR peaks at {best_mrr['MRR']:.2f} on `{best_mrr.config_id}`, one of
+      the *weakest* by Recall@5 ({best_mrr['Recall@5']:.2f}): fragments make several chunks count as
+      relevant, one lands at rank 1, most of the answer never reaches the top five. *Optimising MRR
+      in the playground would have pointed you at nearly the worst option.*
+    - **Structure helps the questions it was shaped for.** `section_1200` is best for **easy**
+      questions ({_pair(section, 'Recall@5_easy')}) and among the worst for **complex** ones
+      ({_pair(section, 'Recall@5_complex')}); `words_400` is even
+      ({_pair(words, 'Recall@5_easy')} against {_pair(words, 'Recall@5_complex')}). *A complex
+      question cites a passage spanning several sections, and a chunk that stops at a section
+      boundary covers only part of it. Structure-aware chunking matches the document, not the
+      question.*
+    - **Overlap bought nothing on fixed-size chunks and nothing either way on sections.** Chars 1200:
+      {_pair(ov_plain)} → {_pair(ov_200)} with 200 overlap, and
+      {int(ov_200['octen']['chunks'] / ov_plain['octen']['chunks'] * 100 - 100)} % more chunks.
+      Section 1600: {_pair(sec_plain)} → {_pair(sec_200)}. Matches Chroma and Jina.
+    - **Prepending the title is a small, real gain for the large models and nothing for miniLM.**
+      Mean **+{title['octen']['mean']:.3f}** (octen) and **+{title['qwen3vl']['mean']:.3f}** (qwen3-vl)
+      over {title['octen']['n']} paired chunkings, positive in {title['octen']['positive']} and
+      {title['qwen3vl']['positive']} of them (sign test p < 10⁻⁵); miniLM
+      {title['miniLM']['mean']:+.3f}, positive in {title['miniLM']['positive']} of {title['miniLM']['n']}
+      (p = {title['miniLM']['p']:.2f}). *miniLM reads 350 characters, and the title is what it reads
+      instead of the body.*
+    """),
+        mo.accordion({
+            'How each number above was computed': mo.md(f"""
+    - *Size loss*: for each of the {len(full_pivot)} chunkings all three models measured, the mean
+      of the two large models' Recall@5 minus miniLM's; then the mean over chunkings.
+    - *Chunking range*: min and max Recall@5 over the {len(large_rows)} large-model configurations.
+    - *Model choice*: mean absolute difference qwen3-vl minus octen over the {len(large_pivot)}
+      shared chunkings (Figure 10b); the per-question intervals are in the accordion under it.
+    - *hit@5*: share of questions with at least one relevant chunk in the top five, from the hits
+      table, for the `chars` sizes at overlap 0 without title.
+    - *Overlap*: the same chunking with and without 200 characters of overlap, both large models.
+    - *Title*: every chunking measured with and without the prepended title, paired within a
+      model; the sign test asks how often the difference is positive if the title did nothing.
+      Chunkings share the same {int(grid_hits.qid.nunique())} questions, so the test is optimistic;
+      {title['qwen3vl']['positive']} of {title['qwen3vl']['n']} is not something optimism produces.
+    """),
+        }),
+    ])
     return
 
 

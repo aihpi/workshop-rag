@@ -46,7 +46,7 @@ def _(DATA_DIR, mo, pd):
     scores = pd.read_parquet(GRID_DIR / 'grid_scores.parquet')
     hits = pd.read_parquet(GRID_DIR / 'grid_hits.parquet')
     questions = pd.read_parquet(GRID_DIR / 'grid_questions.parquet')
-    BUDGET = 8
+    BUDGET = 3
     return BUDGET, hits, questions, scores
 
 
@@ -114,11 +114,14 @@ def _(choose, narrow, scores, ui_strategy):
 
 
 @app.cell(hide_code=True)
-def _(after_strategy, choose, int_label, narrow, ui_model):
-    # `paragraph` cuts on the text's own breaks, so it has no size; the dropdown then reads
-    # 'not applicable' and the lookup below leaves size out of the filter.
+def _(after_strategy, choose, int_label, narrow, ui_model, ui_strategy):
+    # One dropdown, three meanings: a word count, a character count, and for `section` a ceiling
+    # rather than a target. `paragraph` cuts on the text's own breaks and has no size at all, so
+    # the dropdown holds nothing, is not rendered, and the lookup below leaves size out.
     after_model = narrow(after_strategy, 'model', ui_model.value)
-    ui_size = choose(after_model, 'size', int_label, label='size')
+    _label = {'words': 'words per chunk', 'chars': 'characters per chunk',
+              'section': 'split a section above'}.get(ui_strategy.value, 'size')
+    ui_size = choose(after_model, 'size', int_label, label=_label)
     return after_model, ui_size
 
 
@@ -138,14 +141,47 @@ def _(after_size, choose, narrow, title_label, ui_overlap):
 
 
 @app.cell(hide_code=True)
-def _(mo, state, ui_model, ui_overlap, ui_round, ui_size, ui_strategy, ui_title):
-    ui_evaluate = mo.ui.run_button(label='Evaluate')
+def _(BUDGET, get_log, mo, state, ui_model, ui_overlap, ui_round, ui_size, ui_strategy, ui_title):
+    # The budget lives on the button: once the round is spent there is nothing left to press.
+    # Rebuilding the button after every evaluation also clears the press, so the cell that records
+    # a result cannot record it twice.
+    _spent = len(get_log().get(ui_round.value, [])) >= BUDGET
+    ui_evaluate = mo.ui.run_button(label='Budget spent' if _spent else 'Evaluate', disabled=_spent)
+
+    # A control with one option left is not a choice, so it is reported rather than offered.
+    # Some of those are structural: `paragraph` has no size and no overlap, `words` is cut on word
+    # count alone, and a `section` chunk always carries its Baustein title. Others are the cascade
+    # narrowing, and the line underneath says which value is in force either way.
+    def _live(control):
+        return len(control.options) > 1
+
+    def _forced(name, control):
+        (label, value), = control.options.items()
+        return None if value is None else f'{name} {label}'
+
+    _notes = {
+        'paragraph': 'A paragraph chunk ends where the text itself breaks, so there is no size '
+                     'and nothing to overlap.',
+        'words': 'Words are counted off one chunk after the next, so there is no overlap to set.',
+        'section': 'A section is one chunk and always carries its Baustein title. Only a section '
+                   'longer than the size above is split further, along its paragraph breaks: at '
+                   '1600 characters that is 161 of 4432 sections, at 800 it is 939.',
+    }
+
+    # `ui_title` is left out: it is forced only for `section`, and the note above says why.
+    _controls = (('model', ui_model), ('size', ui_size), ('overlap', ui_overlap))
+    _fixed = [f for f in (_forced(n, c) for n, c in _controls if not _live(c)) if f]
 
     mo.vstack([
         mo.md(f'You are **{state["handle"]}**. That name is all anyone will ever see.'),
         mo.hstack([ui_round], justify='start'),
-        mo.hstack([ui_strategy, ui_model, ui_size, ui_overlap], justify='start'),
-        mo.hstack([ui_title, ui_evaluate], justify='start'),
+        mo.hstack([c for c in (ui_strategy, ui_model, ui_size, ui_overlap) if _live(c)],
+                  justify='start'),
+        mo.hstack(([ui_title] if _live(ui_title) else []) + [ui_evaluate], justify='start'),
+        mo.md(' '.join(filter(None, [
+            _notes.get(ui_strategy.value, ''),
+            f"Fixed here: {', '.join(_fixed)}." if _fixed else '',
+        ]))),
         mo.md('*Each control offers only what the ones before it leave available, so every '
               'configuration you can build here has been measured.*'),
     ])
@@ -199,13 +235,14 @@ def _(BUDGET, get_log, md_table, mo, ui_round):
 
     if not _tried:
         _view = mo.md('*Choose a configuration and press Evaluate.*')
-    elif _left < 0:
-        _view = mo.callout(mo.md('**Budget spent.** The evaluations above are what you have; '
-                                 'pick your best one and submit it.'), kind='warn')
     else:
+        # The third evaluation is still an evaluation, so the numbers stay and the warning is
+        # added on top rather than replacing them.
         _last = _tried[-1]
         _best = max(_tried, key=lambda r: r['Recall@5'])
         _view = mo.vstack([
+            *([mo.callout(mo.md('**Budget spent.** These are the evaluations you have; pick your '
+                                'best one and submit it.'), kind='warn')] if _left <= 0 else []),
             mo.hstack([
                 mo.stat(f"{_last['Recall@5']:.1%}", label='Recall@5', caption=_last['config_id']),
                 mo.stat(f"{_last['MRR']:.3f}", label='MRR'),
