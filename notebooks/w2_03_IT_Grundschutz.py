@@ -103,6 +103,11 @@ def _():
     EMBED_MODEL_NAME = "openai/octen-embedding-8b"
     LLM_MODEL_NAME = "openai/gpt-oss-120b"
     API_BASE_URL = os.getenv("OPENAI_API_BASE", "https://api.aisc.hpi.de/")
+
+    # Workshop pacing and a clean clone: by default the pre-computed Docling outputs in processed/
+    # load instantly and stay untouched, so `git pull` before RAG III still works and w3_02 reads
+    # the shipped conversion. Set to True to convert the PDF live; that rewrites the tracked files.
+    RERUN_DOCLING = False
     return (
         COLLECTION_NAME,
         EMBED_MODEL_NAME,
@@ -112,6 +117,7 @@ def _():
         Path,
         QDRANT_HOST,
         QDRANT_PORT,
+        RERUN_DOCLING,
         env,
         json,
         re,
@@ -262,6 +268,8 @@ def _(mo):
     That split is what decides which strategies can cite: 4a and 4e read the Markdown and have no page numbers, 4b, 4c and 4d read the JSON and do.
 
     Both exports get their `/C231` placeholders repaired, but separately: the Markdown as one string, the JSON only in its `text` and `orig` fields, so no label or bounding box is touched by a stray match.
+
+    **Workshop note:** both exports and the chunk files ship pre-computed in `processed/` and load instantly. Set `RERUN_DOCLING = True` in section 1 to convert the PDF live; that overwrites the shipped files.
     """)
     return
 
@@ -271,15 +279,16 @@ def _(
     OUT_DIR,
     PDF_PATH,
     Path,
+    RERUN_DOCLING,
     count_umlaut_placeholders,
     json,
     normalize_json,
     normalize_text,
     panel,
 ):
-    from docling.document_converter import DocumentConverter
-
     def docling_pdf_to_markdown_and_json(pdf_path: Path):
+        from docling.document_converter import DocumentConverter
+
         converter = DocumentConverter()
         result = converter.convert(str(pdf_path))
         doc = result.document
@@ -295,22 +304,31 @@ def _(
 
         return markdown, doc_json_clean, {"replaced": before - after, "remaining": after}
 
-    markdown_text, docling_json, _conv = docling_pdf_to_markdown_and_json(PDF_PATH)
-
     markdown_out = OUT_DIR / f"{PDF_PATH.stem}.md"
     json_out = OUT_DIR / f"{PDF_PATH.stem}.docling.json"
-    markdown_out.write_text(markdown_text, encoding="utf-8")
-    json_out.write_text(json.dumps(docling_json, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    if RERUN_DOCLING or not (markdown_out.exists() and json_out.exists()):
+        markdown_text, docling_json, _conv = docling_pdf_to_markdown_and_json(PDF_PATH)
+        markdown_out.write_text(markdown_text, encoding="utf-8")
+        json_out.write_text(json.dumps(docling_json, ensure_ascii=False, indent=2), encoding="utf-8")
+        _source = "converted live, saved"
+        _replaced = _conv["replaced"]
+    else:
+        markdown_text = markdown_out.read_text(encoding="utf-8")
+        docling_json = json.loads(json_out.read_text(encoding="utf-8"))
+        _source = "pre-computed, loaded"
+        _replaced = "n/a (repaired when it was converted)"
 
     panel(
         "Docling conversion",
         "\n".join(
             [
-                f"Umlaut placeholders replaced   {_conv['replaced']}",
-                f"Remaining placeholders         {_conv['remaining']}",
+                f"Source                         {_source}",
+                f"Umlaut placeholders replaced   {_replaced}",
+                f"Remaining placeholders         {count_umlaut_placeholders(docling_json)}",
                 f"Markdown characters            {len(markdown_text):,}",
-                f"Saved markdown                 {markdown_out.name}",
-                f"Saved JSON                     {json_out.name}",
+                f"Markdown                       {markdown_out.name}",
+                f"JSON                           {json_out.name}",
             ]
         ),
     )
@@ -924,6 +942,7 @@ def _(
     OVERLAP,
     panel,
     PDF_PATH,
+    RERUN_DOCLING,
     records_from_docling_json_structured_sections,
     records_from_docling_json_text_fields,
     records_from_hybrid_chunker,
@@ -947,13 +966,20 @@ def _(
     else:
         raise ValueError(f"Unknown CHUNKING_MODE: {CHUNKING_MODE}")
 
+    # Records carry the absolute PDF path of the machine that made them, so writing over a
+    # shipped chunk file would change it on every laptop. Like the conversion, it is only
+    # rewritten on request.
     chunks_out = OUT_DIR / f"{PDF_PATH.stem}.{CHUNKING_MODE}.chunks.json"
-    chunks_out.write_text(json.dumps(records, ensure_ascii=False, indent=2), encoding="utf-8")
+    if RERUN_DOCLING or not chunks_out.exists():
+        chunks_out.write_text(json.dumps(records, ensure_ascii=False, indent=2), encoding="utf-8")
+        _saved = f"{chunks_out.name} (saved)"
+    else:
+        _saved = f"{chunks_out.name} (shipped, kept)"
 
     _lines = [
         f"Chunking mode      {CHUNKING_MODE}",
         f"Records            {len(records)}",
-        f"Saved chunks       {chunks_out.name}",
+        f"Chunks file        {_saved}",
     ]
     if records:
         _lines += [
