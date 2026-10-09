@@ -31,7 +31,7 @@ cd workshop-rag/notebooks
 uv sync
 ```
 
-The clone carries about 100 MB of data (a PDF corpus, bird photographs, pre-computed results), so give it a minute. `uv sync` reads `pyproject.toml` and builds an isolated environment in `.venv/`; it does not touch any other Python on your machine.
+The clone downloads about 200 MB (a PDF corpus, bird photographs, slides, pre-computed results), so give it a minute. `uv sync` reads `pyproject.toml` and builds an isolated environment in `.venv/`; it does not touch any other Python on your machine. It downloads PyTorch, Docling and their models, several GB in total (about 8 GB on Linux, where PyTorch brings its CUDA libraries), so run it at home before the workshop rather than on the workshop Wi-Fi.
 
 **Check it worked:**
 
@@ -57,7 +57,7 @@ A vector store does not retrieve documents, it retrieves *chunks*: the pieces of
 
 - Pick a **strategy**, a **model**, a **size**, an **overlap**, and whether to prepend the section title.
 - Press **Evaluate**. Your score is Recall@5, the share of questions whose answer passage was retrieved.
-- You have **eight evaluations** per round, because in real life every experiment costs time.
+- You have **three evaluations** per round, because in real life every experiment costs time.
 
 The controls are chained: each one offers only the values the ones before it leave available. So every configuration you can build has already been measured, and you never waste an evaluation on a combination that has no answer. Changing the strategy changes which sizes are on offer, which is the point.
 
@@ -102,13 +102,13 @@ Open `.env` in any editor and replace `your_openai_api_key_here` with the key yo
 
 `.env` is gitignored. Never paste a key into a notebook cell and never commit one.
 
-**Check it worked:** open the next notebook and the table at the top shows a tick next to the API key.
+**Check it worked:** open `w2_02_embedding_models` (the first notebook that needs the key) and the table at the top shows a tick next to the API key. `w2_00` and `w2_01` show no such table, since they need nothing.
 
 ---
 
 ## Step 5: start Qdrant
 
-Qdrant is the vector database the notebooks store embeddings in. It runs in Docker, so Docker itself has to be running first. `w2_03`, `w2_04`, `w3_02`, `w3_03` and `w3_04` all need it; the earlier notebooks do not. From the **repository root**, one level above `notebooks/`:
+Qdrant is the vector database the notebooks store embeddings in. It runs in Docker, so Docker itself has to be running first. `w2_03`, `w3_02`, `w3_03` and `w3_04` all need it; the earlier notebooks do not. From the **repository root**, one level above `notebooks/`:
 
 ```bash
 docker compose up -d

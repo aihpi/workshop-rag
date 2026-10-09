@@ -69,7 +69,7 @@ Run `w3_02` before `w3_03` and `w3_04`: it fills the collection they query. Star
 
 ## Limitations
 
-- **The inference API is a dependency**: everything from `w2_02` onwards needs an AISC key. There is no local-model fallback.
+- **The inference API is a dependency**: every notebook from `w2_02` onwards except `w2_04` (which ships its results pre-computed) needs an AISC key. There is no local-model fallback.
 - **The playground only offers what was measured**: its controls are chained to the configurations in `data/grid/`, so widening the choice means re-running the grid, which costs hours.
 - **The corpus is German and specific**: results on the IT-Grundschutz-Kompendium do not automatically carry over to another domain.
 - **Image embeddings are partly switched off**: the two cross-modal directions turn on once the API embeds pictures as pictures rather than tokenising the data URI.
