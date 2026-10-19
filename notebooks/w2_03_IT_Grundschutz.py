@@ -105,7 +105,7 @@ def _():
     API_BASE_URL = os.getenv("OPENAI_API_BASE", "https://api.aisc.hpi.de/")
 
     # Workshop pacing and a clean clone: by default the pre-computed Docling outputs in processed/
-    # load instantly and stay untouched, so `git pull` before RAG III still works and w3_02 reads
+    # load instantly and stay untouched, so `git pull` before RAG III still works and ragkit/ingest.py reads
     # the shipped conversion. Set to True to convert the PDF live; that rewrites the tracked files.
     RERUN_DOCLING = False
     return (

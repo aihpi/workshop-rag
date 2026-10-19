@@ -1,0 +1,355 @@
+{
+ "top_k": 3,
+ "embedding": "openai/octen-embedding-8b",
+ "answer_model": "openai/gpt-oss-120b",
+ "judge": "gpt-oss-120b",
+ "computed": "2026-10-14",
+ "manual": [
+  {
+   "question": "Welche Angebote bietet das KI-Servicezentrum an?",
+   "reference": "Das KI-Servicezentrum bietet kostenlose Beratung, Weiterbildung und Rechenleistung (Infrastruktur) an.",
+   "chunk_ids": [
+    0,
+    3,
+    17
+   ],
+   "contexts": [
+    "# KI-Servicezentrum",
+    "Wir bieten Beratung, Weiterbildung und Infrastruktur, um KI-Anwendungen eigenständig zu entwickeln, zu betreiben und erfolgreich einzusetzen. Alle unsere Angebote sind kostenlos.",
+    "Mit unseren Beratungsangeboten leisten wir Hilfe zur Selbsthilfe. Wir unterstützen Sie dabei, Ihre KI-Kompetenzen gezielt auszubauen, damit Sie fundierte Entscheidungen treffen und KI-Projekte eigenständig umsetzen können."
+   ],
+   "answer": "Das KI‑Servicezentrum bietet **Beratung, Weiterbildung und Infrastruktur** an – alle Angebote sind kostenlos.",
+   "context_precision": 0.5833333333041666,
+   "answer_correctness": 0.7823267529773124,
+   "source_ids": [
+    3
+   ],
+   "source_lines": [
+    "Wir bieten Beratung, Weiterbildung und Infrastruktur, um KI-Anwendungen eigenständig zu entwickeln, zu betreiben und erfolgreich einzusetzen. Alle unsere Angebote sind kostenlos."
+   ],
+   "context_recall": 1.0,
+   "faithfulness": 1.0,
+   "context_recall_runs": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "faithfulness_runs": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "question": "Sind alle Services kostenlos?",
+   "reference": "Ja, alle Services sind kostenlos, da das KI-Servicezentrum vom Bundesministerium für Forschung, Technologie und Raumfahrt gefördert wird.",
+   "chunk_ids": [
+    3,
+    0,
+    4
+   ],
+   "contexts": [
+    "Wir bieten Beratung, Weiterbildung und Infrastruktur, um KI-Anwendungen eigenständig zu entwickeln, zu betreiben und erfolgreich einzusetzen. Alle unsere Angebote sind kostenlos.",
+    "# KI-Servicezentrum",
+    "### Unsere Angebote:"
+   ],
+   "answer": "Ja. Laut Quelle 1 sind alle angebotenen Services kostenlos.",
+   "context_precision": 0.9999999999,
+   "answer_correctness": 0.763872984931253,
+   "source_ids": [
+    3,
+    104
+   ],
+   "source_lines": [
+    "Wir bieten Beratung, Weiterbildung und Infrastruktur, um KI-Anwendungen eigenständig zu entwickeln, zu betreiben und erfolgreich einzusetzen. Alle unsere Angebote sind kostenlos.",
+    "Das zugrunde liegende Vorhaben wurde mit Mitteln des Bundesministeriums für Forschung, Technologie und Raumfahrt unter dem Förderkennzeichen »KI-Servicezentrum Berlin-Brandenburg« 16IS22092 gefördert. Die Verantwortung für den Inhalt dieser Seite liegt bei der Autorin/beim Autor."
+   ],
+   "context_recall": 0.5,
+   "faithfulness": 0.5,
+   "context_recall_runs": [
+    0.0,
+    0.5,
+    0.5
+   ],
+   "faithfulness_runs": [
+    0.0,
+    0.5,
+    0.5
+   ]
+  },
+  {
+   "question": "Welche Beratungsangebote bietet das KI-Servicezentrum?",
+   "reference": "Das KI-Servicezentrum bietet Gruppensprechstunden und individuelle Beratung zum Einsatz von KI. Zudem können dreimonatige Pilotprojekte gemeinsam durchgeführt werden.",
+   "chunk_ids": [
+    0,
+    17,
+    3
+   ],
+   "contexts": [
+    "# KI-Servicezentrum",
+    "Mit unseren Beratungsangeboten leisten wir Hilfe zur Selbsthilfe. Wir unterstützen Sie dabei, Ihre KI-Kompetenzen gezielt auszubauen, damit Sie fundierte Entscheidungen treffen und KI-Projekte eigenständig umsetzen können.",
+    "Wir bieten Beratung, Weiterbildung und Infrastruktur, um KI-Anwendungen eigenständig zu entwickeln, zu betreiben und erfolgreich einzusetzen. Alle unsere Angebote sind kostenlos."
+   ],
+   "answer": "Das KI‑Servicezentrum bietet **Beratung, Weiterbildung und Infrastruktur** an, um Ihre KI‑Kompetenzen gezielt auszubauen und KI‑Projekte eigenständig zu planen, zu entwickeln und zu betreiben.",
+   "context_precision": 0.0,
+   "answer_correctness": 0.35073014089985843,
+   "source_ids": [
+    26,
+    36
+   ],
+   "source_lines": [
+    "Unsere Sprechstunden finden online in Gruppen von maximal zehn Teilnehmer:innen aus unterschiedlichen Organisationen statt. Wenn Sie im Anschluss noch weitere Fragen haben, beraten wir Sie gerne in einem individuellen Einzeltermin.",
+    "Bewerbungen für ein begleitetes KI-Pilotprojekt sind alle drei Monate möglich. Den Starttermin der nächsten Bewerbungsphase erfahren Sie in unserem [Newsletter](https://hpi.de/registrierung/ai-service-center-newsletter/) oder direkt in unserem [Bewerbungsformular](https://hpi.de/bewerbung/2027/ki-pilotprojekt-bewerbung/) ."
+   ],
+   "context_recall": 0.0,
+   "faithfulness": 0.8571428571428571,
+   "context_recall_runs": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "faithfulness_runs": [
+    0.8571428571428571,
+    0.8571428571428571,
+    0.8571428571428571
+   ]
+  },
+  {
+   "question": "Was passiert in einem Pilotprojekt?",
+   "reference": "Unternehmen können sich für Pilotprojekte bewerben und erhalten 2-3 Tage pro Woche aktive Projektbegleitung, um gemeinsam einen Prototypen zu entwickeln. Dabei können sie auch die Recheninfrastruktur nutzen.",
+   "chunk_ids": [
+    31,
+    37,
+    36
+   ],
+   "contexts": [
+    "In unseren KI-Pilotprojekten entwickeln wir gemeinsam mit Ihnen einen Prototypen. Dieser dient der ersten Erprobung von Konzepten und Machbarkeit und ist eine hervorragende Grundlage für die Weiterentwicklung zu einer kommerziellen, marktfähigen Lösung.",
+    "KI-Experte und KI-Expertin am Tisch mit Teilnehmenden eines Pilotprojekts, vor ihnen Laptops.",
+    "Bewerbungen für ein begleitetes KI-Pilotprojekt sind alle drei Monate möglich. Den Starttermin der nächsten Bewerbungsphase erfahren Sie in unserem [Newsletter](https://hpi.de/registrierung/ai-service-center-newsletter/) oder direkt in unserem [Bewerbungsformular](https://hpi.de/bewerbung/2027/ki-pilotprojekt-bewerbung/) ."
+   ],
+   "answer": "In einem KI‑Pilotprojekt wird gemeinsam mit den Teilnehmenden ein Prototyp entwickelt, um erste Konzepte und deren Machbarkeit zu erproben. KI‑Expert*innen arbeiten dabei zusammen mit den Teilnehmenden (oft an Laptops), um die Basis für eine spätere kommerzielle, marktfähige Lösung zu schaffen.",
+   "context_precision": 0.9999999999,
+   "answer_correctness": 0.33445612037746486,
+   "source_ids": [
+    31,
+    34,
+    35,
+    36
+   ],
+   "source_lines": [
+    "In unseren KI-Pilotprojekten entwickeln wir gemeinsam mit Ihnen einen Prototypen. Dieser dient der ersten Erprobung von Konzepten und Machbarkeit und ist eine hervorragende Grundlage für die Weiterentwicklung zu einer kommerziellen, marktfähigen Lösung.",
+    "- 2-3 Tage pro Woche aktive Projektbegleitung durch unsere KI-Expert:innen",
+    "- Nutzung unserer Infrastruktur für Training und Evaluierung",
+    "Bewerbungen für ein begleitetes KI-Pilotprojekt sind alle drei Monate möglich. Den Starttermin der nächsten Bewerbungsphase erfahren Sie in unserem [Newsletter](https://hpi.de/registrierung/ai-service-center-newsletter/) oder direkt in unserem [Bewerbungsformular](https://hpi.de/bewerbung/2027/ki-pilotprojekt-bewerbung/) ."
+   ],
+   "context_recall": 0.0,
+   "faithfulness": 1.0,
+   "context_recall_runs": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "faithfulness_runs": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "question": "Muss man sich auf ein Pilotprojekt bewerben, um die Recheninfrastruktur nutzen zu können?",
+   "reference": "Nein. Wenn Sie die Recheninfrastruktur nutzen möchten, reichen Sie über das Portal des KI-Servicezentrums eine Beschreibung Ihres Vorhabens ein. Ein Produktivbetrieb wird nicht angeboten.",
+   "chunk_ids": [
+    72,
+    101,
+    36
+   ],
+   "contexts": [
+    "Wenn Sie Ihre KI-Anwendung mit unserer Infrastruktur entwickeln und erproben möchten, reichen Sie eine Beschreibung für Ihr Vorhaben über unser Portal ein. Bitte beachten Sie, dass wir keinen Produktivbetrieb anbieten.",
+    "### Sie möchten unsere Infrastruktur nutzen?",
+    "Bewerbungen für ein begleitetes KI-Pilotprojekt sind alle drei Monate möglich. Den Starttermin der nächsten Bewerbungsphase erfahren Sie in unserem [Newsletter](https://hpi.de/registrierung/ai-service-center-newsletter/) oder direkt in unserem [Bewerbungsformular](https://hpi.de/bewerbung/2027/ki-pilotprojekt-bewerbung/) ."
+   ],
+   "answer": "Ja. Um die Recheninfrastruktur zu nutzen, müssen Sie sich bewerben – entweder indem Sie über das Portal eine Projektbeschreibung einreichen oder sich im Rahmen des begleitenden KI‑Pilotprojekts, das alle drei Monate ausgeschrieben wird, bewerben.",
+   "context_precision": 0.9999999999,
+   "answer_correctness": 0.18511162429238476,
+   "source_ids": [
+    72
+   ],
+   "source_lines": [
+    "Wenn Sie Ihre KI-Anwendung mit unserer Infrastruktur entwickeln und erproben möchten, reichen Sie eine Beschreibung für Ihr Vorhaben über unser Portal ein. Bitte beachten Sie, dass wir keinen Produktivbetrieb anbieten."
+   ],
+   "context_recall": 1.0,
+   "faithfulness": 1.0,
+   "context_recall_runs": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "faithfulness_runs": [
+    0.6666666666666666,
+    1.0,
+    1.0
+   ]
+  }
+ ],
+ "synthetic": [
+  {
+   "question": "How can I stay informed about upcoming KI‑Pilotprojekt application phases through the Newsletter?",
+   "reference": "You can stay informed about upcoming KI‑Pilotprojekt application phases by subscribing to the Newsletter via the link https://hpi.de/registrierung/ai-service-center-newsletter/. The Newsletter announces the start term of the next application phase, allowing you to receive timely updates.",
+   "chunk_ids": [
+    36,
+    13,
+    12
+   ],
+   "contexts": [
+    "Bewerbungen für ein begleitetes KI-Pilotprojekt sind alle drei Monate möglich. Den Starttermin der nächsten Bewerbungsphase erfahren Sie in unserem [Newsletter](https://hpi.de/registrierung/ai-service-center-newsletter/) oder direkt in unserem [Bewerbungsformular](https://hpi.de/bewerbung/2027/ki-pilotprojekt-bewerbung/) .",
+    "- [Newsletter abonnieren](https://hpi.de/registrierung/ai-service-center-newsletter/)",
+    "- [E-Mail schreiben](mailto:KI-Servicezentrum@hpi.de)"
+   ],
+   "answer": "Abonnieren Sie den Newsletter – über den Link https://hpi.de/registrierung/ai-service-center-newsletter/ erhalten Sie regelmäßig die Informationen zum Starttermin der nächsten Bewerbungsphase.",
+   "context_precision": 0.99999999995,
+   "answer_correctness": 0.7785903318327467,
+   "synthesizer_name": "single_hop_specific_query_synthesizer",
+   "context_recall": 1.0,
+   "faithfulness": 1.0,
+   "context_recall_runs": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "faithfulness_runs": [
+    1.0,
+    0.5,
+    1.0
+   ],
+   "source_ids": [
+    13,
+    36
+   ],
+   "source_lines": [
+    "- [Newsletter abonnieren](https://hpi.de/registrierung/ai-service-center-newsletter/)",
+    "Bewerbungen für ein begleitetes KI-Pilotprojekt sind alle drei Monate möglich. Den Starttermin der nächsten Bewerbungsphase erfahren Sie in unserem [Newsletter](https://hpi.de/registrierung/ai-service-center-newsletter/) oder direkt in unserem [Bewerbungsformular](https://hpi.de/bewerbung/2027/ki-pilotprojekt-bewerbung/) ."
+   ]
+  },
+  {
+   "question": "What infrastructure does the KI‑Servicezentrum Berlin‑Brandenburg provide in Potsdam for AI projects, and how can it support the training and inference of AI models?",
+   "reference": "The KI‑Servicezentrum Berlin‑Brandenburg operates its data centre in Potsdam, offering a heterogeneous AI infrastructure. It includes a training cluster consisting of eight NVIDIA Basepods, each equipped with eight H100 GPUs (80 GB VRAM) and interconnected via 400 Gb/s InfiniBand or 200 Gb/s Ethernet, suitable for training machine‑learning or deep‑learning models. For inference, there are five NVIDIA Pods, each with eight A30 GPUs, linked by 25 Gb/s InfiniBand or 40 Gb/s Ethernet, enabling test‑wise hosting of AI models and prototype applications. In addition, neuromorphic systems and other hardware are available, allowing comparison of cost and performance across hardware types, exploration of edge applications, and flexible solutions for model training and AI‑application development. The centre also offers consultancy on selecting cloud, on‑premise, or hybrid solutions, though it does not provide production‑grade operation.",
+   "chunk_ids": [
+    66,
+    2,
+    76
+   ],
+   "contexts": [
+    "Mit unserem Rechenzentrum in Potsdam stellen wir Ihnen eine heterogene Infrastruktur für Künstliche Intelligenz zur Verfügung. So können wir Kosten und Leistung verschiedener Hardwaretypen vergleichen, Edge-Anwendungen untersuchen und Ihnen flexible Lösungen für das Training von KI-Modellen und die Entwicklung von KI-Anwendungen bereitstellen.",
+    "Das KI-Servicezentrum Berlin-Brandenburg ist ein Projekt am Hasso-Plattner-Institut. Wir fördern den Einsatz von Künstlicher Intelligenz in Wirtschaft und Gesellschaft.",
+    "**Infrastruktur für das Training von KI-Modellen**"
+   ],
+   "answer": "Das KI‑Servicezentrum Berlin‑Brandenburg betreibt in Potsdam ein **Rechenzentrum mit einer heterogenen KI‑Infrastruktur**. Dort stehen verschiedene Hardware‑Typen (z. B. GPUs, CPUs, Beschleuniger) zur Verfügung, sodass Kosten und Leistung verglichen werden können. Diese flexible Umgebung ermöglicht :\n\n* **Training von KI‑Modellen** – durch passende Rechnerressourcen und anpassbare Konfigurationen.  \n* **Entwicklung und Inferenz von KI‑Anwendungen** – inkl. Test von Edge‑Szenarien und Bereitstellung von Lösungen, die auf die jeweilige Hardware abgestimmt sind.",
+   "context_precision": 0.0,
+   "answer_correctness": 0.5375978441903588,
+   "synthesizer_name": "single_hop_specific_query_synthesizer",
+   "context_recall": 0.2,
+   "faithfulness": 0.5,
+   "context_recall_runs": [
+    0.2,
+    0.2,
+    0.2
+   ],
+   "faithfulness_runs": [
+    0.42857142857142855,
+    0.5,
+    0.75
+   ]
+  },
+  {
+   "question": "Can you explian what the Inferenzkoten L4-4 is and how it can be used for energry efficient inferenze in our pilot projcts, especially regarding development of AI models and visualisation tasks on affordable hardware for KMU?",
+   "reference": "The Inferenzknoten L4-4 is an energy‑efficient inference node provided by the KI‑Servicezentrum Berlin‑Brandenburg. It is listed as part of the infrastructure and is described as \"Energieeffiziente Inferenz.\" Possible use cases include the development of energy‑efficient AI models, execution of large‑scale visualisation tasks, and testing AI workloads on hardware that is affordable for small and medium‑sized enterprises (KMU).",
+   "chunk_ids": [
+    97,
+    100,
+    98
+   ],
+   "contexts": [
+    "- **Inferenzknoten L4-4** - Energieeffiziente Inferenz",
+    "Entwicklung energieeffizienter KI-Modelle, Durchführung großskaliger Visualisierungsaufgaben, Erprobung von KI-Workloads auf für KMU erschwinglicher Hardware",
+    "- **ARM-Entwicklungsknoten L40-2** - Energieeffiziente Entwicklung"
+   ],
+   "answer": "**Inferenzknoten L4‑4** ist ein Baustein, der speziell für **energieeffiziente Inferenz** von KI‑Modellen konzipiert ist.\n\n- **Einsatz in Pilotprojekten:**  \n  - Er ermöglicht die **Entwicklung von KI‑Modellen**, die wenig Strom verbrauchen, sodass sie auch auf preisgünstiger Hardware laufen können.  \n  - Er unterstützt **großskalige Visualisierungsaufgaben**, weil die reduzierte Leistungsaufnahme längere Berechnungszeiten ohne hohe Betriebskosten zulässt.  \n  - Durch seine Energieeffizienz lässt sich die **Erprobung von KI‑Workloads** auf für KMU (kleine und mittlere Unternehmen) erschwinglichen Systemen durchführen.\n\nDer Kontext liefert jedoch keine weiteren technischen Details (z. B. Prozessorarchitektur, Leistungswerte oder konkrete Anwendungsbeispiele). Deshalb lässt sich die Funktionsweise von L4‑4 nur allgemein als energieeffizienter Inferenzknoten beschreiben.",
+   "context_precision": 0.49999999995,
+   "answer_correctness": 0.6017267946403075,
+   "synthesizer_name": "single_hop_specific_query_synthesizer",
+   "context_recall": 0.6666666666666666,
+   "faithfulness": 0.7777777777777778,
+   "context_recall_runs": [
+    0.6666666666666666,
+    1.0,
+    0.6666666666666666
+   ],
+   "faithfulness_runs": [
+    0.6666666666666666,
+    0.7777777777777778,
+    0.8333333333333334
+   ]
+  },
+  {
+   "question": "Wenr und wiie kann ich d KI-Servicenzentrum Berlin Brandenbarg kontaktieren, um ein pilotprojekt zu starten und die Infrastruktur für Training zu nutzten?",
+   "reference": "Sie können das KI-Servicezentrum Berlin Brandenburg per E‑Mail, über den Newsletter oder über die LinkedIn‑Seite kontaktieren. Das Zentrum bietet eine KI‑Sprechstunde, in der Sie Unterstützung bei der Auswahl eines geeigneten KI‑Anwendungsfalls, der Modellarchitektur, der Implementierung und der effizienten Nutzung der Recheninfrastruktur erhalten. Für ein KI‑Pilotprojekt erhalten Sie gemeinsam mit den KI‑Expert:innen 2‑3 Tage pro Woche aktive Projektbegleitung, Unterstützung bei der Entwicklung eines Prototyps und die Nutzung der Infrastruktur für Training und Evaluierung. Bewerbungen für begleitete KI‑Pilotprojekte sind alle drei Monate möglich; Starttermine werden im Newsletter oder über das Bewerbungsformular bekannt gegeben. Die Anmeldung zur KI‑Sprechstunde und weitere Kontaktmöglichkeiten finden Sie in den bereitgestellten Links im Text.",
+   "chunk_ids": [
+    2,
+    12,
+    27
+   ],
+   "contexts": [
+    "Das KI-Servicezentrum Berlin-Brandenburg ist ein Projekt am Hasso-Plattner-Institut. Wir fördern den Einsatz von Künstlicher Intelligenz in Wirtschaft und Gesellschaft.",
+    "- [E-Mail schreiben](mailto:KI-Servicezentrum@hpi.de)",
+    "[Anmeldung zur KI-Sprechstunde](https://outlook.office365.com/book/KIServicezentrumBerlinBrandenburg@hpiunipotsdamde.onmicrosoft.com/)"
+   ],
+   "answer": "**Kontakt:**\n\n- **Ansprechpartner:** Das KI‑Servicezentrum Berlin‑Brandenburg (Projekt am Hasso‑Plattner‑Institut).  \n- **Wie kontaktieren:**  \n  - **E‑Mail:** [KI-Servicezentrum@hpi.de](mailto:KI-Servicezentrum@hpi.de) – für Anfragen zu Pilotprojekten und Nutzung der Trainings‑Infrastruktur.  \n  - **Alternativ:** Vereinbaren Sie einen Termin in der KI‑Sprechstunde über den Buchungslink: <https://outlook.office365.com/book/KIServicezentrumBerlinBrandenburg@hpiunipotsdamde.onmicrosoft.com/>.",
+   "context_precision": 0.5833333333041666,
+   "answer_correctness": 0.40479423171698303,
+   "synthesizer_name": "multi_hop_specific_query_synthesizer",
+   "context_recall": 0.2,
+   "faithfulness": 0.3333333333333333,
+   "context_recall_runs": [
+    0.2,
+    0.2,
+    0.2
+   ],
+   "faithfulness_runs": [
+    0.3333333333333333,
+    0.6,
+    0.3333333333333333
+   ]
+  },
+  {
+   "question": "What consulting, pilot‑project, and training services does the KI‑Servicezentrum Berlin‑Brandenburg offer to organisations that wish to adopt artificial intelligence, and through which channels can interested parties register for the KI‑Sprechstunde, apply for a guided pilot project, or stay informed about upcoming events and application periods?",
+   "reference": "The KI‑Servicezentrum Berlin‑Brandenburg provides a comprehensive portfolio of services aimed at helping companies and research groups integrate artificial intelligence. \n\n1. **Consulting (Beratung)** – The centre offers advisory support to enable organisations to use AI sensibly, including assistance with selecting suitable AI use cases, choosing appropriate model architectures and software frameworks, implementing AI applications, and making efficient use of the centre’s computing infrastructure. The consulting is framed as ‘Hilfe zur Selbsthilfe’, allowing teams to make informed decisions and eventually run AI projects independently.\n\n2. **KI‑Sprechstunde** – This is an online office‑hour format limited to groups of up to ten participants. During the session, experts help with the same topics covered by the consulting service (use‑case selection, model and framework choice, implementation, infrastructure usage). After the group session, a follow‑up individual appointment can be arranged for further questions. Registration is possible via the link provided in the text (https://outlook.office365.com/book/KIServicezentrumBerlinBrandenburg@hpiunipotsdamde.onmicrosoft.com/).\n\n3. **Pilot Projects** – The centre collaborates with organisations to develop a prototype AI solution that tests concepts and feasibility. The pilot includes 2–3 days per week of active project support by KI‑expert:innen and access to the centre’s training and evaluation infrastructure. Applications for a guided pilot project are accepted every three months; the start date of the next application round is announced through the newsletter or the dedicated application form (https://hpi.de/bewerbung/2026/ki-pilotprojekt-bewerbung-3/).\n\n4. **Start‑up Support** – For teams intending to found an AI start‑up, the centre offers mentorship, networking assistance, and integration with its other services (consulting, pilot projects, collaborations).\n\n5. **Weiterbildung (Training)** – The centre runs workshops, online courses, and guest talks. Workshops are conducted in small groups to allow instructors to tailor the content to participants’ prior knowledge. The training portfolio ranges from beginner‑friendly sessions for school students to advanced workshops on developing AI applications.\n\n6. **Staying Informed** – Interested parties can contact the centre by e‑mail, subscribe to the newsletter (https://hpi.de/registrierung/ai-service-center-newsletter/), or follow the KI‑Servicezentrum on LinkedIn (https://www.linkedin.com/showcase/ai-hpi/). These channels provide updates on events, new application windows, and other relevant information.\n\nIn summary, the KI‑Servicezentrum Berlin‑Brandenburg supports AI adoption through tailored consulting, hands‑on pilot‑project collaboration, structured training programmes, and start‑up mentorship, with clear registration pathways for each service and multiple communication channels to keep stakeholders informed.",
+   "chunk_ids": [
+    27,
+    2,
+    42
+   ],
+   "contexts": [
+    "[Anmeldung zur KI-Sprechstunde](https://outlook.office365.com/book/KIServicezentrumBerlinBrandenburg@hpiunipotsdamde.onmicrosoft.com/)",
+    "Das KI-Servicezentrum Berlin-Brandenburg ist ein Projekt am Hasso-Plattner-Institut. Wir fördern den Einsatz von Künstlicher Intelligenz in Wirtschaft und Gesellschaft.",
+    "- [Zur KI-Sprechstunde anmelden](https://outlook.office365.com/book/KIServicezentrumBerlinBrandenburg@hpiunipotsdamde.onmicrosoft.com/?ismsaljsauthenabled=true)"
+   ],
+   "answer": "**Angebot des KI‑Servicezentrums**\n\nDer Kontext nennt nur, dass das KI‑Servicezentrum Berlin‑Brandenburg „den Einsatz von Künstlicher Intelligenz in Wirtschaft und Gesellschaft fördert“ (Quelle 2). Konkrete Angaben zu **Beratungs‑**, **Pilot‑Projekt‑** oder **Schulungs‑**leistungen für Unternehmen sind im bereitgestellten Material nicht enthalten.\n\n**Melde‑ und Informationskanäle**\n\n- **KI‑Sprechstunde:** Interessierte können sich über den Outlook‑Kalender unter  \n  <https://outlook.office365.com/book/KIServicezentrumBerlinBrandenburg@hpiunipotsdamde.onmicrosoft.com/>  \n  (bzw. den Link in Quelle 3) zur Sprechstunde anmelden.\n\n- **Geführtes Pilot‑Projekt / Informationen zu Veranstaltungen und Bewerbungsfristen:** Der vorliegende Kontext liefert keine Angaben zu einem speziellen Anmelde‑ oder Informationsweg für Pilot‑Projekte oder bevorstehende Events. \n\nKurz gesagt: Der einzige im Kontext genannte Kanal ist der Outlook‑Link zur KI‑Sprechstunde; weitere Service‑ und Registrierungsdetails werden dort nicht genannt.",
+   "context_precision": 0.0,
+   "answer_correctness": 0.24366920614044033,
+   "synthesizer_name": "multi_hop_specific_query_synthesizer",
+   "context_recall": 0.058823529411764705,
+   "faithfulness": 1.0,
+   "context_recall_runs": [
+    0.058823529411764705,
+    0.058823529411764705,
+    0.058823529411764705
+   ],
+   "faithfulness_runs": [
+    1.0,
+    1.0,
+    0.9090909090909091
+   ]
+  }
+ ],
+ "context_recall_faithfulness": "median of 3 judge runs"
+}

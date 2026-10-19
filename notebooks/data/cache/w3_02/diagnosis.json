@@ -1,0 +1,19 @@
+{
+ "index": 0,
+ "top_k": 5,
+ "judge": "gpt-oss-120b",
+ "context_recall_config": 0.0,
+ "claims": [
+  {
+   "statement": "Bei erhöhtem Schutzbedarf sollten Webserver redundant ausgelegt werden, einschließlich redundanter Internetanbindung und ggf. weiterer Systeme wie Webanwendungsserver.",
+   "attributed": 0,
+   "reason": "The context discusses secure configuration, isolation, and separate servers, but it does not mention redundancy, redundant internet connections, or the use of additional web application servers as a protective measure."
+  },
+  {
+   "statement": "Zudem sollten Maßnahmen zur Absicherung gegen DDoS-Angriffe definiert und umgesetzt werden, sowie eine ständige Überwachung des Webserver-Betriebs erfolgen.",
+   "attributed": 0,
+   "reason": "The context does not contain any reference to DDoS protection or continuous monitoring of web server operation; it focuses on configuration, minimal privileges, and disabling unnecessary modules."
+  }
+ ],
+ "context_recall": 0.0
+}

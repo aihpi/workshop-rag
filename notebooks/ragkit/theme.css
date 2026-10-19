@@ -31,3 +31,69 @@ figcaption, .hpi-caption { color: var(--hpi-grey); font-size: .9rem; }
 .prose pre, .prose pre code { white-space: pre-wrap; overflow-wrap: anywhere; overflow-x: visible; }
 .prose table { width: 100%; }
 .prose td, .prose th { overflow-wrap: anywhere; }
+
+/* Grey hint lines and grey translations. .prose sets the ink colour on the rendered Markdown itself,
+   so a colour on a wrapper does not reach it; this class does. Used by w3_01, opt-in elsewhere. */
+.hpi-hint, .hpi-hint .prose, .hpi-hint .prose * { color: var(--hpi-grey) !important; font-size: .9rem; }
+
+/* Task box: every place where participants do something themselves (theme.task_box). Opt-in.
+   Distinct from explanation boxes: full ink frame, thick ink bar on the left, dark label pill. */
+.hpi-task { border: 1.5px solid var(--hpi-ink); border-left: 7px solid var(--hpi-ink); border-radius: 2px;
+            padding: .7rem 1rem .8rem; margin: .25rem 0; background: var(--hpi-paper); color: var(--hpi-ink); }
+.hpi-task-head { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .75rem; margin-bottom: .45rem; }
+.hpi-task-label { background: var(--hpi-ink); color: var(--hpi-paper); border-radius: 2px; padding: .1rem .55rem;
+                  font-weight: 500; font-size: .9rem; }
+.hpi-task-time { color: var(--hpi-grey); font-size: .9rem; }
+.hpi-task-title { font-weight: 500; font-size: 1.05rem; margin: 0 0 .3rem; }
+.hpi-task ol { margin: 0; padding-left: 1.6rem; line-height: 1.45; list-style: decimal outside !important; }
+.hpi-task li { display: list-item !important; }
+.hpi-task li { margin: .1rem 0; }
+
+/* Colour-coded boxes (meta plan "Farben der Kästen"): primary colours plus one secondary colour.
+   Coloured bar on the left, 25 % tint as ground, label in a darker shade of the colour (WCAG AA on the tint:
+   #006659 4.9:1, #9b4406 4.8:1, #875c00 4.9:1), body text in ink (at least 11:1). HPI Red stays for the title rule.
+   The label word always stays; colour is never the only signal. Opt-in via theme.task_box(kind=...) and theme.info_box. */
+.hpi-box { --hpi-box-bar: #f6a800; --hpi-box-tint: #fde9bf; --hpi-box-label: #875c00;
+           border: none; border-left: 7px solid var(--hpi-box-bar); background: var(--hpi-box-tint);
+           border-radius: 2px; padding: .7rem 1rem .8rem; margin: .25rem 0; color: var(--hpi-ink); }
+.hpi-box-task  { --hpi-box-bar: #007f6f; --hpi-box-tint: #bfdfdb; --hpi-box-label: #006659; }  /* HPI Dark Green */
+.hpi-box-extra { --hpi-box-bar: #dd6108; --hpi-box-tint: #f6d8c1; --hpi-box-label: #9b4406; }  /* HPI Orange */
+.hpi-box-info  { --hpi-box-bar: #f6a800; --hpi-box-tint: #fde9bf; --hpi-box-label: #875c00; }  /* HPI Yellow */
+.hpi-task.hpi-box { border: none; border-left: 7px solid var(--hpi-box-bar); background: var(--hpi-box-tint); }
+.hpi-box .hpi-task-label, .hpi-box .hpi-box-label { background: none; padding: 0; color: var(--hpi-box-label);
+                                                     font-weight: 500; font-size: .95rem; }
+.hpi-box .hpi-task-time { color: var(--hpi-ink); }
+.hpi-box-head { margin-bottom: .35rem; }
+.hpi-box, .hpi-box .prose, .hpi-box .prose * { color: var(--hpi-ink); }
+.hpi-box .hpi-box-label, .hpi-box .hpi-task-label { color: var(--hpi-box-label) !important; }
+.hpi-box a { color: var(--hpi-ink); text-decoration: underline; }
+/* Legend of the three box types (theme.box_legend), shown once above the first section. */
+.hpi-legend { display: flex; flex-wrap: wrap; gap: .6rem; margin: .25rem 0 .5rem; }
+.hpi-legend .hpi-box { flex: 1 1 12rem; margin: 0; padding: .45rem .75rem; font-size: .9rem; }
+.hpi-legend .hpi-box-label { display: block; }
+
+/* Feedback box (theme.feedback_box, meta plan 10.4a): the answer to a quiz or a checkable prediction.
+   Neutral on purpose: white ground, 2px frame in HPI Dark Grey, no colour of its own (green marks tasks,
+   yellow information). A large check mark or cross plus the verdict word; colour is never the signal.
+   The white ground and the thin light ring keep it readable and visible in the dark theme as well. */
+.hpi-feedback { border: 2px solid var(--hpi-ink); border-radius: 3px; background: var(--hpi-paper);
+                box-shadow: 0 0 0 1px var(--hpi-rule); padding: .6rem 1rem .75rem; margin: .25rem 0; color: var(--hpi-ink); }
+.hpi-feedback-head { display: flex; align-items: center; gap: .6rem; }
+.hpi-feedback-mark { font-size: 2rem; line-height: 1; font-weight: 700; min-width: 1.4rem; text-align: center; }
+.hpi-feedback-verdict { font-size: 1.15rem; font-weight: 600; }
+.hpi-feedback-open .hpi-feedback-verdict { font-size: 1.05rem; }
+.hpi-feedback-body { margin-top: .4rem; }
+.hpi-feedback, .hpi-feedback .prose, .hpi-feedback .prose * { color: var(--hpi-ink); }
+.hpi-feedback a { color: var(--hpi-ink); text-decoration: underline; }
+
+/* Call-to-action button: a run button that must not be overlooked. marimo draws buttons in a shadow
+   root, but it copies this stylesheet into that root; the button is found there by its label, which
+   theme.cta_label() marks with .hpi-cta-label. HPI Dark Green (the colour of task boxes), white text
+   (5.0:1). Use: mo.Html(f'<div class="hpi-cta">{mo.ui.run_button(label=theme.cta_label(text))}</div>') */
+.hpi-cta { margin: .5rem 0 .25rem; }
+button:has(.hpi-cta-label) { background: #007f6f !important; border-color: #007f6f !important; height: auto !important;
+                             padding: .55rem 1.2rem !important; border-radius: 3px !important; box-shadow: none !important; }
+button:has(.hpi-cta-label):hover:not(:disabled) { background: #006659 !important; border-color: #006659 !important; }
+button:has(.hpi-cta-label):disabled { background: #d6d7d8 !important; border-color: #acb0b2 !important; opacity: 1 !important; }
+.hpi-cta-label, .hpi-cta-label * { color: #ffffff !important; font-size: 1.05rem !important; font-weight: 500 !important; }
+button:disabled .hpi-cta-label, button:disabled .hpi-cta-label * { color: #212427 !important; }

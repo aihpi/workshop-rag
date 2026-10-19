@@ -1,0 +1,2157 @@
+{
+ "A": {
+  "index": 32,
+  "question": "Welche zusätzlichen Maßnahmen gelten für Konten mit weitreichenden Berechtigungen?",
+  "reference": "Administrationskonten sollten durch Mehr-Faktor-Authentisierung geschützt werden, da sie ein besonders hohes Schadenspotenzial besitzen und bevorzugtes Angriffsziel darstellen.",
+  "fundstelle": "ORP.4.A10 Schutz von Benutzendenkennungen mit weitreichenden Berechtigungen (S) [IT-Betrieb] Benutzendenkennungen mit weitreichenden Berechtigungen SOLLTEN mit einer Mehr-FaktorAuthentisierung, z. B. mit kryptografischen Zertifikaten, Chipkarten oder Token, geschützt werden.\n\nORP.4.A21 Mehr-Faktor-Authentisierung (H) [IT-Betrieb] Es SOLLTE eine sichere Mehr-Faktor-Authentisierung, z. B. mit kryptografischen Zertifikaten, Chipkarten oder Token, zur Authentisierung verwendet werden.",
+  "answer": "**Zusätzliche Maßnahmen für Konten mit weitreichenden Berechtigungen (nach den angegebenen Quellen)**  \n\n| Maßnahme | Inhalt | Quelle |\n|----------|--------|--------|\n| **Mehr‑Faktor‑Authentisierung (MFA)** | Schutz der Konten durch mindestens zwei Authentifizierungsfaktoren (z. B. kryptografische Zertifikate, Chip‑/Smart‑Cards oder Token). | ORP.4.A10 |\n| **Bestands‑ und Rechte‑Verzeichnis** | Führen eines Verzeichnisses, das alle vergebenen Zutritts‑, Zugangs‑ und Zugriffsrechte auf kritische Systeme enthält; Angabe, welche Rechte ein einzelner Benutzer bzw. eine Benutzergruppe tatsächlich hat. | IND.1.A15 |\n| **Protokollierung kritischer administrativer Tätigkeiten** | Alle kritischen administrativen Aktionen werden protokolliert; die Protokolle dürfen vom IT‑Betrieb nicht gelöscht oder manipuliert werden. | IND.1.A15 |\n| **Spezifische Sicherheitsrichtlinien für Passwörter und Anmelde‑Restriktionen** | Für Konten mit kritischen Berechtigungen gelten strengere Passwortregeln (z. B. Mindestlänge, Komplexität, regelmäßige Änderung) und ggf. weitere Anmelde‑Beschränkungen; die Richtlinien werden den Konten zugeordnet und regelmäßig überprüft. | APP.4.2.A19 |\n| **Einsatz und Dokumentation der Benutzerkontensteuerung (UAC)** | Für privilegierte Konten wird die UAC konfiguriert, wobei ein Abwägen zwischen Bedienbarkeit und Sicherheitsniveau erfolgt; die gewählten Parameter sowie alle Administrationskonten werden dokumentiert und regelmäßig auf Notwendigkeit geprüft. | SYS.2.2.3.A20 |\n| **Regelmäßige Überprüfung und Anpassung der Rechte** | Die Dokumentation muss regelmäßig (z. B. im Rahmen von Audits) geprüft werden, um überflüssige oder zu weitreichende Berechtigungen zu entfernen. | IND.1.A15, SYS.2.2.3.A20 |\n| **Überwachung und Kontrolle von „zu mächtigen“ Konten** | Erkennen und Reduzieren von Konten, die mehr Rechte besitzen als für ihre Aufgabe nötig (z. B. Dienstkonten mit Administrator‑Rechten). | Quelle 3 (Hinweis auf Risiko, nicht explizite Maßnahme, aber implizierte Notwendigkeit der Rechte‑Reduktion) |\n\n**Zusammengefasst:**  \nKonten mit weitreichenden Berechtigungen müssen zusätzlich zu den allgemeinen Sicherheitsvorgaben durch **Mehr‑Faktor‑Authentisierung**, ein **vollständiges Rechte‑Verzeichnis**, **lückenlose Protokollierung**, **verstärkte Passwort‑ und Anmelderichtlinien**, **kontrollierten Einsatz von UAC** sowie **regelmäßige Überprüfung und Dokumentation** ihrer Rechte geschützt werden. Diese Maßnahmen reduzieren das Risiko von Missbrauch und erleichtern die Nachvollziehbarkeit von administrativen Aktivitäten.",
+  "chunks": [
+   {
+    "text": "ORP.4.A10 Schutz von Benutzendenkennungen mit weitreichenden Berechtigungen (S) [IT-Betrieb]\n\nBenutzendenkennungen mit weitreichenden Berechtigungen SOLLTEN mit einer Mehr-Faktor-Authentisierung, z. B. mit kryptografischen Zertifikaten, Chipkarten oder Token, geschützt werden.",
+    "pages": "S. 126",
+    "chunk_id": 351
+   },
+   {
+    "text": "IND.1.A15 Überwachung von weitreichenden Berechtigungen (H)\n\nDie Institution SOLLTE ein Bestandsverzeichnis führen, das alle vergebenen Zutritts-, Zugangs und Zugriffsrechte auf kritische Systeme enthält. Das Verzeichnis SOLLTE beinhalten, welche Rechte ein bestimmter Benutzender oder eine bestimme Benutzende effektiv hat und wer an einem bestimmten System über welche Rechte verfügt. Alle kritischen administrativen Tätigkeiten SOLLTEN protokolliert werden. Der IT-Betrieb SOLLTE NICHT die Protokolle löschen oder manipulieren können.",
+    "pages": "S. 660",
+    "chunk_id": 3073
+   },
+   {
+    "text": "2.7. Zu mächtige oder schwach gesicherte Konten\n\nAnwendungssoftware setzt manchmal Rechte hochprivilegierter Gruppen (beispielsweise von sogenannten Domänenadministratoren ) für Dienstkonten voraus, um die Produkte einfacher testen und ausbringen zu können, obwohl für den Betrieb deutlich weniger Rechte notwendig sind. Ein besonderes Risiko besteht, wenn diese Dienstkonten mit schwachen Passwörtern gesichert sind. Auch Konten, die nicht Mitglied einer hoch privilegierten Gruppe sind, können administrative Berechtigungen beispielsweise auf einer großen Anzahl von Servern und Clients zugewiesen sein. Damit besitzen sie ähnlich umfangreiche Rechte wie Mitglieder hoch privilegierten Gruppen im AD DS. Die weitreichenden Rechte dieser Konten können von Angreifenden missbraucht werden, um sich in der Domäne weiterzubewegen.",
+    "pages": "S. 379",
+    "chunk_id": 1550
+   },
+   {
+    "text": "APP.4.2.A19 Definition der Sicherheitsrichtlinien für Konten (S)\n\nFür die jeweiligen Konten und Kontengruppen SOLLTEN spezifische Sicherheitsrichtlinien für Passwörter und Anmelderestriktionen erstellt werden. So SOLLTEN beispielsweise Konten mit kritischen Berechtigungen durch starke Passwortregeln abgesichert sein (Transaktion SECPOL). Die Sicherheitsrichtlinien SOLLTEN den Konten korrekt zugeordnet und regelmäßig überprüft werden.",
+    "pages": "S. 424",
+    "chunk_id": 1811
+   },
+   {
+    "text": "SYS.2.2.3.A20 Einsatz der Benutzerkontensteuerung UAC für privilegierte Konten (S)\n\nDie Konfigurationsparameter der sogenannten Benutzerkontensteuerung (User Account Control, UAC) SOLLTEN für die privilegierten Konten zwischen Bedienbarkeit und Sicherheitsniveau abgewogen eingesetzt werden. Die Entscheidungen für die zu verwendenden Konfigurationsparameter SOLLTEN dokumentiert werden. Darüber hinaus SOLLTE die Dokumentation alle Konten mit Administrationsrechten enthalten sowie regelmäßig geprüft werden, ob es notwendig ist, die Rechte erweitern zu können.",
+    "pages": "S. 565",
+    "chunk_id": 2543
+   }
+  ],
+  "context_precision": 0.9999999999,
+  "context_recall": 1.0,
+  "ac": {
+   "answer_claims": [
+    "Mehr‑Faktor‑Authentisierung schützt Konten durch mindestens zwei Authentifizierungsfaktoren, zum Beispiel kryptografische Zertifikate, Chip‑/Smart‑Cards oder Token.",
+    "Ein Bestands‑ und Rechte‑Verzeichnis führt alle vergebenen Zutritts‑, Zugangs‑ und Zugriffsrechte auf kritische Systeme auf und gibt an, welche Rechte ein einzelner Benutzer oder eine Benutzergruppe tatsächlich hat.",
+    "Kritische administrative Aktionen werden protokolliert, und die Protokolle dürfen vom IT‑Betrieb nicht gelöscht oder manipuliert werden.",
+    "Für Konten mit kritischen Berechtigungen gelten strengere Passwortregeln, zum Beispiel Mindestlänge, Komplexität und regelmäßige Änderung, sowie ggf. weitere Anmelde‑Beschränkungen, und die Richtlinien werden den Konten zugeordnet und regelmäßig überprüft.",
+    "Für privilegierte Konten wird die Benutzerkontensteuerung (UAC) konfiguriert, wobei ein Abwägen zwischen Bedienbarkeit und Sicherheitsniveau erfolgt, und die gewählten Parameter sowie alle Administrationskonten werden dokumentiert und regelmäßig auf Notwendigkeit geprüft.",
+    "Die Dokumentation der Rechte muss regelmäßig, zum Beispiel im Rahmen von Audits, geprüft werden, um überflüssige oder zu weitreichende Berechtigungen zu entfernen.",
+    "Überwachung und Kontrolle erkennt Konten, die mehr Rechte besitzen als für ihre Aufgabe nötig, und reduziert solche übermäßigen Rechte, zum Beispiel bei Dienstkonten mit Administrator‑Rechten.",
+    "Konten mit weitreichenden Berechtigungen müssen zusätzlich zu den allgemeinen Sicherheitsvorgaben durch Mehr‑Faktor‑Authentisierung, ein vollständiges Rechte‑Verzeichnis, lückenlose Protokollierung, verstärkte Passwort‑ und Anmelderichtlinien, kontrollierten Einsatz von Benutzerkontensteuerung (UAC) sowie regelmäßige Überprüfung und Dokumentation der Rechte geschützt werden.",
+    "Die genannten Maßnahmen reduzieren das Risiko von Missbrauch und erleichtern die Nachvollziehbarkeit von administrativen Aktivitäten."
+   ],
+   "reference_claims": [
+    "Administrationskonten sollten durch Mehr-Faktor-Authentisierung geschützt werden.",
+    "Administrationskonten besitzen ein besonders hohes Schadenspotenzial.",
+    "Administrationskonten stellen ein bevorzugtes Angriffsziel dar."
+   ],
+   "TP": [
+    {
+     "statement": "Mehr‑Faktor‑Authentisierung schützt Konten durch mindestens zwei Authentifizierungsfaktoren, zum Beispiel kryptografische Zertifikate, Chip‑/Smart‑Cards oder Token.",
+     "reason": "The ground truth states that administrative accounts should be protected by multi‑factor authentication; this answer statement describes MFA protecting accounts, which directly supports that requirement."
+    },
+    {
+     "statement": "Konten mit weitreichenden Berechtigungen müssen zusätzlich zu den allgemeinen Sicherheitsvorgaben durch Mehr‑Faktor‑Authentisierung, ein vollständiges Rechte‑Verzeichnis, lückenlose Protokollierung, verstärkte Passwort‑ und Anmelderichtlinien, kontrollierten Einsatz von Benutzerkontensteuerung (UAC) sowie regelmäßige Überprüfung und Dokumentation der Rechte geschützt werden.",
+     "reason": "The ground truth emphasizes MFA protection for privileged (administrative) accounts; this answer explicitly lists MFA as a required measure for accounts with extensive permissions, directly reflecting the ground‑truth statement."
+    }
+   ],
+   "FP": [
+    {
+     "statement": "Ein Bestands‑ und Rechte‑Verzeichnis führt alle vergebenen Zutritts‑, Zugangs‑ und Zugriffsrechte auf kritische Systeme auf und gibt an, welche Rechte ein einzelner Benutzer oder eine Benutzergruppe tatsächlich hat.",
+     "reason": "The ground truth does not mention a rights inventory; therefore this statement is not directly supported."
+    },
+    {
+     "statement": "Kritische administrative Aktionen werden protokolliert, und die Protokolle dürfen vom IT‑Betrieb nicht gelöscht oder manipuliert werden.",
+     "reason": "Logging of critical administrative actions is not addressed in the ground truth."
+    },
+    {
+     "statement": "Für Konten mit kritischen Berechtigungen gelten strengere Passwortregeln, zum Beispiel Mindestlänge, Komplexität und regelmäßige Änderung, sowie ggf. weitere Anmelde‑Beschränkungen, und die Richtlinien werden den Konten zugeordnet und regelmäßig überprüft.",
+     "reason": "Password policy details are not mentioned in the ground truth."
+    },
+    {
+     "statement": "Für privilegierte Konten wird die Benutzerkontensteuerung (UAC) konfiguriert, wobei ein Abwägen zwischen Bedienbarkeit und Sicherheitsniveau erfolgt, und die gewählten Parameter sowie alle Administrationskonten werden dokumentiert und regelmäßig auf Notwendigkeit geprüft.",
+     "reason": "UAC configuration is not covered by the ground truth statements."
+    },
+    {
+     "statement": "Die Dokumentation der Rechte muss regelmäßig, zum Beispiel im Rahmen von Audits, geprüft werden, um überflüssige oder zu weitreichende Berechtigungen zu entfernen.",
+     "reason": "Regular rights documentation is not mentioned in the ground truth."
+    },
+    {
+     "statement": "Überwachung und Kontrolle erkennt Konten, die mehr Rechte besitzen als für ihre Aufgabe nötig, und reduziert solche übermäßigen Rechte, zum Beispiel bei Dienstkonten mit Administrator‑Rechten.",
+     "reason": "Monitoring and reduction of excessive rights are not addressed in the ground truth."
+    },
+    {
+     "statement": "Die genannten Maßnahmen reduzieren das Risiko von Missbrauch und erleichtern die Nachvollziehbarkeit von administrativen Aktivitäten.",
+     "reason": "The overall risk‑reduction claim is not explicitly stated in the ground truth."
+    }
+   ],
+   "FN": [
+    {
+     "statement": "Administrationskonten besitzen ein besonders hohes Schadenspotenzial.",
+     "reason": "This statement about the high damage potential of administrative accounts is present in the ground truth but not mentioned in the answer."
+    },
+    {
+     "statement": "Administrationskonten stellen ein bevorzugtes Angriffsziel dar.",
+     "reason": "The ground truth notes that administrative accounts are a preferred attack target, which the answer does not include."
+    }
+   ],
+   "f1": 0.30769230769230765,
+   "similarity": 0.6039845337124894,
+   "score": 0.3817653641973531
+  },
+  "faithfulness": {
+   "claims": [
+    {
+     "statement": "Konten mit weitreichenden Berechtigungen werden durch mindestens zwei Authentifizierungsfaktoren geschützt, zum Beispiel kryptografische Zertifikate, Chip‑/Smart‑Cards oder Token.",
+     "verdict": 1,
+     "reason": "Der Kontext verlangt, dass Konten mit weitreichenden Berechtigungen mit Mehr‑Faktor‑Authentisierung (z. B. Zertifikate, Chipkarten, Token) geschützt werden."
+    },
+    {
+     "statement": "Ein Verzeichnis, das alle vergebenen Zutritts‑, Zugangs‑ und Zugriffsrechte auf kritische Systeme enthält, wird für Konten mit weitreichenden Berechtigungen geführt.",
+     "verdict": 0,
+     "reason": "Der Kontext fordert ein Bestandsverzeichnis aller Rechte, erwähnt jedoch nicht, dass es ausschließlich für Konten mit weitreichenden Berechtigungen geführt wird."
+    },
+    {
+     "statement": "Das Verzeichnis gibt an, welche Rechte ein einzelner Benutzer oder eine Benutzergruppe tatsächlich hat.",
+     "verdict": 1,
+     "reason": "Der Kontext spezifiziert, dass das Verzeichnis enthalten soll, welche Rechte ein bestimmter Benutzer oder eine bestimmte Benutzergruppe effektiv hat."
+    },
+    {
+     "statement": "Alle kritischen administrativen Aktionen von Konten mit weitreichenden Berechtigungen werden protokolliert.",
+     "verdict": 1,
+     "reason": "Der Kontext verlangt, dass alle kritischen administrativen Tätigkeiten protokolliert werden; damit sind auch die Aktionen von Konten mit weitreichenden Berechtigungen erfasst."
+    },
+    {
+     "statement": "Die Protokolle dürfen vom IT‑Betrieb nicht gelöscht oder manipuliert werden.",
+     "verdict": 1,
+     "reason": "Der Kontext legt ausdrücklich fest, dass der IT‑Betrieb die Protokolle nicht löschen oder manipulieren darf."
+    },
+    {
+     "statement": "Strengere Passwortregeln, zum Beispiel Mindestlänge, Komplexität und regelmäßige Änderung, gelten für Konten mit kritischen Berechtigungen.",
+     "verdict": 1,
+     "reason": "Der Kontext fordert starke Passwortregeln für Konten mit kritischen Berechtigungen, was impliziert, dass solche Regeln (z. B. Länge, Komplexität, Wechsel) gelten."
+    },
+    {
+     "statement": "Weitere Anmelde‑Beschränkungen können für Konten mit kritischen Berechtigungen gelten.",
+     "verdict": 1,
+     "reason": "Der Kontext erwähnt, dass neben Passwortregeln auch Anmelderestriktionen für kritische Konten definiert werden sollen."
+    },
+    {
+     "statement": "Die Sicherheitsrichtlinien werden den Konten zugeordnet und regelmäßig überprüft.",
+     "verdict": 1,
+     "reason": "Der Kontext sagt, dass die Sicherheitsrichtlinien den Konten korrekt zugeordnet und regelmäßig überprüft werden sollen."
+    },
+    {
+     "statement": "Die Benutzerkontensteuerung (UAC) wird für privilegierte Konten konfiguriert, wobei ein Abwägen zwischen Bedienbarkeit und Sicherheitsniveau erfolgt.",
+     "verdict": 1,
+     "reason": "Der Kontext verlangt, dass die UAC‑Parameter für privilegierte Konten zwischen Bedienbarkeit und Sicherheitsniveau abgewogen werden."
+    },
+    {
+     "statement": "Die gewählten UAC‑Parameter sowie alle Administrationskonten werden dokumentiert.",
+     "verdict": 1,
+     "reason": "Der Kontext fordert die Dokumentation der UAC‑Entscheidungen und aller Konten mit Administrationsrechten."
+    },
+    {
+     "statement": "Die Dokumentation wird regelmäßig auf Notwendigkeit geprüft.",
+     "verdict": 1,
+     "reason": "Der Kontext verlangt, dass die Dokumentation regelmäßig geprüft wird, ob eine Erweiterung der Rechte notwendig ist."
+    },
+    {
+     "statement": "Die Dokumentation der Rechte von Konten mit weitreichenden Berechtigungen wird regelmäßig, zum Beispiel im Rahmen von Audits, geprüft.",
+     "verdict": 1,
+     "reason": "Der Kontext sieht eine regelmäßige Prüfung der Dokumentation der Administrationsrechte vor, was Audits einschließt."
+    },
+    {
+     "statement": "Überflüssige oder zu weitreichende Berechtigungen werden entfernt.",
+     "verdict": 0,
+     "reason": "Der Kontext erwähnt das Risiko überprivilegierter Konten, gibt jedoch keinen Hinweis darauf, dass solche Berechtigungen aktiv entfernt werden."
+    },
+    {
+     "statement": "Konten, die mehr Rechte besitzen als für die jeweilige Aufgabe nötig, werden erkannt.",
+     "verdict": 0,
+     "reason": "Der Kontext spricht das Problem überprivilegierter Konten an, liefert jedoch keine Aussage darüber, dass sie erkannt werden."
+    },
+    {
+     "statement": "Die Rechte solcher Konten werden reduziert.",
+     "verdict": 0,
+     "reason": "Der Kontext beschreibt das Risiko, gibt aber keinen Hinweis darauf, dass die Rechte aktiv reduziert werden."
+    },
+    {
+     "statement": "Konten mit weitreichenden Berechtigungen müssen zusätzlich zu den allgemeinen Sicherheitsvorgaben durch Mehr‑Faktor‑Authentisierung geschützt werden.",
+     "verdict": 1,
+     "reason": "Der Kontext fordert explizit, dass Konten mit weitreichenden Berechtigungen mit Mehr‑Faktor‑Authentisierung geschützt werden sollen."
+    },
+    {
+     "statement": "Konten mit weitreichenden Berechtigungen müssen zusätzlich zu den allgemeinen Sicherheitsvorgaben ein vollständiges Rechte‑Verzeichnis erhalten.",
+     "verdict": 1,
+     "reason": "Der Kontext verlangt ein Bestandsverzeichnis aller Zugriffsrechte, was für Konten mit weitreichenden Berechtigungen gilt."
+    },
+    {
+     "statement": "Konten mit weitreichenden Berechtigungen müssen zusätzlich zu den allgemeinen Sicherheitsvorgaben lückenlose Protokollierung erhalten.",
+     "verdict": 1,
+     "reason": "Der Kontext schreibt vor, dass alle kritischen administrativen Tätigkeiten protokolliert werden und die Protokolle nicht manipuliert werden dürfen."
+    },
+    {
+     "statement": "Konten mit weitreichenden Berechtigungen müssen zusätzlich zu den allgemeinen Sicherheitsvorgaben verstärkte Passwort‑ und Anmelderichtlinien erhalten.",
+     "verdict": 1,
+     "reason": "Der Kontext fordert starke Passwortregeln und Anmelderestriktionen für Konten mit kritischen Berechtigungen."
+    },
+    {
+     "statement": "Konten mit weitreichenden Berechtigungen müssen zusätzlich zu den allgemeinen Sicherheitsvorgaben einen kontrollierten Einsatz von UAC erhalten.",
+     "verdict": 1,
+     "reason": "Der Kontext verlangt, dass UAC‑Parameter für privilegierte Konten abgewogen und dokumentiert werden."
+    },
+    {
+     "statement": "Konten mit weitreichenden Berechtigungen müssen zusätzlich zu den allgemeinen Sicherheitsvorgaben regelmäßige Überprüfung und Dokumentation der Rechte der Konten erhalten.",
+     "verdict": 1,
+     "reason": "Der Kontext sieht vor, dass die Dokumentation aller Administrationskonten regelmäßig geprüft wird."
+    },
+    {
+     "statement": "Die genannten Maßnahmen reduzieren das Risiko von Missbrauch.",
+     "verdict": 1,
+     "reason": "Der Kontext beschreibt die Maßnahmen (MFA, Rechte‑Verzeichnis, Protokollierung, starke Passwörter, UAC) als Mittel zur Risikominimierung."
+    },
+    {
+     "statement": "Die genannten Maßnahmen erleichtern die Nachvollziehbarkeit von administrativen Aktivitäten.",
+     "verdict": 1,
+     "reason": "Durch Protokollierung und Dokumentation der Rechte wird die Nachvollziehbarkeit von administrativen Aktivitäten verbessert, wie im Kontext impliziert."
+    }
+   ],
+   "score": 0.8260869565217391
+  },
+  "words_answer": 299,
+  "words_reference": 17
+ },
+ "B": {
+  "index": 8,
+  "question": "Welche Basis Anforderungen gibt es im  IT-Grundschutz in Bezug auf Telearbeit ?",
+  "reference": "\nAlle relevanten Aspekte der Telearbeit müssen geregelt werden. Den Telearbeitenden müssen die geltenden Regelungen oder ein entsprechendes Merkblatt ausgehändigt werden, das die zu beachtenden Sicherheitsmaßnahmen erläutert. Strittige Punkte müssen entweder durch Betriebsvereinbarungen oder durch individuelle Vereinbarungen zwischen Mitarbeitenden und Institution geklärt werden. Diese Regelungen müssen regelmäßig aktualisiert werden.\nFür IT-Systeme in der Telearbeit müssen sicherheitstechnische Anforderungen festgelegt werden. Es muss sichergestellt sein, dass nur autorisierte Personen Zugang zu den Telearbeitsrechnern haben und diese ausschließlich für autorisierte Zwecke genutzt werden können.\nDie Mitarbeitenden müssen anhand eines Leitfadens für die Gefahren der Telearbeit sensibilisiert werden. Sie müssen in die entsprechenden Sicherheitsmaßnahmen der Institution eingewiesen und im Umgang damit geschult werden. Diese Schulungs- und Sensibilisierungsmaßnahmen sollten regelmäßig wiederholt werden.",
+  "fundstelle": "\"OPS.1.2.4.A1 Regelungen für Telearbeit (B) [Vorgesetzte, Personalabteilung]\nAlle relevanten Aspekte der Telearbeit MÜSSEN geregelt werden. Zu Informationszwecken MÜSSEN den Telearbeitenden die geltenden Regelungen oder ein dafür vorgesehenes Merkblatt ausgehändigt werden, das die zu beachtenden Sicherheitsmaßnahmen erläutert. Alle strittigen Punkte MÜSSEN entweder durch Betriebsvereinbarungen oder durch zusätzlich zum Arbeitsvertrag getroffene individuelle Vereinbarungen zwischen dem Mitarbeitenden und der Institution geregelt werden. Die Regelungen MÜSSEN regelmäßig aktualisiert werden.\",\n\"OPS.1.2.4.A2 Sicherheitstechnische Anforderungen an den Telearbeitsrechner (B)\nEs MÜSSEN sicherheitstechnische Anforderungen festgelegt werden, die ein IT-System für die Telearbeit erfüllen muss.\nEs MUSS sichergestellt werden, dass nur autorisierte Personen Zugang zu den Telearbeitsrechnern haben. Darüber hinaus MUSS der Telearbeitsrechner so abgesichert werden, dass er nur für autorisierte Zwecke benutzt werden kann.\",\n\"OPS.1.2.4.A5 Sensibilisierung und Schulung der Mitarbeitenden (B)\nAnhand eines Leitfadens MÜSSEN die Mitarbeitenden für die Gefahren sensibilisiert werden, die mit der Telearbeit verbunden sind. Außerdem MÜSSEN sie in die entsprechenden Sicherheitsmaßnahmen der Institution eingewiesen und im Umgang mit diesen geschult werden. Die Schulungs- und Sensibilisierungsmaßnahmen für Mitarbeitenden SOLLTEN regelmäßig wiederholt werden.\"",
+  "answer": "**Basis‑Anforderungen des IT‑Grundschutzes für Telearbeit (Baustein OPS 1.2.4)**  \n\nDer Baustein OPS 1.2.4 definiert drei zentrale Handlungsfelder, die als Grund‑ bzw. Basis‑Anforderungen gelten:\n\n| Handlungsfeld | Grund‑Anforderung (nach Kontext) |\n|---------------|-----------------------------------|\n| **1. Organisation der Telearbeit** | • Ein **Sicherheits‑ und Organisationskonzept** für Telearbeit muss erstellt werden (OPS 1.2.4 A6). Das Konzept enthält Sicherheitsziele, Schutzbedarf, konkrete Sicherheits‑ und Risiko‑Anforderungen und ist regelmäßig zu aktualisieren und an das übergeordnete Sicherheitskonzept der Institution anzupassen. |\n| **2. Arbeitsplatz‑PC der Mitarbeitenden** | • Vor Einrichtung eines Telearbeitsplatzes ist eine **Anforderungsanalyse** durchzuführen (OPS 1.2.4 A10). Dabei werden Hard‑ und Software‑Bedarfe ermittelt, der Schutzbedarf der verarbeiteten Informationen dokumentiert und mit den IT‑Verantwortlichen abgestimmt. |\n| **3. Kommunikationsverbindung zwischen Telearbeitsrechner und Institution** | • Es wird von einer **sicheren Telekommunikationsverbindung** ausgegangen, die den geschützten Austausch von Informationen und den Zugriff auf Server der Institution ermöglicht. Details zur Absicherung (z. B. VPN, Verschlüsselung) werden in den Bausteinen der Teilschichten **NET 2 (Funknetze)** und **NET 4 (Telekommunikation)** behandelt. |\n| **4. Ergänzende Grundanforderungen (aus verknüpften Bausteinen)** | • Infrastruktur‑Sicherheit des häuslichen Arbeitsplatzes → **INF 8** (Häuslicher Arbeitsplatz).<br>• Falls der Arbeitsplatz nicht dauerhaft eingerichtet ist → **INF 9** (Mobiler Arbeitsplatz).<br>• Allgemeine Client‑Sicherheit → **SYS 2.1** und die jeweiligen betriebssystemspezifischen System‑Bausteine.<br>• Datensicherung, wenn Daten nicht sofort auf Institution‑Servern gespeichert werden → **CON 3** (Datensicherungskonzept). |\n| **5. Grundsatz** | • Der Baustein OPS 1.2.4 gilt **für jeden Telearbeitsplatz** und konzentriert sich auf heimbasierte Telearbeit. Sicherheitsanforderungen an die eigentliche IT‑Systemkonfiguration (z. B. Betriebssystem‑Härtung) werden nicht im Baustein selbst, sondern in den genannten System‑Bausteinen behandelt. |\n\n**Zusammengefasst** lauten die Basis‑Anforderungen im IT‑Grundschutz für Telearbeit:\n\n1. **Sicherheitskonzept für Telearbeit** (OPS 1.2.4 A6).  \n2. **Durchführung einer Anforderungsanalyse** vor Einrichtung (OPS 1.2.4 A10).  \n3. **Sichere Telekommunikationsverbindung** zwischen Home‑Office und Institution.  \n4. **Abstimmung mit übergeordneten Sicherheits‑ und Infrastruktur‑Bausteinen** (INF 8/9, SYS 2.1, NET 2/4, CON 3).  \n\nAlle weiteren Detail‑Umsetzungen (z. B. VPN‑Technik, Client‑Härtung, WLAN‑Sicherheit) finden sich in den verlinkten Bausteinen, werden aber im Baustein OPS 1.2.4 selbst nicht weiter ausgeführt.",
+  "chunks": [
+   {
+    "text": "1.3. Abgrenzung und Modellierung\n\nDer Baustein OPS.1.2.4 Telearbeit ist für jeden Telearbeitsplatz anzuwenden. Dieser Baustein konzentriert sich auf die Form der Telearbeit, die im häuslichen Umfeld durchgeführt wird (heimbasierte Telearbeit). Es wird davon ausgegangen, dass zwischen dem Telearbeitsplatz und der Institution eine sichere Telekommunikationsverbindung besteht, die es ermöglicht, geeignet Informationen auszutauschen und auf Daten auf dem Server der Institution zuzugreifen. Die Anforderungen dieses Bausteins umfassen die folgenden drei Bereiche: die Organisation der Telearbeit, den Arbeitsplatz-PCs der Mitarbeitenden und die Kommunikationsverbindung zwischen Telearbeitsrechnern und Institution. Sicherheitsanforderungen an die Infrastruktur des Telearbeitsplatzes werden im vorliegenden Baustein nicht berücksichtigt, sondern sind im Baustein INF.8 Häuslicher Arbeitsplatz beschrieben. Anforderungen an einen nicht dauerhaft eingerichteten Arbeitsplatz sind im Baustein INF.9 Mobiler Arbeitsplatz zu finden. Detaillierte Empfehlungen, wie die IT-Systeme konfiguriert und abgesichert werden können, werden nicht im Rahmen dieses Bausteins behandelt. Sie sind in SYS.2.1 Allgemeiner Client sowie in den betriebssystemspezifischen System-Bausteinen zu finden. Weitere für die Telearbeit relevante Sicherheitsaspekte, wie z. B. für WLAN, werden in den Bausteinen der Teilschichten NET.2 Funknetze oder NET.4 Telekommunikation betrachtet. Sofern Daten, die bei der Telearbeit verändert wurden, nicht unmittelbar auf IT-Systemen der Institution gespeichert werden, muss geregelt werden, wie eine Datensicherung durchgeführt wird. Anforderungen dazu sind im Baustein CON.3 Datensicherungskonzept zu finden.",
+    "pages": "S. 261",
+    "chunk_id": 965
+   },
+   {
+    "text": "4.1. Wissenswertes\n\nDie International Organization for Standardization (ISO) gibt in der Norm ISO/IEC 27001:2013, insbesondere in Annex A, A.6.2.1 'Mobile device policy' und A.11.2.6 'Security of equipment and assets off-premises', Informationen zum Umgang mit Telearbeit. Das Information Security Forum (ISF) macht in seinem Standard 'The Standard of Good Practice for Information Security', insbesondere in Area PA2 Mobile Computing, ebenfalls Vorgaben zur Telearbeit. Das National Institute of Standards and Technology (NIST) hat im Rahmen seiner Special Publications die NIST Special Publication 800-46 als 'Guide to Enterprise Telework, Remote Access and Bring Your Own Device (BYOD) Security' veröffentlicht.",
+    "pages": "S. 264",
+    "chunk_id": 986
+   },
+   {
+    "text": "OPS.1.2.4.A10 Durchführung einer Anforderungsanalyse für den Telearbeitsplatz (S) [IT-Betrieb]\n\nBevor ein Telearbeitsplatz eingerichtet wird, SOLLTE eine Anforderungsanalyse durchgeführt werden. Daraus SOLLTE z. B. hervorgehen, welche Hard- und Software-Komponenten für den Telearbeitsplatz benötigt werden. Die Anforderungen an den jeweiligen Telearbeitsplatz SOLLTEN mit den IT-Verantwortlichen abgestimmt werden. Es SOLLTE immer festgestellt und dokumentiert werden, welchen Schutzbedarf die am Telearbeitsplatz verarbeiteten Informationen haben.",
+    "pages": "S. 264",
+    "chunk_id": 984
+   },
+   {
+    "text": "1.1. Einleitung\n\nUnter Telearbeit wird jede auf die Informations- und Kommunikationstechnik gestützte Tätigkeit verstanden, die ganz oder teilweise außerhalb der Geschäftsräume und Gebäude der Institution verrichtet wird. Bei der heimbasierten Telearbeit arbeiten die Mitarbeitenden regelmäßig tages- oder stundenweise abwechselnd an ihrem Arbeitsplatz in den Räumlichkeiten der Institution und am häuslichen Arbeitsplatz.",
+    "pages": "S. 261",
+    "chunk_id": 963
+   },
+   {
+    "text": "OPS.1.2.4.A6 Erstellen eines Sicherheitskonzeptes für Telearbeit (S)\n\nEs SOLLTE ein Sicherheitskonzept für die Telearbeit erstellt werden, das Sicherheitsziele, Schutzbedarf, Sicherheitsanforderungen sowie Risiken beschreibt. Das Konzept SOLLTE regelmäßig aktualisiert und überarbeitet werden. Das Sicherheitskonzept zur Telearbeit SOLLTE auf das übergreifende Sicherheitskonzept der Institution abgestimmt werden.",
+    "pages": "S. 263",
+    "chunk_id": 980
+   }
+  ],
+  "context_precision": 0.699999999965,
+  "context_recall": 0.3333333333333333,
+  "ac": {
+   "answer_claims": [
+    "Der Baustein OPS 1.2.4 definiert zentrale Handlungsfelder, die als Grund‑ bzw. Basis‑Anforderungen gelten.",
+    "Ein Sicherheits‑ und Organisationskonzept für Telearbeit muss erstellt werden (OPS 1.2.4 A6).",
+    "Ein Sicherheits‑ und Organisationskonzept für Telearbeit enthält Sicherheitsziele, Schutzbedarf, konkrete Sicherheits‑ und Risiko‑Anforderungen und wird regelmäßig aktualisiert und an das übergeordnete Sicherheitskonzept der Institution angepasst.",
+    "Vor Einrichtung eines Telearbeitsplatzes muss eine Anforderungsanalyse durchgeführt werden (OPS 1.2.4 A10).",
+    "Eine Anforderungsanalyse ermittelt Hard‑ und Software‑Bedarfe, dokumentiert den Schutzbedarf der verarbeiteten Informationen und wird mit den IT‑Verantwortlichen abgestimmt.",
+    "Eine sichere Telekommunikationsverbindung wird vorausgesetzt, die den geschützten Austausch von Informationen und den Zugriff auf Server der Institution ermöglicht.",
+    "Details zur Absicherung, beispielsweise VPN oder Verschlüsselung, werden in den Bausteinen NET 2 (Funknetze) und NET 4 (Telekommunikation) behandelt.",
+    "Die Infrastruktur‑Sicherheit des häuslichen Arbeitsplatzes wird durch Baustein INF 8 (Häuslicher Arbeitsplatz) geregelt.",
+    "Falls der Arbeitsplatz nicht dauerhaft eingerichtet ist, wird Baustein INF 9 (Mobiler Arbeitsplatz) angewendet.",
+    "Allgemeine Client‑Sicherheit wird durch Baustein SYS 2.1 und die jeweiligen betriebssystemspezifischen System‑Bausteine geregelt.",
+    "Datensicherung, wenn Daten nicht sofort auf Institution‑Servern gespeichert werden, wird durch Baustein CON 3 (Datensicherungskonzept) geregelt.",
+    "Der Baustein OPS 1.2.4 gilt für jeden Telearbeitsplatz und konzentriert sich auf heimbasierte Telearbeit.",
+    "Sicherheitsanforderungen an die IT‑Systemkonfiguration, beispielsweise Betriebssystem‑Härtung, werden nicht im Baustein OPS 1.2.4 selbst behandelt, sondern in den genannten System‑Bausteinen.",
+    "Ein Sicherheitskonzept für Telearbeit (OPS 1.2.4 A6) ist erforderlich.",
+    "Eine Anforderungsanalyse vor Einrichtung (OPS 1.2.4 A10) ist erforderlich.",
+    "Eine sichere Telekommunikationsverbindung zwischen Home‑Office und Institution ist erforderlich.",
+    "Abstimmung mit übergeordneten Sicherheits‑ und Infrastruktur‑Bausteinen (INF 8/9, SYS 2.1, NET 2/4, CON 3) ist erforderlich."
+   ],
+   "reference_claims": [
+    "Alle relevanten Aspekte der Telearbeit müssen geregelt werden.",
+    "Den Telearbeitenden müssen die geltenden Regelungen ausgehändigt werden.",
+    "Ein entsprechendes Merkblatt erläutert die zu beachtenden Sicherheitsmaßnahmen und muss den Telearbeitenden ausgehändigt werden.",
+    "Strittige Punkte müssen entweder durch Betriebsvereinbarungen oder durch individuelle Vereinbarungen zwischen Mitarbeitenden und Institution geklärt werden.",
+    "Die Regelungen müssen regelmäßig aktualisiert werden.",
+    "Für IT-Systeme in der Telearbeit müssen sicherheitstechnische Anforderungen festgelegt werden.",
+    "Nur autorisierte Personen dürfen Zugang zu den Telearbeitsrechnern haben.",
+    "Telearbeitsrechner dürfen ausschließlich für autorisierte Zwecke genutzt werden.",
+    "Mitarbeitende müssen anhand eines Leitfadens für die Gefahren der Telearbeit sensibilisiert werden.",
+    "Mitarbeitende müssen in die entsprechenden Sicherheitsmaßnahmen der Institution eingewiesen werden.",
+    "Mitarbeitende müssen im Umgang mit den Sicherheitsmaßnahmen geschult werden.",
+    "Die Schulungs- und Sensibilisierungsmaßnahmen sollten regelmäßig wiederholt werden."
+   ],
+   "TP": [
+    {
+     "statement": "Ein Sicherheits‑ und Organisationskonzept für Telearbeit enthält Sicherheitsziele, Schutzbedarf, konkrete Sicherheits‑ und Risiko‑Anforderungen und wird regelmäßig aktualisiert und an das übergeordnete Sicherheitskonzept der Institution angepasst.",
+     "reason": "The answer states that the security and organizational concept is regularly updated, which directly matches the ground‑truth requirement that regulations must be regularly updated."
+    }
+   ],
+   "FP": [
+    {
+     "statement": "Der Baustein OPS 1.2.4 definiert zentrale Handlungsfelder, die als Grund‑ bzw. Basis‑Anforderungen gelten.",
+     "reason": "No ground‑truth statement mentions the OPS 1.2.4 module or its definition of basic requirements."
+    },
+    {
+     "statement": "Ein Sicherheits‑ und Organisationskonzept für Telearbeit muss erstellt werden (OPS 1.2.4 A6).",
+     "reason": "Ground truth requires security requirements for IT systems but does not specifically state that a security‑and‑organizational concept must be created."
+    },
+    {
+     "statement": "Vor Einrichtung eines Telearbeitsplatzes muss eine Anforderungsanalyse durchgeführt werden (OPS 1.2.4 A10).",
+     "reason": "The ground‑truth does not mention a mandatory pre‑setup requirement analysis."
+    },
+    {
+     "statement": "Eine Anforderungsanalyse ermittelt Hard‑ und Software‑Bedarfe, dokumentiert den Schutzbedarf der verarbeiteten Informationen und wird mit den IT‑Verantwortlichen abgestimmt.",
+     "reason": "No ground‑truth statement describes the content or purpose of an Anforderungsanalyse."
+    },
+    {
+     "statement": "Eine sichere Telekommunikationsverbindung wird vorausgesetzt, die den geschützten Austausch von Informationen und den Zugriff auf Server der Institution ermöglicht.",
+     "reason": "Ground truth does not specify a requirement for a secure telecommunications connection."
+    },
+    {
+     "statement": "Details zur Absicherung, beispielsweise VPN oder Verschlüsselung, werden in den Bausteinen NET 2 (Funknetze) und NET 4 (Telekommunikation) behandelt.",
+     "reason": "The ground‑truth does not refer to VPN, encryption, or the NET 2/4 modules."
+    },
+    {
+     "statement": "Die Infrastruktur‑Sicherheit des häuslichen Arbeitsplatzes wird durch Baustein INF 8 (Häuslicher Arbeitsplatz) geregelt.",
+     "reason": "No ground‑truth statement mentions the INF 8 module or infrastructure security of a home workplace."
+    },
+    {
+     "statement": "Falls der Arbeitsplatz nicht dauerhaft eingerichtet ist, wird Baustein INF 9 (Mobiler Arbeitsplatz) angewendet.",
+     "reason": "The ground‑truth does not contain any reference to INF 9 or mobile workstations."
+    },
+    {
+     "statement": "Allgemeine Client‑Sicherheit wird durch Baustein SYS 2.1 und die jeweiligen betriebssystemspezifischen System‑Bausteine geregelt.",
+     "reason": "Ground truth does not discuss client‑security modules such as SYS 2.1."
+    },
+    {
+     "statement": "Datensicherung, wenn Daten nicht sofort auf Institution‑Servern gespeichert werden, wird durch Baustein CON 3 (Datensicherungskonzept) geregelt.",
+     "reason": "No ground‑truth statement mentions data‑backup concepts or the CON 3 module."
+    },
+    {
+     "statement": "Der Baustein OPS 1.2.4 gilt für jeden Telearbeitsplatz und konzentriert sich auf heimbasierte Telearbeit.",
+     "reason": "Ground truth does not refer to the applicability of OPS 1.2.4."
+    },
+    {
+     "statement": "Sicherheitsanforderungen an die IT‑Systemkonfiguration, beispielsweise Betriebssystem‑Härtung, werden nicht im Baustein OPS 1.2.4 selbst behandelt, sondern in den genannten System‑Bausteinen.",
+     "reason": "The ground‑truth does not mention system‑configuration requirements or their placement in other modules."
+    },
+    {
+     "statement": "Ein Sicherheitskonzept für Telearbeit (OPS 1.2.4 A6) ist erforderlich.",
+     "reason": "Ground truth requires security requirements but does not specifically name OPS 1.2.4 A6."
+    },
+    {
+     "statement": "Eine Anforderungsanalyse vor Einrichtung (OPS 1.2.4 A10) ist erforderlich.",
+     "reason": "No ground‑truth statement mandates an Anforderungsanalyse identified as OPS 1.2.4 A10."
+    },
+    {
+     "statement": "Eine sichere Telekommunikationsverbindung zwischen Home‑Office und Institution ist erforderlich.",
+     "reason": "The ground‑truth does not explicitly require a secure connection between home‑office and institution."
+    },
+    {
+     "statement": "Abstimmung mit übergeordneten Sicherheits‑ und Infrastruktur‑Bausteinen (INF 8/9, SYS 2.1, NET 2/4, CON 3) ist erforderlich.",
+     "reason": "Ground truth does not mention coordination with these specific Bausteine."
+    }
+   ],
+   "FN": [
+    {
+     "statement": "Alle relevanten Aspekte der Telearbeit müssen geregelt werden.",
+     "reason": "The answer does not contain a statement that all relevant aspects of telework are regulated."
+    },
+    {
+     "statement": "Den Telearbeitenden müssen die geltenden Regelungen ausgehändigt werden.",
+     "reason": "No statement in the answer mentions handing over the applicable regulations to teleworkers."
+    },
+    {
+     "statement": "Ein entsprechendes Merkblatt erläutert die zu beachtenden Sicherheitsmaßnahmen und muss den Telearbeitenden ausgehändigt werden.",
+     "reason": "The answer does not refer to a Merkblatt or its distribution."
+    },
+    {
+     "statement": "Strittige Punkte müssen entweder durch Betriebsvereinbarungen oder durch individuelle Vereinbarungen zwischen Mitarbeitenden und Institution geklärt werden.",
+     "reason": "The answer contains no mention of resolving disputed points via agreements."
+    },
+    {
+     "statement": "Die Regelungen müssen regelmäßig aktualisiert werden.",
+     "reason": "Only a related concept (regular update of a security concept) is mentioned, but the generic requirement that all regulations be regularly updated is not explicitly present."
+    },
+    {
+     "statement": "Für IT-Systeme in der Telearbeit müssen sicherheitstechnische Anforderungen festgelegt werden.",
+     "reason": "The answer discusses specific modules and concepts but does not state the generic requirement for security‑technical requirements for telework IT systems."
+    },
+    {
+     "statement": "Nur autorisierte Personen dürfen Zugang zu den Telearbeitsrechnern haben.",
+     "reason": "No statement in the answer addresses authorized‑person access control."
+    },
+    {
+     "statement": "Telearbeitsrechner dürfen ausschließlich für autorisierte Zwecke genutzt werden.",
+     "reason": "The answer does not mention the restriction of telework computers to authorized purposes."
+    },
+    {
+     "statement": "Mitarbeitende müssen anhand eines Leitfadens für die Gefahren der Telearbeit sensibilisiert werden.",
+     "reason": "The answer does not contain any reference to a guide for telework hazards or sensitisation."
+    },
+    {
+     "statement": "Mitarbeitende müssen in die entsprechenden Sicherheitsmaßnahmen der Institution eingewiesen werden.",
+     "reason": "No statement in the answer mentions instructing employees in institutional security measures."
+    },
+    {
+     "statement": "Mitarbeitende müssen im Umgang mit den Sicherheitsmaßnahmen geschult werden.",
+     "reason": "The answer does not include a statement about training employees on security measures."
+    },
+    {
+     "statement": "Die Schulungs- und Sensibilisierungsmaßnahmen sollten regelmäßig wiederholt werden.",
+     "reason": "The answer does not mention the regular repetition of training and sensitisation measures."
+    }
+   ],
+   "f1": 0.06666666666666667,
+   "similarity": 0.7222015566712968,
+   "score": 0.23055038916782422
+  },
+  "faithfulness": {
+   "claims": [
+    {
+     "statement": "Der Baustein OPS 1.2.4 definiert drei zentrale Handlungsfelder; jedes Handlungsfeld gilt als Grund‑ bzw. Basis‑Anforderung.",
+     "verdict": 0,
+     "reason": "Der Kontext nennt drei Bereiche (Organisation, Arbeitsplatz‑PCs, Kommunikationsverbindung), aber sagt nicht, dass jedes Feld als Grund‑ bzw. Basis‑Anforderung gilt."
+    },
+    {
+     "statement": "Ein Sicherheits‑ und Organisationskonzept für Telearbeit muss erstellt werden (OPS 1.2.4 A6).",
+     "verdict": 0,
+     "reason": "Im Kontext wird nur von einer Empfehlung (\"SOLLTE\") gesprochen, nicht von einer zwingenden Pflicht (\"MUSS\")."
+    },
+    {
+     "statement": "Das Sicherheits‑ und Organisationskonzept enthält Sicherheitsziele.",
+     "verdict": 1,
+     "reason": "Der Kontext beschreibt, dass das Sicherheitskonzept Sicherheitsziele, Schutzbedarf, Sicherheitsanforderungen und Risiken beinhaltet."
+    },
+    {
+     "statement": "Das Sicherheits‑ und Organisationskonzept enthält Schutzbedarf.",
+     "verdict": 1,
+     "reason": "Der Kontext nennt explizit, dass das Konzept den Schutzbedarf beschreibt."
+    },
+    {
+     "statement": "Das Sicherheits‑und Organisationskonzept enthält konkrete Sicherheits‑ und Risiko‑Anforderungen.",
+     "verdict": 1,
+     "reason": "Der Kontext sagt, das Konzept beschreibt Sicherheitsanforderungen sowie Risiken, also sind solche Anforderungen enthalten."
+    },
+    {
+     "statement": "Das Sicherheits‑und Organisationskonzept muss regelmäßig aktualisiert werden.",
+     "verdict": 0,
+     "reason": "Der Text verwendet das Wort \"SOLLTE\" (Empfehlung), nicht \"MUSS\"; daher ist die Pflicht nicht direkt angegeben."
+    },
+    {
+     "statement": "Das Sicherheits‑und Organisationskonzept muss an das übergeordnete Sicherheitskonzept der Institution angepasst werden.",
+     "verdict": 0,
+     "reason": "Auch hier wird nur empfohlen (\"SOLLTE\"), nicht zwingend gefordert."
+    },
+    {
+     "statement": "Vor Einrichtung eines Telearbeitsplatzes muss eine Anforderungsanalyse durchgeführt werden (OPS 1.2.4 A10).",
+     "verdict": 0,
+     "reason": "Der Kontext spricht von einer Empfehlung (\"SOLLTE\"), nicht von einer zwingenden Pflicht."
+    },
+    {
+     "statement": "Die Anforderungsanalyse ermittelt Hard‑Bedarfe.",
+     "verdict": 1,
+     "reason": "Der Kontext sagt, die Analyse soll ergeben, welche Hard‑Komponenten benötigt werden."
+    },
+    {
+     "statement": "Die Anforderungsanalyse ermittelt Software‑Bedarfe.",
+     "verdict": 1,
+     "reason": "Der Kontext erwähnt, dass die Analyse auch die benötigten Software‑Komponenten bestimmen soll."
+    },
+    {
+     "statement": "Die Anforderungsanalyse dokumentiert den Schutzbedarf der verarbeiteten Informationen.",
+     "verdict": 1,
+     "reason": "Der Text fordert ausdrücklich, dass der Schutzbedarf dokumentiert werden soll."
+    },
+    {
+     "statement": "Die Anforderungsanalyse wird mit den IT‑Verantwortlichen abgestimmt.",
+     "verdict": 1,
+     "reason": "Der Kontext gibt an, dass die Anforderungen mit den IT‑Verantwortlichen abgestimmt werden sollen."
+    },
+    {
+     "statement": "Eine sichere Telekommunikationsverbindung wird vorausgesetzt.",
+     "verdict": 1,
+     "reason": "Der Kontext geht davon aus, dass zwischen Telearbeitsplatz und Institution eine sichere Telekommunikationsverbindung besteht."
+    },
+    {
+     "statement": "Die sichere Telekommunikationsverbindung ermöglicht den geschützten Austausch von Informationen.",
+     "verdict": 1,
+     "reason": "Der Kontext sagt, die sichere Verbindung ermöglicht den Austausch von Informationen, was impliziert, dass dieser Austausch geschützt ist."
+    },
+    {
+     "statement": "Die sichere Telekommunikationsverbindung ermöglicht den Zugriff auf Server der Institution.",
+     "verdict": 1,
+     "reason": "Der Text erwähnt ausdrücklich, dass die Verbindung den Zugriff auf Daten auf dem Server der Institution erlaubt."
+    },
+    {
+     "statement": "Details zur Absicherung, zum Beispiel VPN und Verschlüsselung, werden in den Bausteinen der Teilschicht NET 2 (Funknetze) behandelt.",
+     "verdict": 0,
+     "reason": "Der Kontext nennt nur WLAN‑bezogene Sicherheitsaspekte für NET 2, nicht explizit VPN oder Verschlüsselung."
+    },
+    {
+     "statement": "Details zur Absicherung, zum Beispiel VPN und Verschlüsselung, werden in den Bausteinen der Teilschicht NET 4 (Telekommunikation) behandelt.",
+     "verdict": 0,
+     "reason": "Der Kontext erwähnt NET 4 für Telekommunikationsaspekte, aber gibt keine konkreten Beispiele wie VPN oder Verschlüsselung."
+    },
+    {
+     "statement": "Die Infrastruktur‑Sicherheit des häuslichen Arbeitsplatzes wird durch Baustein INF 8 (Häuslicher Arbeitsplatz) geregelt.",
+     "verdict": 1,
+     "reason": "Der Text sagt ausdrücklich, dass Sicherheitsanforderungen an die Infrastruktur im Baustein INF 8 beschrieben werden."
+    },
+    {
+     "statement": "Die Infrastruktur‑Sicherheit für nicht dauerhaft eingerichtete Arbeitsplätze wird durch Baustein INF 9 (Mobiler Arbeitsplatz) geregelt.",
+     "verdict": 1,
+     "reason": "Der Kontext verweist klar auf INF 9 für Anforderungen an nicht dauerhaft eingerichtete Arbeitsplätze."
+    },
+    {
+     "statement": "Die allgemeine Client‑Sicherheit wird durch Baustein SYS 2.1 und die jeweiligen betriebssystemspezifischen System‑Bausteine abgedeckt.",
+     "verdict": 1,
+     "reason": "Der Text nennt SYS.2.1 Allgemeiner Client und die betriebssystemspezifischen System‑Bausteine für diese Thematik."
+    },
+    {
+     "statement": "Die Datensicherung, wenn Daten nicht sofort auf Institution‑Servern gespeichert werden, wird durch Baustein CON 3 (Datensicherungskonzept) geregelt.",
+     "verdict": 1,
+     "reason": "Der Kontext erklärt, dass die Anforderungen zur Datensicherung im Baustein CON 3 zu finden sind."
+    },
+    {
+     "statement": "Der Baustein OPS 1.2.4 gilt für jeden Telearbeitsplatz.",
+     "verdict": 1,
+     "reason": "Der erste Satz des Kontextes besagt ausdrücklich, dass OPS 1.2.4 für jeden Telearbeitsplatz anzuwenden ist."
+    },
+    {
+     "statement": "Der Baustein OPS 1.2.4 konzentriert sich auf heimbasierte Telearbeit.",
+     "verdict": 1,
+     "reason": "Der Kontext erklärt, dass sich der Baustein auf die Form der Telearbeit im häuslichen Umfeld fokussiert."
+    },
+    {
+     "statement": "Sicherheitsanforderungen an die IT‑Systemkonfiguration, zum Beispiel Betriebssystem‑Härtung, werden nicht im Baustein OPS 1.2.4 behandelt.",
+     "verdict": 1,
+     "reason": "Der Text sagt, dass detaillierte Empfehlungen zur IT‑Systemkonfiguration nicht im Rahmen dieses Bausteins behandelt werden."
+    },
+    {
+     "statement": "Sicherheitsanforderungen an die IT‑Systemkonfiguration werden in den genannten System‑Bausteinen behandelt.",
+     "verdict": 1,
+     "reason": "Der Kontext verweist auf SYS.2.1 und die betriebssystemspezifischen System‑Bausteine für diese Anforderungen."
+    },
+    {
+     "statement": "Ein Sicherheitskonzept für Telearbeit ist in OPS 1.2.4 A6 festgelegt.",
+     "verdict": 1,
+     "reason": "OPS 1.2.4.A6 definiert die Anforderung, ein Sicherheitskonzept für Telearbeit zu erstellen."
+    },
+    {
+     "statement": "Eine Anforderungsanalyse muss vor Einrichtung eines Telearbeitsplatzes durchgeführt werden (OPS 1.2.4 A10).",
+     "verdict": 0,
+     "reason": "Der Kontext formuliert dies als Empfehlung (\"SOLLTE\"), nicht als zwingende Pflicht."
+    },
+    {
+     "statement": "Eine sichere Telekommunikationsverbindung zwischen Home‑Office und Institution ist erforderlich.",
+     "verdict": 1,
+     "reason": "Der Text geht davon aus, dass eine sichere Verbindung besteht, also ist sie Voraussetzung."
+    },
+    {
+     "statement": "Eine Abstimmung mit den übergeordneten Sicherheits‑ und Infrastruktur‑Bausteinen INF 8, INF 9, SYS 2.1, NET 2, NET 4 und CON 3 ist erforderlich.",
+     "verdict": 0,
+     "reason": "Der Kontext erwähnt diese Bausteine für Detailthemen, verlangt aber keine explizite Abstimmung mit allen von ihnen."
+    },
+    {
+     "statement": "Detail‑Umsetzungen wie VPN‑Technik, Client‑Härtung und WLAN‑Sicherheit finden sich in den verlinkten Bausteinen.",
+     "verdict": 0,
+     "reason": "Nur WLAN‑Sicherheit wird im Kontext genannt; VPN‑Technik und Client‑Härtung werden nicht explizit erwähnt."
+    },
+    {
+     "statement": "Der Baustein OPS 1.2.4 enthält keine weiteren Detail‑Umsetzungen.",
+     "verdict": 1,
+     "reason": "Der Text sagt, dass detaillierte Implementierungen nicht in diesem Baustein, sondern in anderen Bausteinen behandelt werden."
+    }
+   ],
+   "score": 0.6774193548387096
+  },
+  "words_answer": 323,
+  "words_reference": 116
+ },
+ "C": {
+  "index": 6,
+  "question": "Wie dokumentiere ich Management-Entscheidungen und was muss dabei beachtet werden?",
+  "reference": "Management-Berichte sollten klar priorisierte Maßnahmenvorschläge mit realistischen Abschätzungen zum Umsetzungsaufwand enthalten und revisionssicher archiviert werden. Die Management-Entscheidungen über erforderliche Aktionen, den Umgang mit Restrisiken und mit Veränderungen von sicherheitsrelevanten Prozessen müssen dokumentiert und ebenfalls revisionssicher archiviert werden. Für die Dokumentation sollte eine geregelte Vorgehensweise existieren, die Aktualität und Vertraulichkeit wahrt.\n\nZur Information der Institutionsleitung sollten regelmäßig Management-Berichte  über den Stand der Informationssicherheit erstellt werden, die wesentliche Informationen über den Sicherheitsprozess enthalten, einschließlich Problemen, Erfolgen und Verbesserungsmöglichkeiten.\nDiese Berichte sollten  priorisierte Maßnahmenvorschläge mit realistischen Abschätzungen zum erwarteten Umsetzungsaufwand enthalten. Sowohl die Management-Berichte als auch die dokumentierten Management-Entscheidungen über erforderliche Aktionen, den Umgang mit Restrisiken und Veränderungen sicherheitsrelevanter Prozesse sollten revisionssicher archiviert werden.\nEs sollte eine geregelte Vorgehensweise für die Erstellung und Archivierung von Dokumentationen existieren. Regelungen sollten die Aktualität und Vertraulichkeit der Dokumentationen sicherstellen. Die jeweils aktuelle Version der Dokumente sollte kurzfristig zugänglich sein, während alle Vorgängerversionen zentral archiviert werden sollten.",
+  "fundstelle": "\"ISMS.1.A12 Management-Berichte zur Informationssicherheit (S) [Institutionsleitung]  \nDie Institutionsleitung SOLLTE sich regelmäßig über den Stand der Informationssicherheit informieren, insbesondere über die aktuelle Gefährdungslage sowie die Wirksamkeit und Effizienz des Sicherheitsprozesses. Dazu SOLLTEN Management-Berichte geschrieben werden, welche die wesentlichen relevanten Informationen über den Sicherheitsprozess enthalten, insbesondere über Probleme, Erfolge und Verbesserungsmöglichkeiten. Die Management-Berichte SOLLTEN klar priorisierte Maßnahmenvorschläge enthalten. Die Maßnahmenvorschläge SOLLTEN mit realistischen Abschätzungen zum erwarteten Umsetzungsaufwand versehen sein. Die Management-Berichte SOLLTEN revisionssicher archiviert werden. Die Management-Entscheidungen über erforderliche Aktionen, den Umgang mit Restrisiken und mit \nVeränderungen von sicherheitsrelevanten Prozessen SOLLTEN dokumentiert sein. Die Management-Entscheidungen SOLLTEN revisionssicher archiviert werden.\",\n\"ISMS.1.A13 Dokumentation des Sicherheitsprozesses (S) \nDer Ablauf des Sicherheitsprozesses SOLLTE dokumentiert werden. Wichtige Entscheidungen und die Arbeitsergebnisse der einzelnen Phasen wie Sicherheitskonzept, Richtlinien oder Untersuchungsergebnisse von Sicherheitsvorfällen SOLLTEN ausreichend dokumentiert werden. \nEs SOLLTE eine geregelte Vorgehensweise für die Erstellung und Archivierung von Dokumentationen im Rahmen des Sicherheitsprozesses geben. Regelungen SOLLTEN existieren, um die Aktualität und vertraulichkeit der Dokumentationen zu wahren. Von den vorhandenen Dokumenten SOLLTE die jeweils aktuelle Version kurzfristig zugänglich sein. Außerdem SOLLTEN alle Vorgängerversionen zentral archiviert werden. \"",
+  "answer": "**Dokumentation von Management‑Entscheidungen – Vorgehensweise und zu beachtende Aspekte**\n\nAuf Basis der im IT‑Grundschutz genannten Vorgaben (Quellen 1‑5) lässt sich das Dokumentieren von Management‑Entscheidungen in vier Schritten zusammenfassen. Dabei werden die wichtigsten Anforderungen aus den jeweiligen Bausteinen berücksichtigt.\n\n| Schritt | Was muss dokumentiert werden | Warum / Hinweis aus dem Kontext |\n|--------|------------------------------|---------------------------------|\n| **1. Festlegung des Dokumentations‑Verfahrens** | • Ein verbindliches Verfahren, das beschreibt, **wie** Entscheidungen erfasst, erstellt, freigegeben und archiviert werden. <br>• Regelungen zur **Aktualität**, **Vertraulichkeit** und **Zugriff**. | *DER.4.A12* (Notfall‑Management) und *ISMS.1.A13* (Sicherheitsprozess) fordern ein festgelegtes bzw. geregeltes Vorgehen, das regelmäßige Aktualisierungen und beschränkten Zugriff sicherstellt. |\n| **2. Inhaltliche Erfassung der Entscheidung** | Für jede Management‑Entscheidung mindestens folgende Angaben: <br>• **Was** wurde entschieden (Kurzbeschreibung). <br>• **Warum** – Grundlage bzw. Anlass (z. B. Risiko‑Analyse, gesetzliche Vorgabe, Ergebnis eines Sicherheitsvorfalls). <br>• **Wer** hat die Entscheidung getroffen (Name, Funktion). <br>• **Wann** (Datum, ggf. Uhrzeit). <br>• **Wie** – ggf. Bezug zu bestehenden Richtlinien, Standards oder Abweichungen davon. | *OPS.1.1.2.A11* verlangt, dass aus der Dokumentation hervorgeht, welche Änderungen erfolgten, wann, wer sie durchgeführt hat und auf welcher Grundlage sie erfolgten. |\n| **3. Technische Umsetzung & Versionierung** | • Nutzung eines **zentralen Dokumenten‑Management‑Systems** (DMS) oder einer gesicherten Ablage. <br>• **Versionierung**: Jede neue Entscheidung wird als neue Version gespeichert; Vorgängerversionen bleiben zentral archiviert. <br>• **Kurzfristiger Zugriff** auf die aktuelle Version für autorisierte Personen; ältere Versionen bleiben lesbar, aber nicht änderbar. | *ISMS.1.A13* schreibt die zentrale Archivierung aller Vorgängerversionen und die kurzfristige Verfügbarkeit der aktuellen Version vor. |\n| **4. Zugriffskontrolle & Schutz** | • **Zugriff nur für autorisierte Personen** (z. B. Management, Sicherheitsbeauftragte). <br>• **Schutz vor unbefugtem Ändern/Löschen** (z. B. Schreibschutz, Rollen‑basiertes Berechtigungskonzept). <br>• **Aufbewahrung** über die erforderliche Zeitdauer, gesichert und vor Manipulation geschützt. | *DER.4.A12* und *OPS.1.1.2.A28* betonen, dass der Zugriff beschränkt sein muss und Protokolldateien (bzw. Dokumente) nicht von den Erstellern verändert oder gelöscht werden dürfen. |\n\n### Praktische Umsetzung – Beispiel‑Checkliste\n\n1. **Verfahren definieren**  \n   - Dokumentvorlage (z. B. Entscheidungs‑Protokoll) erstellen.  \n   - Freigabeschritte (Entwurf → Review → Freigabe) festlegen.  \n   - Verantwortlichkeiten (Ersteller, Prüfer, Freigabeberechtigter) zuordnen.\n\n2. **Entscheidung erfassen**  \n   - Titel der Entscheidung  \n   - Datum / Uhrzeit  \n   - Entscheidungsträger (Name, Position)  \n   - Hintergrund / Analyse (Risiko‑Bewertung, Vorfall‑Ergebnis, rechtliche Vorgaben)  \n   - Beschluss (konkrete Maßnahme, Ziel)  \n   - Verweis auf betroffene Richtlinien / Standards  \n   - Eventuelle Abweichungen und Begründung  \n\n3. **Speichern & versionieren**  \n   - Dokument im DMS ablegen → automatische Versionsnummer.  \n   - Metadaten: Schlagwörter (z. B. „Notfall“, „Sicherheitskonzept“), Verantwortlicher, Gültigkeitsdatum.  \n   - Vorgängerversionen unveränderlich archivieren.\n\n4. **Zugriff & Schutz**  \n   - Rollen‑basiertes Berechtigungskonzept (z. B. „Management“, „ISMS‑Team“, „Auditor“).  \n   - Schreibschutz für freigegebene Versionen.  \n   - Regelmäßige Prüfung der Zugriffsrechte (z. B. halbjährlich).  \n\n5. **Regelmäßige Aktualisierung**  \n   - Bei Änderungen (z. B. neue Rechtslage, geänderte Risiko‑Bewertung) neue Version anlegen.  \n   - Veraltete Entscheidungen kennzeichnen (z. B. „abgelöst am …“).  \n\n### Was muss besonders beachtet werden?\n\n- **Vollständigkeit & Aktualität** – Die Dokumentation muss den gesamten Entscheidungs‑ und Änderungsprozess abbilden und stets den aktuellen Stand widerspiegeln (*NET.1.2.A12*, *OPS.1.1.2.A11*).  \n- **Vertraulichkeit** – Nur autorisierte Personen dürfen die Entscheidung einsehen; das gilt insbesondere für sicherheitsrelevante oder geschäftskritische Entscheidungen (*DER.4.A12*).  \n- **Nachvollziehbarkeit** – Jede Entscheidung muss eindeutig einem Verantwortlichen, einem Zeitpunkt und einer Begründung zugeordnet sein, damit Audits und Reviews transparent durchgeführt werden können (*OPS.1.1.2.A11*).  \n- **Archivierung** – Alle früheren Versionen sind zentral zu archivieren, um Historie und Nachvollziehbarkeit zu gewährleisten (*ISMS.1.A13*).  \n- **Schutz vor Manipulation** – Dokumente dürfen nach Freigabe nicht mehr verändert oder gelöscht werden; dies wird durch technische Maßnahmen (Schreibschutz, unveränderliche Protokolle) sichergestellt (*OPS.1.1.2.A28*).\n\n---\n\n**Fazit:**  \nManagement‑Entscheidungen werden im IT‑Grundschutz durch ein strukturiertes, versioniertes und zugriffsgeschütztes Verfahren dokumentiert. Die Dokumentation muss **wer, wann, was und warum** festhalten, regelmäßig aktualisiert und zentral archiviert werden. Zugriffsrechte und der Schutz vor unbefugter Veränderung sind dabei zentrale Anforderungen.",
+  "chunks": [
+   {
+    "text": "DER.4.A12 Dokumentation im Notfallmanagement-Prozess (H)\n\nDer Ablauf des Notfallmanagement-Prozesses, die Arbeitsergebnisse der einzelnen Phasen und wichtige Entscheidungen SOLLTEN dokumentiert werden. Ein festgelegtes Verfahren SOLLTE sicherstellen, dass diese Dokumente regelmäßig aktualisiert werden. Darüber hinaus SOLLTE der Zugriff auf die Dokumentation auf autorisierte Personen beschränkt werden.",
+    "pages": "S. 348",
+    "chunk_id": 1407
+   },
+   {
+    "text": "ISMS.1.A13 Dokumentation des Sicherheitsprozesses (S)\n\nDer Ablauf des Sicherheitsprozesses SOLLTE dokumentiert werden. Wichtige Entscheidungen und die Arbeitsergebnisse der einzelnen Phasen wie Sicherheitskonzept, Richtlinien oder Untersuchungsergebnisse von Sicherheitsvorfällen SOLLTEN ausreichend dokumentiert werden. Es SOLLTE eine geregelte Vorgehensweise für die Erstellung und Archivierung von Dokumentationen im Rahmen des Sicherheitsprozesses geben. Regelungen SOLLTEN existieren, um die Aktualität und Vertraulichkeit der Dokumentationen zu wahren. Von den vorhandenen Dokumenten SOLLTE die jeweils aktuelle Version kurzfristig zugänglich sein. Außerdem SOLLTEN alle Vorgängerversionen zentral archiviert werden.",
+    "pages": "S. 102",
+    "chunk_id": 236
+   },
+   {
+    "text": "NET.1.2.A12 Ist-Aufnahme und Dokumentation des Netzmanagements (S)\n\nEs SOLLTE eine Dokumentation erstellt werden, die beschreibt, wie die Management-Infrastruktur des Netzes aufgebaut ist. Darin SOLLTEN die initiale Ist-Aufnahme sowie alle durchgeführten Änderungen im Netzmanagement enthalten sein. Insbesondere SOLLTE dokumentiert werden, welche Netzkomponenten mit welchen ManagementWerkzeugen verwaltet werden. Außerdem SOLLTEN alle für das Netzmanagement benutzten IT-Arbeitsplätze und -Endgeräte sowie alle Informationsbestände, Management-Daten und Informationen über den Betrieb des Netzmanagements erfasst werden. Letztlich SOLLTEN sämtliche Schnittstellen zu Anwendungen und Diensten außerhalb des Netzmanagements dokumentiert werden. Der so dokumentierte Ist-Zustand der Management-Infrastruktur SOLLTE mit der Dokumentation der Netz-Infrastruktur abgeglichen werden (siehe Baustein NET.1.1 Netz-Architektur- und Design). Die Dokumentation SOLLTE vollständig und immer aktuell sein.",
+    "pages": "S. 708",
+    "chunk_id": 3279
+   },
+   {
+    "text": "OPS.1.1.2.A11 Dokumentation von IT-Administrationstätigkeiten (S)\n\nDurchgeführte Administrationstätigkeiten SOLLTEN nachvollziehbar dokumentiert werden. Es SOLLTE geprüft werden, welche grundsätzlichen Anforderungen an die Dokumentation der Administrationstätigkeiten existieren. Es SOLLTE identifiziert werden, welche Ziele mit der Dokumentation erreicht werden sollen. Aufgrund dieser Anforderungen und Ziele SOLLTE verbindlich festgelegt werden, welche Schritte in welchem Detailierungsgrad dokumentiert werden. Aus der Dokumentation SOLLTE mindestens hervorgehen, welche Änderungen erfolgten, wann die Änderungen erfolgten, wer die Änderungen durchgeführt hat, auf welcher Grundlage bzw. aus welchem Anlass die Änderungen erfolgt sind und inwiefern und aus welchem Grund gegebenenfalls von vorgegebenen Standards oder Konfigurationen abgewichen wurde. Dokumentation im Kontext einer Administrationstätigkeit SOLLTE in Standard-Arbeitsabläufen enthalten sein. Es SOLLTE geregelt werden, welche Möglichkeiten zu nutzen sind, falls Administrationstätigkeiten außerplanmäßig durchgeführt werden. Es SOLLTE identifiziert werden, unter welchen Umständen ein Zugriff auf die Dokumentation notwendig ist. Der Zugriff SOLLTE dementsprechend gewährleistet sein.",
+    "pages": "S. 216-217",
+    "chunk_id": 741
+   },
+   {
+    "text": "OPS.1.1.2.A28 Protokollierung administrativer Tätigkeiten (S)\n\nAdministrative Tätigkeiten SOLLTEN protokolliert werden. Die Protokolldateien SOLLTEN für eine angemessene Zeitdauer geschützt aufbewahrt werden. Die ausführenden Administrierenden SOLLTEN keine Möglichkeiten haben, die aufgezeichneten Protokolldateien zu verändern oder zu löschen. Protokolldaten SOLLTEN regelmäßig geprüft werden.",
+    "pages": "S. 218",
+    "chunk_id": 751
+   }
+  ],
+  "context_precision": 0.9166666666361111,
+  "context_recall": 0.6666666666666666,
+  "ac": {
+   "answer_claims": [
+    "The documentation of management decisions can be summarized in four steps based on the IT baseline requirements (sources 1‑5).",
+    "The four steps consider the most important requirements from the respective modules.",
+    "Step 1 defines the documentation procedure.",
+    "The documentation procedure is a binding process that describes how decisions are recorded, created, approved, and archived.",
+    "The documentation procedure includes regulations for currency, confidentiality, and access.",
+    "The standards DER.4.A12 (Emergency Management) and ISMS.1.A13 (Security Process) require a defined and regulated approach that ensures regular updates and restricted access.",
+    "Step 2 specifies the content capture of each management decision.",
+    "Each management decision must include at least the following information: a short description of what was decided.",
+    "Each management decision must include the reason or basis for the decision, such as risk analysis, legal requirement, or result of a security incident.",
+    "Each management decision must identify the decision maker by name and function.",
+    "Each management decision must record the date and, if applicable, the time of the decision.",
+    "Each management decision must describe how the decision relates to existing policies, standards, or deviations from them.",
+    "The requirement OPS.1.1.2.A11 mandates that the documentation shows which changes occurred, when the changes occurred, the responsible person who performed the changes, and the basis on which the changes occurred.",
+    "Step 3 addresses technical implementation and versioning.",
+    "A central document management system (DMS) or a secured storage location must be used for storing decision documents.",
+    "Versioning requires that each new decision is saved as a new version while previous versions remain centrally archived.",
+    "Authorized persons must have short‑term access to the current version, while older versions remain readable but not editable.",
+    "The requirement ISMS.1.A13 mandates central archiving of all previous versions and short‑term availability of the current version.",
+    "Step 4 defines access control and protection.",
+    "Access to decision documents is limited to authorized persons such as management and security officers.",
+    "Protection measures must prevent unauthorized modification or deletion, for example by using write protection and role‑based permission concepts.",
+    "Retention of documents must cover the required time period, be secured, and protected from manipulation.",
+    "The requirements DER.4.A12 and OPS.1.1.2.A28 emphasize that access must be restricted and that documents may not be altered or deleted by the creators of the documents.",
+    "Define the documentation procedure.",
+    "Create a document template such as a decision protocol.",
+    "Establish approval steps: draft, review, approval.",
+    "Assign responsibilities for creator, reviewer, and approver.",
+    "Capture the decision.",
+    "Record the decision title.",
+    "Record the date and time.",
+    "Record the decision maker name and position.",
+    "Record the background or analysis, including risk assessment, incident result, or legal requirements.",
+    "Record the resolution, i.e., the concrete measure or goal.",
+    "Reference the affected policies or standards.",
+    "Document any deviations and the justification for each deviation.",
+    "Store and version the decision.",
+    "Place the document in the DMS; the DMS generates an automatic version number.",
+    "Add metadata such as keywords (e.g., “Emergency”, “Security Concept”), responsible person, and validity date.",
+    "Archive previous versions in an immutable manner.",
+    "Control access and protection.",
+    "Implement a role‑based permission concept with roles such as Management, ISMS Team, and Auditor.",
+    "Apply write protection to approved versions.",
+    "Conduct regular reviews of access rights, for example semi‑annually.",
+    "Update the documentation regularly.",
+    "Create a new version when changes occur, such as new legal requirements or updated risk assessments.",
+    "Mark outdated decisions, for example with “superseded on …”.",
+    "Completeness and currency require that the documentation reflects the entire decision and change process and always shows the current state (NET.1.2.A12, OPS.1.1.2.A11).",
+    "Confidentiality requires that only authorized persons may view the decision, especially for security‑relevant or business‑critical decisions (DER.4.A12).",
+    "Traceability requires that each decision is clearly linked to a responsible person, a timestamp, and a justification, enabling transparent audits and reviews (OPS.1.1.2.A11).",
+    "Archiving requires that all earlier versions are stored centrally to preserve history and traceability (ISMS.1.A13).",
+    "Protection against manipulation requires that documents cannot be changed or deleted after approval, enforced by technical measures such as write protection and immutable logs (OPS.1.1.2.A28).",
+    "Management decisions are documented in the IT baseline by a structured, versioned, and access‑protected procedure.",
+    "The documentation must capture the responsible person, the timestamp, the content, and the justification, be updated regularly, and be stored centrally.",
+    "Access rights and protection against unauthorized changes are central requirements."
+   ],
+   "reference_claims": [
+    "Management-Berichte müssen klar priorisierte Maßnahmenvorschläge mit realistischen Abschätzungen zum Umsetzungsaufwand enthalten.",
+    "Management-Berichte müssen revisionssicher archiviert werden.",
+    "Management-Entscheidungen über erforderliche Aktionen, den Umgang mit Restrisiken und Veränderungen von sicherheitsrelevanten Prozessen müssen dokumentiert werden.",
+    "Management-Entscheidungen über erforderliche Aktionen, den Umgang mit Restrisiken und Veränderungen von sicherheitsrelevanten Prozessen müssen revisionssicher archiviert werden.",
+    "Für die Dokumentation muss eine geregelte Vorgehensweise existieren, die Aktualität der Dokumentation wahrt.",
+    "Für die Dokumentation muss eine geregelte Vorgehensweise existieren, die Vertraulichkeit der Dokumentation wahrt.",
+    "Zur Information der Institutionsleitung müssen regelmäßig Management-Berichte über den Stand der Informationssicherheit erstellt werden.",
+    "Management-Berichte müssen wesentliche Informationen über den Sicherheitsprozess enthalten, einschließlich Problemen, Erfolgen und Verbesserungsmöglichkeiten.",
+    "Management-Berichte müssen priorisierte Maßnahmenvorschläge mit realistischen Abschätzungen zum erwarteten Umsetzungsaufwand enthalten.",
+    "Management-Berichte müssen revisionssicher archiviert werden.",
+    "Dokumentierte Management-Entscheidungen über erforderliche Aktionen, den Umgang mit Restrisiken und Veränderungen sicherheitsrelevanter Prozesse müssen revisionssicher archiviert werden.",
+    "Eine geregelte Vorgehensweise für die Erstellung und Archivierung von Dokumentationen muss existieren.",
+    "Regelungen müssen die Aktualität der Dokumentationen sicherstellen.",
+    "Regelungen müssen die Vertraulichkeit der Dokumentationen sicherstellen.",
+    "Die jeweils aktuelle Version der Dokumente muss kurzfristig zugänglich sein.",
+    "Alle Vorgängerversionen der Dokumente müssen zentral archiviert werden."
+   ],
+   "TP": [
+    {
+     "statement": "The documentation procedure is a binding process that describes how decisions are recorded, created, approved, and archived.",
+     "reason": "Ground truth requires a regulated procedure for documenting decisions; this statement directly describes such a binding process."
+    },
+    {
+     "statement": "The documentation procedure includes regulations for currency, confidentiality, and access.",
+     "reason": "Matches ground‑truth statements that a regulated approach must ensure currency (Aktualität) and confidentiality of the documentation."
+    },
+    {
+     "statement": "The requirement OPS.1.1.2.A11 mandates that the documentation shows which changes occurred, when the changes occurred, the responsible person who performed the changes, and the basis on which the changes occurred.",
+     "reason": "Directly supports the ground‑truth requirement for traceability and currency of documented decisions."
+    },
+    {
+     "statement": "A central document management system (DMS) or a secured storage location must be used for storing decision documents.",
+     "reason": "Ground truth states that documentation must be stored centrally and archived revision‑securely; a DMS fulfills this requirement."
+    },
+    {
+     "statement": "Versioning requires that each new decision is saved as a new version while previous versions remain centrally archived.",
+     "reason": "Corresponds to the ground‑truth need that all previous versions be centrally archived (\"Alle Vorgängerversionen der Dokumente müssen zentral archiviert werden.\")"
+    },
+    {
+     "statement": "Authorized persons must have short‑term access to the current version, while older versions remain readable but not editable.",
+     "reason": "Directly matches the ground‑truth statement that the current version must be short‑term accessible."
+    },
+    {
+     "statement": "The requirement ISMS.1.A13 mandates central archiving of all previous versions and short‑term availability of the current version.",
+     "reason": "Explicitly restates the ground‑truth requirements for central archiving and short‑term access."
+    },
+    {
+     "statement": "Access to decision documents is limited to authorized persons such as management and security officers.",
+     "reason": "Supports ground‑truth clauses that the documentation must preserve confidentiality."
+    },
+    {
+     "statement": "Protection measures must prevent unauthorized modification or deletion, for example by using write protection and role‑based permission concepts.",
+     "reason": "Directly reflects the ground‑truth demand for confidentiality and protection against unauthorized changes."
+    },
+    {
+     "statement": "The requirements DER.4.A12 and OPS.1.1.2.A28 emphasize that access must be restricted and that documents may not be altered or deleted by the creators of the documents.",
+     "reason": "Reinforces the ground‑truth rules on confidentiality and revision‑secure archiving."
+    },
+    {
+     "statement": "Completeness and currency require that the documentation reflects the entire decision and change process and always shows the current state (NET.1.2.A12, OPS.1.1.2.A11).",
+     "reason": "Matches the ground‑truth requirement that the documentation must stay current (Aktualität)."
+    },
+    {
+     "statement": "Confidentiality requires that only authorized persons may view the decision, especially for security‑relevant or business‑critical decisions (DER.4.A12).",
+     "reason": "Directly aligns with the ground‑truth clause about maintaining confidentiality of the documentation."
+    },
+    {
+     "statement": "Traceability requires that each decision is clearly linked to a responsible person, a timestamp, and a justification, enabling transparent audits and reviews (OPS.1.1.2.A11).",
+     "reason": "Supports the ground‑truth demand for traceability and currency of documented decisions."
+    },
+    {
+     "statement": "Archiving requires that all earlier versions are stored centrally to preserve history and traceability (ISMS.1.A13).",
+     "reason": "Restates the ground‑truth rule that all previous versions must be centrally archived."
+    },
+    {
+     "statement": "Protection against manipulation requires that documents cannot be changed or deleted after approval, enforced by technical measures such as write protection and immutable logs (OPS.1.1.2.A28).",
+     "reason": "Directly reflects the ground‑truth requirement for protection against unauthorized modification."
+    },
+    {
+     "statement": "Management decisions are documented in the IT baseline by a structured, versioned, and access‑protected procedure.",
+     "reason": "Summarises several ground‑truth statements about a regulated, revision‑secure documentation process."
+    },
+    {
+     "statement": "The documentation must capture the responsible person, the timestamp, the content, and the justification, be updated regularly, and be stored centrally.",
+     "reason": "Directly fulfills ground‑truth requirements for currency, confidentiality, traceability and central archiving."
+    },
+    {
+     "statement": "Access rights and protection against unauthorized changes are central requirements.",
+     "reason": "Encapsulates the ground‑truth emphasis on confidentiality and protection of the documentation."
+    },
+    {
+     "statement": "Step 1 defines the documentation procedure.",
+     "reason": "Corresponds to the ground‑truth need for a regulated approach to documentation."
+    },
+    {
+     "statement": "Step 3 addresses technical implementation and versioning.",
+     "reason": "Relates to the ground‑truth requirement that versions be stored centrally and archived."
+    },
+    {
+     "statement": "Step 4 defines access control and protection.",
+     "reason": "Matches ground‑truth clauses on confidentiality and access restriction."
+    }
+   ],
+   "FP": [
+    {
+     "statement": "The documentation of management decisions can be summarized in four steps based on the IT baseline requirements (sources 1‑5).",
+     "reason": "Ground truth does not mention a four‑step summary or the IT baseline; the statement adds information not present in the reference."
+    },
+    {
+     "statement": "The four steps consider the most important requirements from the respective modules.",
+     "reason": "No corresponding ground‑truth statement about \"four steps\" or module requirements."
+    },
+    {
+     "statement": "Step 2 specifies the content capture of each management decision.",
+     "reason": "Ground truth does not detail a step‑wise content capture process."
+    },
+    {
+     "statement": "Each management decision must include at least the following information: a short description of what was decided.",
+     "reason": "Specific content‑capture details are not mentioned in the ground truth."
+    },
+    {
+     "statement": "Each management decision must include the reason or basis for the decision, such as risk analysis, legal requirement, or result of a security incident.",
+     "reason": "Ground truth does not list these exact justification elements."
+    },
+    {
+     "statement": "Each management decision must identify the decision maker by name and function.",
+     "reason": "Not stated in the ground‑truth reference."
+    },
+    {
+     "statement": "Each management decision must record the date and, if applicable, the time of the decision.",
+     "reason": "Ground truth mentions timestamps only in a generic way; this detailed requirement is not present."
+    },
+    {
+     "statement": "Each management decision must describe how the decision relates to existing policies, standards, or deviations from them.",
+     "reason": "No matching ground‑truth statement."
+    },
+    {
+     "statement": "The standards DER.4.A12 (Emergency Management) and ISMS.1.A13 (Security Process) require a defined and regulated approach that ensures regular updates and restricted access.",
+     "reason": "Ground truth does not reference these specific standards."
+    },
+    {
+     "statement": "Define the documentation procedure.",
+     "reason": "A generic instruction not explicitly present in the ground truth."
+    },
+    {
+     "statement": "Create a document template such as a decision protocol.",
+     "reason": "Template creation is not mentioned in the ground truth."
+    },
+    {
+     "statement": "Establish approval steps: draft, review, approval.",
+     "reason": "Approval workflow details are absent from the reference."
+    },
+    {
+     "statement": "Assign responsibilities for creator, reviewer, and approver.",
+     "reason": "No corresponding ground‑truth statement."
+    },
+    {
+     "statement": "Capture the decision.",
+     "reason": "Too generic and not directly supported by the ground truth."
+    },
+    {
+     "statement": "Record the decision title.",
+     "reason": "Not mentioned in the ground truth."
+    },
+    {
+     "statement": "Record the date and time.",
+     "reason": "Ground truth only speaks about currency, not this exact phrasing."
+    },
+    {
+     "statement": "Record the decision maker name and position.",
+     "reason": "Not covered by the ground‑truth statements."
+    },
+    {
+     "statement": "Record the background or analysis, including risk assessment, incident result, or legal requirements.",
+     "reason": "Specific background‑recording details are not in the ground truth."
+    },
+    {
+     "statement": "Record the resolution, i.e., the concrete measure or goal.",
+     "reason": "No matching ground‑truth statement."
+    },
+    {
+     "statement": "Reference the affected policies or standards.",
+     "reason": "Ground truth does not require explicit referencing of policies."
+    },
+    {
+     "statement": "Document any deviations and the justification for each deviation.",
+     "reason": "Not mentioned in the reference list."
+    },
+    {
+     "statement": "Store and version the decision.",
+     "reason": "While versioning is covered, the phrasing \"store and version the decision\" is not a direct ground‑truth statement."
+    },
+    {
+     "statement": "Place the document in the DMS; the DMS generates an automatic version number.",
+     "reason": "Specific DMS behaviour is not described in the ground truth."
+    },
+    {
+     "statement": "Add metadata such as keywords (e.g., “Emergency”, “Security Concept”), responsible person, and validity date.",
+     "reason": "Metadata details are not part of the ground‑truth."
+    },
+    {
+     "statement": "Archive previous versions in an immutable manner.",
+     "reason": "Ground truth requires central archiving but does not specify immutability."
+    },
+    {
+     "statement": "Control access and protection.",
+     "reason": "Too generic; the ground truth mentions confidentiality but not this exact wording."
+    },
+    {
+     "statement": "Implement a role‑based permission concept with roles such as Management, ISMS Team, and Auditor.",
+     "reason": "Specific role‑based model is not in the ground truth."
+    },
+    {
+     "statement": "Apply write protection to approved versions.",
+     "reason": "Write protection is implied by confidentiality but not explicitly stated in the reference."
+    },
+    {
+     "statement": "Conduct regular reviews of access rights, for example semi‑annually.",
+     "reason": "Ground truth does not mention a review frequency."
+    },
+    {
+     "statement": "Update the documentation regularly.",
+     "reason": "While currency is required, the explicit instruction to \"update regularly\" is not a ground‑truth statement."
+    },
+    {
+     "statement": "Create a new version when changes occur, such as new legal requirements or updated risk assessments.",
+     "reason": "Ground truth does not detail the triggers for new versions."
+    },
+    {
+     "statement": "Mark outdated decisions, for example with “superseded on …”.",
+     "reason": "Not covered by the ground‑truth."
+    },
+    {
+     "statement": "Retention of documents must cover the required time period, be secured, and protected from manipulation.",
+     "reason": "Retention period is not mentioned in the ground truth."
+    }
+   ],
+   "FN": [
+    {
+     "statement": "Management-Berichte müssen klar priorisierte Maßnahmenvorschläge mit realistischen Abschätzungen zum Umsetzungsaufwand enthalten.",
+     "reason": "This requirement about prioritized measures in management reports is absent from the answer."
+    },
+    {
+     "statement": "Management-Berichte müssen revisionssicher archiviert werden.",
+     "reason": "The answer does not mention that management reports must be archived revision‑securely."
+    },
+    {
+     "statement": "Zur Information der Institutionsleitung müssen regelmäßig Management-Berichte über den Stand der Informationssicherheit erstellt werden.",
+     "reason": "No statement in the answer refers to the regular creation of management reports for the institution’s leadership."
+    },
+    {
+     "statement": "Management-Berichte müssen wesentliche Informationen über den Sicherheitsprozess enthalten, einschließlich Problemen, Erfolgen und Verbesserungsmöglichkeiten.",
+     "reason": "The answer does not cover the content requirements for management reports."
+    },
+    {
+     "statement": "Management-Berichte müssen priorisierte Maßnahmenvorschläge mit realistischen Abschätzungen zum erwarteten Umsetzungsaufwand enthalten.",
+     "reason": "Again, the answer lacks any mention of prioritized action proposals in management reports."
+    },
+    {
+     "statement": "Management-Berichte müssen revisionssicher archiviert werden.",
+     "reason": "Duplicate of a previous ground‑truth item; still not addressed in the answer."
+    }
+   ],
+   "f1": 0.5185185185185185,
+   "similarity": 0.7154639097023454,
+   "score": 0.5677548663144751
+  },
+  "faithfulness": {
+   "claims": [
+    {
+     "statement": "Die Dokumentation von Management‑Entscheidungen basiert auf den Vorgaben des IT‑Grundschutzes (Quellen 1‑5) und wird in vier Schritten zusammengefasst.",
+     "verdict": 0,
+     "reason": "The context does not mention four steps or specific sources; therefore the statement cannot be directly inferred."
+    },
+    {
+     "statement": "Schritt 1 definiert ein verbindliches Dokumentations‑Verfahren, das beschreibt, wie Entscheidungen erfasst, erstellt, freigegeben und archiviert werden.",
+     "verdict": 0,
+     "reason": "The context does not describe a step‑wise procedure; this detail is not present."
+    },
+    {
+     "statement": "Schritt 1 beinhaltet Regelungen zur Aktualität, Vertraulichkeit und zum Zugriff auf Dokumente.",
+     "verdict": 0,
+     "reason": "No step‑wise description is given in the context, so the statement cannot be inferred."
+    },
+    {
+     "statement": "Die Vorgaben DER.4.A12 und ISMS.1.A13 fordern ein festgelegtes Vorgehen mit regelmäßigen Aktualisierungen und beschränktem Zugriff.",
+     "verdict": 1,
+     "reason": "Both DER.4.A12 and ISMS.1.A13 explicitly require a defined procedure, regular updates and access limited to authorized persons."
+    },
+    {
+     "statement": "Schritt 2 legt die inhaltliche Erfassung jeder Management‑Entscheidung fest.",
+     "verdict": 0,
+     "reason": "The context does not contain a description of a second step; the statement is not directly supported."
+    },
+    {
+     "statement": "Für jede Entscheidung muss eine Kurzbeschreibung des Beschlusses angegeben werden.",
+     "verdict": 0,
+     "reason": "The standards mention documentation of decisions but do not require a short description; the statement cannot be directly inferred."
+    },
+    {
+     "statement": "Für jede Entscheidung muss die Grundlage oder der Anlass (z. b. Risiko‑Analyse, gesetzliche Vorgabe, Ergebnis eines Sicherheitsvorfalls) dokumentiert werden.",
+     "verdict": 0,
+     "reason": "The context requires documentation of the basis for changes, not explicitly for every decision; therefore the statement is not directly inferable."
+    },
+    {
+     "statement": "Für jede Entscheidung muss der Name und die Funktion des Entscheidungsträgers angegeben werden.",
+     "verdict": 0,
+     "reason": "The standards speak about who performed changes, but do not explicitly require naming the decision‑maker for each decision."
+    },
+    {
+     "statement": "Für jede Entscheidung muss das Datum und ggf. die Uhrzeit der Entscheidung festgehalten werden.",
+     "verdict": 0,
+     "reason": "The context mandates recording when changes occur, not specifically when decisions are made."
+    },
+    {
+     "statement": "Für jede Entscheidung muss ein Bezug zu bestehenden Richtlinien, Standards oder Abweichungen davon angegeben werden.",
+     "verdict": 0,
+     "reason": "No explicit requirement of linking each decision to existing standards is stated in the given texts."
+    },
+    {
+     "statement": "Die Anforderung OPS.1.1.2.A11 verlangt, dass die Dokumentation Änderungen, Zeitpunkt, Verantwortlichen und Grundlage nachweist.",
+     "verdict": 1,
+     "reason": "OPS.1.1.2.A11 explicitly requires documentation of changes, when they occurred, who performed them and the underlying basis."
+    },
+    {
+     "statement": "Schritt 3 beschreibt die technische Umsetzung und Versionierung der Dokumentation.",
+     "verdict": 0,
+     "reason": "The context does not outline a third step; this detail is not present."
+    },
+    {
+     "statement": "Ein zentrales Dokumenten‑Management‑System (DMS) oder eine gesicherte Ablage wird für die Speicherung verwendet.",
+     "verdict": 0,
+     "reason": "The standards mention archiving and central storage but do not specify a DMS."
+    },
+    {
+     "statement": "Jede neue Entscheidung wird als neue Version im DMS gespeichert.",
+     "verdict": 0,
+     "reason": "The context does not describe this concrete workflow."
+    },
+    {
+     "statement": "Vorgängerversionen bleiben zentral archiviert und unveränderlich.",
+     "verdict": 1,
+     "reason": "ISMS.1.A13 requires that all previous versions be centrally archived; this implies they remain unchanged."
+    },
+    {
+     "statement": "Autorisierten Personen wird kurzfristiger Zugriff auf die aktuelle Version gewährt.",
+     "verdict": 1,
+     "reason": "ISMS.1.A13 states that the current version must be short‑term accessible to authorized persons."
+    },
+    {
+     "statement": "Ältere Versionen bleiben lesbar, aber nicht änderbar.",
+     "verdict": 1,
+     "reason": "The requirement to archive previous versions centrally and keep them immutable leads to this conclusion."
+    },
+    {
+     "statement": "Die Vorgabe ISMS.1.A13 schreibt zentrale Archivierung aller Vorgängerversionen und kurzfristige Verfügbarkeit der aktuellen Version vor.",
+     "verdict": 1,
+     "reason": "This is explicitly stated in ISMS.1.A13."
+    },
+    {
+     "statement": "Schritt 4 regelt Zugriffskontrolle und Schutz der Dokumente.",
+     "verdict": 0,
+     "reason": "No fourth step is described in the provided context."
+    },
+    {
+     "statement": "Zugriff ist nur für autorisierte Personen wie Management und Sicherheitsbeauftragte erlaubt.",
+     "verdict": 0,
+     "reason": "The context limits access to authorized persons but does not specify the particular roles; the added examples are not directly supported."
+    },
+    {
+     "statement": "Schutzmaßnahmen umfassen Schreibschutz und ein rollenbasiertes Berechtigungskonzept.",
+     "verdict": 0,
+     "reason": "Specific technical measures such as write‑protection or role‑based concepts are not mentioned in the standards."
+    },
+    {
+     "statement": "Dokumente müssen über die erforderliche Aufbewahrungsdauer gesichert und vor Manipulation geschützt werden.",
+     "verdict": 1,
+     "reason": "Both ISMS.1.A13 and OPS.1.1.2.A28 require confidentiality, integrity and protection against unauthorized changes."
+    },
+    {
+     "statement": "Die Vorgaben DER.4.A12 und OPS.1.1.2.A28 betonen, dass der Zugriff beschränkt sein muss und Dokumente nicht von den Erstellern verändert oder gelöscht werden dürfen.",
+     "verdict": 0,
+     "reason": "DER.4.A12 limits access, and OPS.1.1.2.A28 restricts administrators from altering log files, but it does not state that all documents cannot be changed by their creators; the statement overgeneralises."
+    },
+    {
+     "statement": "Die praktische Umsetzung beginnt mit der Definition eines Verfahrens und der Erstellung einer Dokumentvorlage (Entscheidungs‑Protokoll).",
+     "verdict": 0,
+     "reason": "The context does not describe this concrete implementation step."
+    },
+    {
+     "statement": "Freigabeschritte werden als Entwurf → Review → Freigabe festgelegt.",
+     "verdict": 0,
+     "reason": "No such workflow is described in the provided texts."
+    },
+    {
+     "statement": "Verantwortlichkeiten werden den Rollen Ersteller, Prüfer und Freigabeberechtigter zugeordnet.",
+     "verdict": 0,
+     "reason": "The standards do not enumerate these specific roles."
+    },
+    {
+     "statement": "Bei der Erfassung einer Entscheidung werden Titel, Datum, Uhrzeit, Entscheidungsträger, Hintergrund, Analyse, Beschluss, Verweis auf Richtlinien und eventuelle Abweichungen dokumentiert.",
+     "verdict": 0,
+     "reason": "Such a detailed list is not present in the context."
+    },
+    {
+     "statement": "Das Dokument wird im DMS abgelegt, wodurch eine automatische Versionsnummer erzeugt wird.",
+     "verdict": 0,
+     "reason": "The context does not mention automatic version numbers or a DMS."
+    },
+    {
+     "statement": "Metadaten wie Schlagwörter, Verantwortlicher und Gültigkeitsdatum werden dem Dokument hinzugefügt.",
+     "verdict": 0,
+     "reason": "No mention of these specific metadata fields is made."
+    },
+    {
+     "statement": "Vorgängerversionen werden unveränderlich archiviert.",
+     "verdict": 1,
+     "reason": "ISMS.1.A13 requires central archiving of previous versions, implying they remain unchanged."
+    },
+    {
+     "statement": "Ein rollenbasiertes Berechtigungskonzept definiert Rollen wie Management, ISMS‑Team und Auditor.",
+     "verdict": 0,
+     "reason": "The standards do not specify such a role model."
+    },
+    {
+     "statement": "Freigegebene Versionen erhalten Schreibschutz.",
+     "verdict": 0,
+     "reason": "Write‑protection is not explicitly required in the given texts."
+    },
+    {
+     "statement": "Die Zugriffsrechte werden regelmäßig, zum Beispiel halbjährlich, geprüft.",
+     "verdict": 0,
+     "reason": "No periodic review interval is stated in the context."
+    },
+    {
+     "statement": "Bei Änderungen wie neuer Rechtslage oder geänderter Risiko‑Bewertung wird eine neue Version angelegt.",
+     "verdict": 0,
+     "reason": "The context does not describe this specific trigger for versioning."
+    },
+    {
+     "statement": "Veraltete Entscheidungen werden gekennzeichnet, zum Beispiel mit dem Hinweis „abgelöst am …“.",
+     "verdict": 0,
+     "reason": "No such labeling requirement is mentioned."
+    },
+    {
+     "statement": "Die Dokumentation muss vollständig den gesamten Entscheidungs‑ und Änderungsprozess abbilden.",
+     "verdict": 1,
+     "reason": "The standards repeatedly stress that documentation must be complete and cover all relevant activities."
+    },
+    {
+     "statement": "Die Dokumentation muss stets den aktuellen Stand widerspiegeln.",
+     "verdict": 1,
+     "reason": "All standards require the documentation to be always current."
+    },
+    {
+     "statement": "Nur autorisierte Personen dürfen sicherheitsrelevante oder geschäftskritische Entscheidungen einsehen.",
+     "verdict": 1,
+     "reason": "Access is limited to authorized persons according to DER.4.A12 and ISMS.1.A13; this covers security‑relevant information."
+    },
+    {
+     "statement": "Jede Entscheidung muss eindeutig einem Verantwortlichen, einem Zeitpunkt und einer Begründung zugeordnet sein.",
+     "verdict": 1,
+     "reason": "OPS.1.1.2.A11 explicitly requires documentation of who made a change, when, and on what basis."
+    },
+    {
+     "statement": "Die eindeutige Zuordnung ermöglicht transparente Audits und Reviews.",
+     "verdict": 0,
+     "reason": "The purpose of the assignment is not stated in the provided standards; this is an inferred benefit, not a direct requirement."
+    },
+    {
+     "statement": "Alle früheren Versionen müssen zentral archiviert werden, um Historie und Nachvollziehbarkeit zu gewährleisten.",
+     "verdict": 1,
+     "reason": "ISMS.1.A13 mandates central archiving of all previous versions, which serves exactly this purpose."
+    },
+    {
+     "statement": "Dokumente dürfen nach Freigabe nicht mehr verändert oder gelöscht werden.",
+     "verdict": 0,
+     "reason": "The standards restrict alteration of log files and limit access, but they do not explicitly forbid any changes to all documents after release."
+    },
+    {
+     "statement": "Technische Maßnahmen wie Schreibschutz und unveränderliche Protokolle sichern den Schutz vor Manipulation.",
+     "verdict": 0,
+     "reason": "While protection against manipulation is required, specific technical measures such as write‑protection are not enumerated."
+    },
+    {
+     "statement": "Management‑Entscheidungen werden im IT‑Grundschutz durch ein strukturiertes, versioniertes und zugriffsgeschütztes Verfahren dokumentiert.",
+     "verdict": 1,
+     "reason": "The combined requirements of DER.4.A12, ISMS.1.A13 and OPS.1.1.2.A11 describe exactly such a structured, versioned and access‑controlled documentation process."
+    },
+    {
+     "statement": "Die Dokumentation muss wer, wann, was und warum festhalten, regelmäßig aktualisiert und zentral archiviert werden.",
+     "verdict": 1,
+     "reason": "This summarizes the explicit requirements of OPS.1.1.2.A11 and ISMS.1.A13 regarding content, updates and archiving."
+    },
+    {
+     "statement": "Zugriffsrechte und Schutz vor unbefugter Veränderung sind zentrale Anforderungen.",
+     "verdict": 1,
+     "reason": "All cited standards emphasize restricted access and protection against unauthorized changes."
+    }
+   ],
+   "score": 0.34782608695652173
+  },
+  "words_answer": 604,
+  "words_reference": 150
+ },
+ "D": {
+  "index": 0,
+  "question": "Welche Maßnahmen sind bei erhöhtem Schutzbedarf für Webserver sinnvoll?",
+  "reference": "Bei erhöhtem Schutzbedarf sollten Webserver redundant ausgelegt werden, einschließlich redundanter Internetanbindung und ggf. weiterer Systeme wie Webanwendungsserver. Zudem sollten Maßnahmen zur Absicherung gegen DDoS-Angriffe definiert und umgesetzt werden, sowie eine ständige Überwachung des Webserver-Betriebs erfolgen.",
+  "fundstelle": "\"APP.3.2 Webserver\n3.3. Anforderungen bei erhöhtem Schutzbedarf\nIm Folgenden sind für diesen Baustein exemplarische Vorschläge für Anforderungen aufgeführt, die über dasjenige Schutzniveau hinausgehen, das dem Stand der Technik entspricht. Die Vorschläge SOLLTEN bei erhöhtem Schutzbedarf in Betracht gezogen werden. Die konkrete Festlegung erfolgt im Rahmen einer individuellen Risikoanalyse.\",\n\"APP.3.2.A15 Redundanz (H) \nWebserver SOLLTEN redundant ausgelegt werden. Auch die Internetanbindung des Webservers und weiterer IT-Systeme, wie etwa der Webanwendungsserver, SOLLTEN redundant ausgelegt sein.\",\n\"APP.3.2.A17 ENTFALLEN (H)\nDiese Anforderung ist entfallen.\",\n\"APP.3.2.A18 Schutz vor Denial-of-Service-Angriffen (H)\nDer Webserver SOLLTE ständig überwacht werden. Des Weiteren SOLLTEN Maßnahmen definiert und umgesetzt werden, die DDoS-Angriffe verhindern oder zumindest abschwächen.\",\n\"APP.3.2.A19 ENTFALLEN (H)\nDiese Anforderung ist entfallen.\"",
+  "answer": "**Sinnvolle Maßnahmen bei erhöhtem Schutzbedarf für Webserver (nach dem bereitgestellten Kontext)**  \n\n| Maßnahme | Begründung / Hinweis aus dem Kontext |\n|----------|--------------------------------------|\n| **Erstellung einer Sicherheitsrichtlinie** (APP.3.2.A9) | Eine verbindliche Richtlinie muss die erforderlichen Maßnahmen, Zuständigkeiten, Beschaffung von Informationen zu aktuellen Sicherheitslücken, Umsetzung von Sicherheitsmaßnahmen und Vorgehen bei Sicherheitsvorfällen festlegen. |\n| **Sichere Grundkonfiguration** (APP.3.2.A1) | Der Webserver‑Prozess muss einem Konto mit **minimalen Rechten** zugewiesen werden. Er muss in einer **gekapselten Umgebung** (z. B. Container, VM) laufen. Falls das nicht möglich ist, sollte jeder Webserver auf einem **eigenen physischen oder virtuellen Server** betrieben werden. |\n| **Entzug nicht notwendiger Schreibrechte** | Alle nicht zwingend erforderlichen Schreibberechtigungen für den Webserver‑Dienst müssen entfernt werden. |\n| **Deaktivierung nicht benötigter Module/Funktionen** | Nur die tatsächlich benötigten Web‑Server‑Module dürfen aktiv sein; alle anderen **MÜSSEN deaktiviert** werden. |\n| **Verwendung von TLS 1.2 oder höher** | Der BSI‑Leitfaden *„Migration auf TLS 1.2 – Handlungsleitfaden“* (Quelle 4) wird als relevante Dokumentation genannt und ist für den sicheren Transport (HTTPS) zu nutzen. |\n| **Beachtung weiterführender BSI‑ und NIST‑Dokumente** | „Sicheres Webhosting“, „Sicheres Bereitstellen von Webangeboten (ISi‑Webserver)“ und das NIST‑Dokument *Guideline on Securing Public Web Servers* (Quelle 4) liefern zusätzliche, für hochsichere Umgebungen empfohlene Vorgehensweisen. |\n| **Regelmäßige Informationsbeschaffung zu Sicherheitslücken** | Die Sicherheitsrichtlinie (APP.3.2.A9) soll festlegen, **wie** aktuelle Informationen zu Schwachstellen beschafft werden (z. B. via CERT‑Meldungen, Hersteller‑Advisories). |\n| **Kontinuierliche Überprüfung und Aktualisierung** | Im Rahmen der Richtlinie muss definiert sein, **wie** und **wann** Sicherheitsmaßnahmen (z. B. Patches, Konfigurations‑Checks) umgesetzt werden. |\n| **Incident‑Response‑Prozesse** | Die Richtlinie muss ebenfalls das Vorgehen bei **Sicherheitsvorfällen** beschreiben (Quelle 2). |\n| **Isolation und Segmentierung** | Durch den Betrieb in einer gekapselten Umgebung bzw. auf eigenen (physischen/virtuellen) Servern wird die Angriffsfläche reduziert und ein möglicher Angriff auf andere Systeme begrenzt. |\n\n**Zusammenfassung**  \nFür Webserver mit erhöhtem Schutzbedarf ist es empfehlenswert, zunächst eine umfassende Sicherheitsrichtlinie zu etablieren, die alle relevanten Prozesse (Lückenmanagement, Patch‑Management, Incident‑Response) abdeckt. Darauf aufbauend muss der Server sicher konfiguriert werden: minimale Rechte, gekapselte Ausführung, getrennte (physische/virtuelle) Instanz, Entzug unnötiger Schreibrechte und Deaktivierung nicht benötigter Module. Der Datenverkehr sollte ausschließlich über TLS 1.2 / 1.3 erfolgen, und die Betreiber sollten die BSI‑ und NIST‑Leitfäden als weiterführende Quellen nutzen. Regelmäßige Überprüfung, Aktualisierung und ein definiertes Vorgehen bei Vorfällen runden das Sicherheitskonzept ab.",
+  "chunks": [
+   {
+    "text": "1.2. Zielsetzung\n\nZiel dieses Bausteins ist der Schutz des Webservers und der Informationen, die durch den Webserver bereitgestellt oder damit verarbeitet werden.",
+    "pages": "S. 395",
+    "chunk_id": 1647
+   },
+   {
+    "text": "APP.3.2.A9 Festlegung einer Sicherheitsrichtlinie für den Webserver (S)\n\nEs SOLLTE eine Sicherheitsrichtlinie erstellt werden, in der die erforderlichen Maßnahmen und Zuständigkeiten benannt sind. Weiterhin SOLLTE geregelt werden, wie Informationen zu aktuellen Sicherheitslücken besorgt werden. Auch SOLLTE geregelt werden, wie Sicherheitsmaßnahmen umgesetzt werden und wie vorgegangen werden soll, wenn Sicherheitsvorfälle eintreten.",
+    "pages": "S. 398",
+    "chunk_id": 1668
+   },
+   {
+    "text": "1.1. Einleitung\n\nEin Webserver ist die Kernkomponente jedes Webangebotes, er nimmt Anfragen der Clients entgegen und liefert die entsprechenden Inhalte zurück. Die Daten werden in der Regel über das Hypertext Transfer Protocol (HTTP) oder dessen mit Transport Layer Security (TLS) verschlüsselte Variante HTTP Secure (HTTPS) transportiert. Da Webserver eine einfache Schnittstelle zwischen Serveranwendungen und Clients bieten, werden sie auch häufig für interne Informationen und Anwendungen in Institutionsnetzen, wie dem Intranet, eingesetzt. Webserver sind in der Regel direkt im Internet verfügbar und bieten somit eine exponierte Angriffsfläche. Deswegen müssen sie durch geeignete Schutzmaßnahmen abgesichert werden.",
+    "pages": "S. 395",
+    "chunk_id": 1646
+   },
+   {
+    "text": "4.1. Wissenswertes\n\nDas Bundesamt für Sicherheit in der Informationstechnik hat folgende weiterführende Dokumente veröffentlicht, die für den Betrieb von Webservern relevant sein können: Migration auf TLS 1.2 - Handlungsleitfaden Sicheres Webhosting: Handlungsempfehlung für Webhoster Sicheres Bereitstellen von Webangeboten (ISi-Webserver) Das National Institute of Standards and Technology (NIST) stellt in seinem Dokument 'Guideline on Securing Public Web Servers' Hinweise zur Absicherung von Webservern zur Verfügung.",
+    "pages": "S. 400",
+    "chunk_id": 1680
+   },
+   {
+    "text": "APP.3.2.A1 Sichere Konfiguration eines Webservers (B)\n\nNachdem der IT-Betrieb einen Webserver installiert hat, MUSS er eine sichere Grundkonfiguration vornehmen. Dazu MUSS er insbesondere den Webserver-Prozess einem Konto mit minimalen Rechten zuweisen. Der Webserver MUSS in einer gekapselten Umgebung ausgeführt werden, sofern dies vom Betriebssystem unterstützt wird. Ist dies nicht möglich, SOLLTE jeder Webserver auf einem eigenen physischen oder virtuellen Server ausgeführt werden. Dem Webserver-Dienst MÜSSEN alle nicht notwendige Schreibberechtigungen entzogen werden. Nicht benötigte Module und Funktionen des Webservers MÜSSEN deaktiviert werden.",
+    "pages": "S. 397",
+    "chunk_id": 1658
+   }
+  ],
+  "context_precision": 0.0,
+  "context_recall": 0.0,
+  "ac": {
+   "answer_claims": [
+    "Eine verbindliche Sicherheitsrichtlinie muss die erforderlichen Maßnahmen, Zuständigkeiten, Beschaffung von Informationen zu aktuellen Sicherheitslücken, Umsetzung von Sicherheitsmaßnahmen und Vorgehen bei Sicherheitsvorfällen festlegen.",
+    "Der Webserver‑Prozess muss einem Konto mit minimalen Rechten zugewiesen werden.",
+    "Der Webserver‑Prozess muss in einer gekapselten Umgebung, zum Beispiel einem Container oder einer virtuellen Maschine, laufen.",
+    "Jeder Webserver sollte auf einem eigenen physischen oder virtuellen Server betrieben werden, falls eine gekapselte Umgebung nicht möglich ist.",
+    "Alle nicht zwingend erforderlichen Schreibberechtigungen für den Webserver‑Dienst müssen entfernt werden.",
+    "Nur die tatsächlich benötigten Web‑Server‑Module dürfen aktiv sein.",
+    "Alle nicht benötigten Web‑Server‑Module müssen deaktiviert werden.",
+    "Der BSI‑Leitfaden \"Migration auf TLS 1.2 – Handlungsleitfaden\" muss für den sicheren Transport über HTTPS genutzt werden.",
+    "Die Dokumente \"Sicheres Webhosting\", \"Sicheres Bereitstellen von Webangeboten (ISi‑Webserver)\" und das NIST‑Dokument \"Guideline on Securing Public Web Servers\" liefern zusätzliche empfohlene Vorgehensweisen für hochsichere Umgebungen.",
+    "Die Sicherheitsrichtlinie soll festlegen, wie aktuelle Informationen zu Schwachstellen beschafft werden, zum Beispiel über CERT‑Meldungen oder Hersteller‑Advisories.",
+    "Die Sicherheitsrichtlinie muss definieren, wie und wann Sicherheitsmaßnahmen wie Patches und Konfigurations‑Checks umgesetzt werden.",
+    "Die Sicherheitsrichtlinie muss das Vorgehen bei Sicherheitsvorfällen beschreiben.",
+    "Der Betrieb des Webservers in einer gekapselten Umgebung oder auf eigenen physischen bzw. virtuellen Servern reduziert die Angriffsfläche.",
+    "Der Betrieb des Webservers in einer gekapselten Umgebung oder auf eigenen Servern begrenzt einen möglichen Angriff auf andere Systeme.",
+    "Für Webserver mit erhöhtem Schutzbedarf ist es empfehlenswert, zunächst eine umfassende Sicherheitsrichtlinie zu etablieren, die alle relevanten Prozesse wie Lückenmanagement, Patch‑Management und Incident‑Response abdeckt.",
+    "Der Server muss sicher konfiguriert werden, indem minimale Rechte, gekapselte Ausführung und getrennte physische oder virtuelle Instanz verwendet werden.",
+    "Unnötige Schreibrechte müssen vom Webserver‑Dienst entzogen werden.",
+    "Nicht benötigte Module müssen deaktiviert werden.",
+    "Der Datenverkehr sollte ausschließlich über TLS 1.2 oder TLS 1.3 erfolgen.",
+    "Betreiber sollten die BSI‑ und NIST‑Leitfäden als weiterführende Quellen nutzen.",
+    "Regelmäßige Überprüfung und Aktualisierung des Sicherheitskonzepts sind erforderlich.",
+    "Ein definiertes Vorgehen bei Sicherheitsvorfällen rundet das Sicherheitskonzept ab."
+   ],
+   "reference_claims": [
+    "Bei erhöhtem Schutzbedarf sollten Webserver redundant ausgelegt werden.",
+    "Redundante Internetanbindung sollte für Webserver bereitgestellt werden.",
+    "Weitere Systeme wie Webanwendungsserver können bei erhöhtem Schutzbedarf hinzugefügt werden.",
+    "Maßnahmen zur Absicherung gegen DDoS-Angriffe sollten definiert werden.",
+    "Maßnahmen zur Absicherung gegen DDoS-Angriffe sollten umgesetzt werden.",
+    "Eine ständige Überwachung des Webserver-Betriebs sollte erfolgen."
+   ],
+   "TP": [],
+   "FP": [
+    {
+     "statement": "Eine verbindliche Sicherheitsrichtlinie muss die erforderlichen Maßnahmen, Zuständigkeiten, Beschaffung von Informationen zu aktuellen Sicherheitslücken, Umsetzung von Sicherheitsmaßnahmen und Vorgehen bei Sicherheitsvorfällen festlegen.",
+     "reason": "The ground truth does not mention a security policy or its contents, so this statement is not directly supported."
+    },
+    {
+     "statement": "Der Webserver‑Prozess muss einem Konto mit minimalen Rechten zugewiesen werden.",
+     "reason": "No ground‑truth statement addresses minimal‑rights accounts for the web‑server process."
+    },
+    {
+     "statement": "Der Webserver‑Prozess muss in einer gekapselten Umgebung, zum Beispiel einem Container oder einer virtuellen Maschine, laufen.",
+     "reason": "The ground truth does not discuss containerisation or isolated execution environments."
+    },
+    {
+     "statement": "Jeder Webserver sollte auf einem eigenen physischen oder virtuellen Server betrieben werden, falls eine gekapselte Umgebung nicht möglich ist.",
+     "reason": "The ground truth does not mention dedicated physical or virtual servers for each web server."
+    },
+    {
+     "statement": "Alle nicht zwingend erforderlichen Schreibberechtigungen für den Webserver‑Dienst müssen entfernt werden.",
+     "reason": "No ground‑truth statement covers removal of unnecessary write permissions."
+    },
+    {
+     "statement": "Nur die tatsächlich benötigten Web‑Server‑Module dürfen aktiv sein.",
+     "reason": "The ground truth does not address enabling only required web‑server modules."
+    },
+    {
+     "statement": "Alle nicht benötigten Web‑Server‑Module müssen deaktiviert werden.",
+     "reason": "This detail about disabling unused modules is absent from the ground truth."
+    },
+    {
+     "statement": "Der BSI‑Leitfaden \"Migration auf TLS 1.2 – Handlungsleitfaden\" muss für den sicheren Transport über HTTPS genutzt werden.",
+     "reason": "The ground truth does not reference the BSI TLS‑1.2 guideline."
+    },
+    {
+     "statement": "Die Dokumente \"Sicheres Webhosting\", \"Sicheres Bereitstellen von Webangeboten (ISi‑Webserver)\" und das NIST‑Dokument \"Guideline on Securing Public Web Servers\" liefern zusätzliche empfohlene Vorgehensweisen für hochsichere Umgebungen.",
+     "reason": "No ground‑truth statement mentions these documents or additional recommended practices."
+    },
+    {
+     "statement": "Die Sicherheitsrichtlinie soll festlegen, wie aktuelle Informationen zu Schwachstellen beschafft werden, zum Beispiel über CERT‑Meldungen oder Hersteller‑Advisories.",
+     "reason": "Ground truth does not discuss how vulnerability information should be obtained."
+    },
+    {
+     "statement": "Die Sicherheitsrichtlinie muss definieren, wie und wann Sicherheitsmaßnahmen wie Patches und Konfigurations‑Checks umgesetzt werden.",
+     "reason": "The ground truth contains no mention of patch‑ or configuration‑check scheduling."
+    },
+    {
+     "statement": "Die Sicherheitsrichtlinie muss das Vorgehen bei Sicherheitsvorfällen beschreiben.",
+     "reason": "While the ground truth mentions incident handling, it does not specify that the security policy must describe it."
+    },
+    {
+     "statement": "Der Betrieb des Webservers in einer gekapselten Umgebung oder auf eigenen physischen bzw. virtuellen Servern reduziert die Angriffsfläche.",
+     "reason": "Ground truth does not address attack‑surface reduction through isolation."
+    },
+    {
+     "statement": "Der Betrieb des Webservers in einer gekapselten Umgebung oder auf eigenen Servern begrenzt einen möglichen Angriff auf andere Systeme.",
+     "reason": "No ground‑truth statement covers limiting impact on other systems via isolation."
+    },
+    {
+     "statement": "Für Webserver mit erhöhtem Schutzbedarf ist es empfehlenswert, zunächst eine umfassende Sicherheitsrichtlinie zu etablieren, die alle relevanten Prozesse wie Lückenmanagement, Patch‑Management und Incident‑Response abdeckt.",
+     "reason": "The ground truth does not mention establishing a comprehensive security policy."
+    },
+    {
+     "statement": "Der Server muss sicher konfiguriert werden, indem minimale Rechte, gekapselte Ausführung und getrennte physische oder virtuelle Instanz verwendet werden.",
+     "reason": "No ground‑truth statement describes these specific hardening measures."
+    },
+    {
+     "statement": "Unnötige Schreibrechte müssen vom Webserver‑Dienst entzogen werden.",
+     "reason": "The ground truth does not contain any reference to removing unnecessary write rights."
+    },
+    {
+     "statement": "Nicht benötigte Module müssen deaktiviert werden.",
+     "reason": "This detail is not present in the ground truth."
+    },
+    {
+     "statement": "Der Datenverkehr sollte ausschließlich über TLS 1.2 oder TLS 1.3 erfolgen.",
+     "reason": "Ground truth does not mention TLS versions or encrypted transport."
+    },
+    {
+     "statement": "Betreiber sollten die BSI‑ und NIST‑Leitfäden als weiterführende Quellen nutzen.",
+     "reason": "No ground‑truth statement refers to using BSI or NIST guidelines."
+    },
+    {
+     "statement": "Regelmäßige Überprüfung und Aktualisierung des Sicherheitskonzepts sind erforderlich.",
+     "reason": "The ground truth calls for continuous monitoring of the web‑server operation, not for periodic review of a security concept."
+    },
+    {
+     "statement": "Ein definiertes Vorgehen bei Sicherheitsvorfällen rundet das Sicherheitskonzept ab.",
+     "reason": "While the ground truth mentions incident handling, it does not specify that a defined procedure must complete the security concept."
+    }
+   ],
+   "FN": [
+    {
+     "statement": "Bei erhöhtem Schutzbedarf sollten Webserver redundant ausgelegt werden.",
+     "reason": "This redundancy recommendation is present in the ground truth but not mentioned in the answer."
+    },
+    {
+     "statement": "Redundante Internetanbindung sollte für Webserver bereitgestellt werden.",
+     "reason": "The answer does not contain any statement about providing redundant internet connectivity."
+    },
+    {
+     "statement": "Weitere Systeme wie Webanwendungsserver können bei erhöhtem Schutzbedarf hinzugefügt werden.",
+     "reason": "No answer statement refers to adding additional systems such as application servers."
+    },
+    {
+     "statement": "Maßnahmen zur Absicherung gegen DDoS-Angriffe sollten definiert werden.",
+     "reason": "The answer lacks any mention of defining DDoS protection measures."
+    },
+    {
+     "statement": "Maßnahmen zur Absicherung gegen DDoS-Angriffe sollten umgesetzt werden.",
+     "reason": "Implementation of DDoS mitigation is not covered by any answer statement."
+    },
+    {
+     "statement": "Eine ständige Überwachung des Webserver-Betriebs sollte erfolgen.",
+     "reason": "Continuous monitoring of the web‑server operation is absent from the answer."
+    }
+   ],
+   "f1": 0.0,
+   "similarity": 0.7505770450914756,
+   "score": 0.1876442612728689
+  },
+  "faithfulness": {
+   "claims": [
+    {
+     "statement": "Eine verbindliche Sicherheitsrichtlinie muss die erforderlichen Maßnahmen festlegen.",
+     "verdict": 0,
+     "reason": "Der Kontext spricht von einer empfohlenen (SOLLTE) Sicherheitsrichtlinie, nicht von einer verpflichtenden (MUSS) Vorgabe."
+    },
+    {
+     "statement": "Eine verbindliche Sicherheitsrichtlinie muss die Zuständigkeiten festlegen.",
+     "verdict": 0,
+     "reason": "Im Kontext wird nur empfohlen (SOLLTE), die Zuständigkeiten zu benennen, nicht vorgeschrieben."
+    },
+    {
+     "statement": "Eine verbindliche Sicherheitsrichtlinie muss die Beschaffung von Informationen zu aktuellen Sicherheitslücken festlegen.",
+     "verdict": 0,
+     "reason": "Der Text sagt, dass dies geregelt werden SOLLTE, nicht MUSS."
+    },
+    {
+     "statement": "Eine verbindliche Sicherheitsrichtlinie muss die Umsetzung von Sicherheitsmaßnahmen festlegen.",
+     "verdict": 0,
+     "reason": "Im Kontext wird die Regelung der Umsetzung nur als SOLLTE formuliert."
+    },
+    {
+     "statement": "Eine verbindliche Sicherheitsrichtlinie muss das Vorgehen bei Sicherheitsvorfällen festlegen.",
+     "verdict": 0,
+     "reason": "Der Kontext verwendet SOLLTE, nicht MUSS, für das Vorgehen bei Vorfällen."
+    },
+    {
+     "statement": "Der Webserver‑Prozess muss einem Konto mit minimalen Rechten zugewiesen werden.",
+     "verdict": 1,
+     "reason": "Der Kontext verlangt explizit, dass der Webserver-Prozess einem Konto mit minimalen Rechten zugewiesen werden MUSS."
+    },
+    {
+     "statement": "Der Webserver‑Prozess muss in einer gekapselten Umgebung, zum Beispiel Container oder virtuelle Maschine, laufen.",
+     "verdict": 1,
+     "reason": "Der Text sagt, dass der Webserver MUSS in einer gekapselten Umgebung ausgeführt werden, sofern das Betriebssystem dies unterstützt."
+    },
+    {
+     "statement": "Falls eine gekapselte Umgebung nicht möglich ist, muss jeder Webserver auf einem eigenen physischen Server betrieben werden.",
+     "verdict": 0,
+     "reason": "Der Kontext empfiehlt (SOLLTE) einen eigenen physischen oder virtuellen Server, aber schreibt es nicht als Pflicht (MUSS) vor."
+    },
+    {
+     "statement": "Falls eine gekapselte Umgebung nicht möglich ist, muss jeder Webserver auf einem eigenen virtuellen Server betrieben werden.",
+     "verdict": 0,
+     "reason": "Wie bei Aussage 8 wird nur empfohlen (SOLLTE), nicht verpflichtend (MUSS)."
+    },
+    {
+     "statement": "Alle nicht zwingend erforderlichen Schreibberechtigungen für den Webserver‑Dienst müssen entfernt werden.",
+     "verdict": 1,
+     "reason": "Der Kontext fordert, dass alle nicht notwendigen Schreibberechtigungen dem Webserver-Dienst entzogen werden MUSS."
+    },
+    {
+     "statement": "Nur die tatsächlich benötigten Web‑Server‑Module dürfen aktiv sein.",
+     "verdict": 1,
+     "reason": "Da nicht benötigte Module MUSS deaktiviert werden, folgt daraus, dass nur die benötigten aktiv bleiben."
+    },
+    {
+     "statement": "Alle anderen Web‑Server‑Module müssen deaktiviert werden.",
+     "verdict": 1,
+     "reason": "Der Kontext verlangt, dass nicht benötigte Module und Funktionen des Webservers MUSS deaktiviert werden."
+    },
+    {
+     "statement": "Der BSI‑Leitfaden „Migration auf TLS 1.2 – Handlungsleitfaden“ wird als relevante Dokumentation genannt.",
+     "verdict": 1,
+     "reason": "Im Abschnitt Wissenswertes wird dieser BSI-Leitfaden als relevante Dokumentation für den Betrieb von Webservern aufgeführt."
+    },
+    {
+     "statement": "Der BSI‑Leitfaden muss für den sicheren Transport von HTTPS genutzt werden.",
+     "verdict": 0,
+     "reason": "Der Kontext nennt den Leitfaden nur als relevante Quelle, nicht als zwingende Vorgabe."
+    },
+    {
+     "statement": "Das Dokument „Sicheres Webhosting“ liefert zusätzliche, für hochsichere Umgebungen empfohlene Vorgehensweisen.",
+     "verdict": 0,
+     "reason": "Der Kontext nennt das Dokument als potenziell relevante Quelle, gibt aber keine Aussage über empfohlene Vorgehensweisen für hochsichere Umgebungen."
+    },
+    {
+     "statement": "Das Dokument „Sicheres Bereitstellen von Webangeboten (ISi‑Webserver)“ liefert zusätzliche, für hochsichere Umgebungen empfohlene Vorgehensweisen.",
+     "verdict": 0,
+     "reason": "Im Text wird das Dokument nur als mögliche Referenz genannt, nicht als Quelle für spezifische hochsichere Empfehlungen."
+    },
+    {
+     "statement": "Das NIST‑Dokument Guideline on Securing Public Web Servers liefert zusätzliche, für hochsichere Umgebungen empfohlene Vorgehensweisen.",
+     "verdict": 0,
+     "reason": "Der Kontext nennt das NIST-Dokument als relevante Quelle, jedoch ohne explizite Aussage zu hochsicheren Vorgehensweisen."
+    },
+    {
+     "statement": "Die Sicherheitsrichtlinie muss festlegen, wie aktuelle Informationen zu Schwachstellen beschafft werden.",
+     "verdict": 0,
+     "reason": "Der Text verwendet SOLLTE (empfohlen), nicht MUSS (verpflichtend) für diese Festlegung."
+    },
+    {
+     "statement": "Beispiele für Beschaffungsquellen sind CERT‑Meldungen und Hersteller‑Advisories.",
+     "verdict": 0,
+     "reason": "Der Kontext nennt keine konkreten Beispiele für Beschaffungsquellen."
+    },
+    {
+     "statement": "Die Sicherheitsrichtlinie muss definieren, wie Sicherheitsmaßnahmen umgesetzt werden.",
+     "verdict": 0,
+     "reason": "Im Kontext wird dies nur als SOLLTE formuliert, nicht als verpflichtende Vorgabe."
+    },
+    {
+     "statement": "Die Sicherheitsrichtlinie muss definieren, wann Sicherheitsmaßnahmen umgesetzt werden.",
+     "verdict": 0,
+     "reason": "Der Kontext enthält keinerlei Hinweis auf einen Zeitplan für die Umsetzung."
+    },
+    {
+     "statement": "Beispiele für Sicherheitsmaßnahmen sind Patches und Konfigurations‑Checks.",
+     "verdict": 0,
+     "reason": "Der Text nennt keine konkreten Beispiele für Sicherheitsmaßnahmen."
+    },
+    {
+     "statement": "Die Sicherheitsrichtlinie muss das Vorgehen bei Sicherheitsvorfällen beschreiben.",
+     "verdict": 0,
+     "reason": "Der Kontext spricht von einer SOLLTE-Empfehlung, nicht von einer MUSS-Vorgabe."
+    },
+    {
+     "statement": "Der Betrieb in einer gekapselten Umgebung reduziert die Angriffsfläche.",
+     "verdict": 0,
+     "reason": "Der Text erklärt, dass Webserver eine exponierte Angriffsfläche haben und Schutzmaßnahmen notwendig sind, aber er sagt nicht explizit, dass eine gekapselte Umgebung die Angriffsfläche reduziert."
+    },
+    {
+     "statement": "Der Betrieb auf eigenen physischen Servern reduziert die Angriffsfläche.",
+     "verdict": 0,
+     "reason": "Eine solche Aussage wird im Kontext nicht explizit gemacht."
+    },
+    {
+     "statement": "Der Betrieb auf eigenen virtuellen Servern reduziert die Angriffsfläche.",
+     "verdict": 0,
+     "reason": "Der Kontext enthält keine direkte Aussage über die Reduktion der Angriffsfläche durch virtuelle Server."
+    },
+    {
+     "statement": "Der Betrieb in einer gekapselten Umgebung begrenzt einen möglichen Angriff auf andere Systeme.",
+     "verdict": 0,
+     "reason": "Der Text nennt diese Begrenzung nicht explizit."
+    },
+    {
+     "statement": "Der Betrieb auf eigenen physischen Servern begrenzt einen möglichen Angriff auf andere Systeme.",
+     "verdict": 0,
+     "reason": "Im Kontext wird diese Begrenzung nicht direkt angegeben."
+    },
+    {
+     "statement": "Der Betrieb auf eigenen virtuellen Servern begrenzt einen möglichen Angriff auf andere Systeme.",
+     "verdict": 0,
+     "reason": "Der Kontext liefert keine direkte Aussage dazu."
+    },
+    {
+     "statement": "Webserver mit erhöhtem Schutzbedarf sollten zunächst eine umfassende Sicherheitsrichtlinie etablieren, die alle relevanten Prozesse, einschließlich Lückenmanagement, Patch‑Management und Incident‑Response, abdeckt.",
+     "verdict": 0,
+     "reason": "Eine solche Empfehlung wird im Text nicht genannt."
+    },
+    {
+     "statement": "Der Server muss sicher konfiguriert werden, indem minimale Rechte vergeben werden.",
+     "verdict": 1,
+     "reason": "Der Kontext verlangt, dass der Webserver-Prozess einem Konto mit minimalen Rechten zugewiesen wird, was eine sichere Konfiguration impliziert."
+    },
+    {
+     "statement": "Der Server muss in einer gekapselten Umgebung ausgeführt werden.",
+     "verdict": 1,
+     "reason": "Der Text sagt eindeutig, dass der Webserver MUSS in einer gekapselten Umgebung ausgeführt werden, sofern das Betriebssystem dies unterstützt."
+    },
+    {
+     "statement": "Der Server muss auf einer getrennten physischen oder virtuellen Instanz betrieben werden.",
+     "verdict": 0,
+     "reason": "Der Kontext empfiehlt (SOLLTE) einen eigenen physischen oder virtuellen Server, aber schreibt es nicht als Pflicht (MUSS) vor."
+    },
+    {
+     "statement": "Unnötige Schreibrechte für den Server müssen entzogen werden.",
+     "verdict": 1,
+     "reason": "Der Kontext fordert, dass alle nicht notwendigen Schreibberechtigungen dem Webserver-Dienst entzogen werden MUSS."
+    },
+    {
+     "statement": "Nicht benötigte Module für den Server müssen deaktiviert werden.",
+     "verdict": 1,
+     "reason": "Der Text verlangt, dass nicht benötigte Module und Funktionen des Webservers MUSS deaktiviert werden."
+    },
+    {
+     "statement": "Der Datenverkehr muss ausschließlich über TLS 1.2 oder TLS 1.3 erfolgen.",
+     "verdict": 0,
+     "reason": "Der Kontext erwähnt TLS 1.2 und HTTPS, aber es wird nicht gefordert, dass ausschließlich TLS 1.2/1.3 verwendet werden muss."
+    },
+    {
+     "statement": "Betreiber müssen die BSI‑ und NIST‑Leitfäden als weiterführende Quellen nutzen.",
+     "verdict": 0,
+     "reason": "Der Text nennt die Leitfäden als relevante Dokumente, aber nicht als verpflichtende Nutzung."
+    },
+    {
+     "statement": "Regelmäßige Überprüfung und Aktualisierung des Sicherheitskonzepts müssen durchgeführt werden.",
+     "verdict": 0,
+     "reason": "Eine solche Anforderung wird im Kontext nicht genannt."
+    },
+    {
+     "statement": "Ein definiertes Vorgehen bei Sicherheitsvorfällen muss Teil des Sicherheitskonzepts sein.",
+     "verdict": 0,
+     "reason": "Der Kontext spricht von einer SOLLTE-Empfehlung, nicht von einer MUSS-Vorgabe."
+    }
+   ],
+   "score": 0.2564102564102564
+  },
+  "words_answer": 373,
+  "words_reference": 35
+ },
+ "E": {
+  "index": 3,
+  "question": "Was sollten Management-Berichte zur Informationssicherheit enthalten?",
+  "reference": "Managementberichte zur Informationssicherheit sollten der Leitung der Organisation einen klaren Überblick über den Sicherheitsstatus geben. Sie sollten insbesondere Informationen zur aktuellen Gefährdungslage und zur Wirksamkeit sowie Effizienz der Sicherheitsmaßnahmen enthalten. Außerdem sollen sie Probleme, Erfolge und mögliche Verbesserungen im Sicherheitsprozess darstellen. Die Berichte sollten priorisierte Maßnahmenvorschläge enthalten, die mit realistischen Einschätzungen zum erwarteten Umsetzungsaufwand versehen sind. Managemententscheidungen über erforderliche Maßnahmen, den Umgang mit verbleibenden Risiken und Änderungen an sicherheitsrelevanten Prozessen sollten dokumentiert und revisionssicher archiviert werden.",
+  "fundstelle": "ISMS.1.A12 Management-Berichte zur Informationssicherheit (S) [Institutionsleitung]  \nDie Institutionsleitung SOLLTE sich regelmäßig über den Stand der Informationssicherheit informieren, insbesondere über die aktuelle Gefährdungslage sowie die Wirksamkeit und Effizienz des Sicherheitsprozesses. Dazu SOLLTEN Management-Berichte geschrieben werden, welche die wesentlichen relevanten Informationen über den Sicherheitsprozess enthalten, insbesondere über Probleme, Erfolge und Verbesserungsmöglichkeiten. Die Management-Berichte SOLLTEN klar priorisierte Maßnahmenvorschläge enthalten. Die Maßnahmenvorschläge SOLLTEN mit realistischen Abschätzungen zum erwarteten Umsetzungsaufwand versehen sein. Die Management-Berichte SOLLTEN revisionssicher archiviert werden. Die Management-Entscheidungen über erforderliche Aktionen, den Umgang mit Restrisiken und mit \nVeränderungen von sicherheitsrelevanten Prozessen SOLLTEN dokumentiert sein. Die Management-Entscheidungen SOLLTEN revisionssicher archiviert werden.\n\n",
+  "answer": "**Management‑Berichte zur Informationssicherheit sollten nach dem IT‑Grundschutz‑Standard (ISMS.1.A12) mindestens die folgenden Inhalte umfassen:**\n\n1. **Aktueller Stand der Informationssicherheit**  \n   * Überblick über die momentane Gefährdungslage.  \n   * Bewertung der Wirksamkeit und Effizienz des gesamten Sicherheitsprozesses.\n\n2. **Probleme, Erfolge und Verbesserungspotenziale**  \n   * Darstellung von aufgetretenen Sicherheitsproblemen bzw. Schwachstellen.  \n   * Beschreibung von bereits erreichten Erfolgen (z. B. abgeschlossene Maßnahmen, positive Auditergebnisse).  \n   * Aufzeigen von Möglichkeiten zur Optimierung des Sicherheitsprozesses.\n\n3. **Priorisierte Maßnahmenvorschläge**  \n   * Klare Priorisierung der empfohlenen Maßnahmen (z. B. nach Risiko‑ bzw. Dringlichkeitsgrad).  \n   * Realistische Abschätzung des erwarteten Aufwands für die Umsetzung (Ressourcen, Zeit, Kosten).\n\n4. **Dokumentation von Management‑Entscheidungen**  \n   * Festhalten, welche Aktionen von der Institutionsleitung beschlossen wurden.  \n   * Entscheidungen zum Umgang mit Restrisiken.  \n   * Beschlüsse zu Änderungen sicherheitsrelevanter Prozesse.\n\n5. **Archivierung**  \n   * Der Bericht selbst sowie die darin enthaltenen Management‑Entscheidungen müssen revisionssicher archiviert werden, damit sie jederzeit nachvollziehbar und prüfbar sind.\n\nKurz gesagt: Ein Management‑Bericht zur Informationssicherheit muss den aktuellen Sicherheitsstatus, die Gefährdungslage, die Wirksamkeit des Sicherheitsprozesses, konkrete Probleme und Erfolge, klar priorisierte und Aufwand‑bewertete Maßnahmen sowie die daraus resultierenden Management‑Entscheidungen enthalten – alles revisionssicher dokumentiert und archiviert.",
+  "chunks": [
+   {
+    "text": "ISMS.1.A12 Management-Berichte zur Informationssicherheit (S) [Institutionsleitung]\n\nDie Institutionsleitung SOLLTE sich regelmäßig über den Stand der Informationssicherheit informieren, insbesondere über die aktuelle Gefährdungslage sowie die Wirksamkeit und Effizienz des Sicherheitsprozesses. Dazu SOLLTEN Management-Berichte geschrieben werden, welche die wesentlichen relevanten Informationen über den Sicherheitsprozess enthalten, insbesondere über Probleme, Erfolge und Verbesserungsmöglichkeiten. Die Management-Berichte SOLLTEN klar priorisierte Maßnahmenvorschläge enthalten. Die Maßnahmenvorschläge SOLLTEN mit realistischen Abschätzungen zum erwarteten Umsetzungsaufwand versehen sein. Die Management-Berichte SOLLTEN revisionssicher archiviert werden. Die Management-Entscheidungen über erforderliche Aktionen, den Umgang mit Restrisiken und mit Veränderungen von sicherheitsrelevanten Prozessen SOLLTEN dokumentiert sein. Die Management-Entscheidungen SOLLTEN revisionssicher archiviert werden.",
+    "pages": "S. 102",
+    "chunk_id": 235
+   },
+   {
+    "text": "1.2. Zielsetzung\n\nZiel dieses Bausteins ist es, Anforderungen zu beschreiben, um die Informationssicherheit in Institutionen selbst in kritischen Situationen zu gewährleisten. Dazu sind die entsprechenden Maßnahmen in ein ganzheitliches Notfallmanagement einzubetten. Zudem sind alle Aspekte zu betrachten, die erforderlich sind, um die Informationssicherheit auch bei Schadensereignissen oder Notfällen aufrechterhalten zu können. Dies reicht von der Planung bis zur Überprüfung aller Prozesse.",
+    "pages": "S. 345",
+    "chunk_id": 1384
+   },
+   {
+    "text": "Informationssicherheitsmanagement (IS-Management)\n\nDie Planungs-, Lenkungs- und Kontrollaufgabe, die erforderlich ist, um einen durchdachten und wirksamen Prozess zur Herstellung von Informationssicherheit aufzubauen und kontinuierlich umzusetzen, wird als Informations- sicherheitsmanagement bezeichnet. Dabei handelt es sich um einen kontinuierlichen Prozess, dessen Strategien und Konzepte ständig auf ihre Leistungsfähigkeit und Wirksamkeit zu überprüfen und bei Bedarf fortzuschreiben sind.",
+    "pages": "S. 37-38",
+    "chunk_id": 114
+   },
+   {
+    "text": "1.2. Zielsetzung\n\nZiel dieses Bausteins ist es, die Informationssicherheit als integralen Bestandteil des Systemmanagements zu etablieren. Der Baustein beschreibt zum einen, wie das Systemmanagement aufgebaut und abgesichert werden kann, und zum anderen, wie die zugehörige Kommunikation geschützt werden kann.",
+    "pages": "S. 245",
+    "chunk_id": 884
+   },
+   {
+    "text": "DER.3.2.A9 Integration in den Informationssicherheitsprozess (S)\n\nDie Institution SOLLTE sicherstellen, dass IS-Revisionen ein Teil des Sicherheitsprozesses sind. Außerdem SOLLTEN die Ergebnisse von IS-Revisionen in das ISMS zurückfließen und zu dessen Verbesserung beitragen. Weiter SOLLTEN die Ergebnisse der IS-Revisionen sowie die Aktivitäten, um Mängel zu beseitigen und um die Qualität zu verbessern, in den regelmäßigen Bericht des oder der ISB an die Institutionsleitung aufgenommen werden.",
+    "pages": "S. 341",
+    "chunk_id": 1366
+   }
+  ],
+  "context_precision": 0.699999999965,
+  "context_recall": 1.0,
+  "ac": {
+   "answer_claims": [
+    "Management‑Berichte zur Informationssicherheit sollten nach dem IT‑Grundschutz‑Standard (ISMS.1.A12) mindestens die genannten Inhalte umfassen.",
+    "Der aktuelle Stand der Informationssicherheit beinhaltet einen Überblick über die momentane Gefährdungslage.",
+    "Der aktuelle Stand der Informationssicherheit beinhaltet eine Bewertung der Wirksamkeit und Effizienz des gesamten Sicherheitsprozesses.",
+    "Der Abschnitt über Probleme, Erfolge und Verbesserungspotenziale stellt aufgetretene Sicherheitsprobleme bzw. Schwachstellen dar.",
+    "Der Abschnitt über Probleme, Erfolge und Verbesserungspotenziale beschreibt bereits erreichte Erfolge, zum Beispiel abgeschlossene Maßnahmen und positive Auditergebnisse.",
+    "Der Abschnitt über Probleme, Erfolge und Verbesserungspotenziale zeigt Möglichkeiten zur Optimierung des Sicherheitsprozesses auf.",
+    "Der Abschnitt über priorisierte Maßnahmenvorschläge enthält eine klare Priorisierung der empfohlenen Maßnahmen, zum Beispiel nach Risiko‑ bzw. Dringlichkeitsgrad.",
+    "Der Abschnitt über priorisierte Maßnahmenvorschläge enthält eine realistische Abschätzung des erwarteten Aufwands für die Umsetzung, einschließlich Ressourcen, Zeit und Kosten.",
+    "Der Abschnitt über Dokumentation von Management‑Entscheidungen hält fest, welche Aktionen von der Institutionsleitung beschlossen wurden.",
+    "Der Abschnitt über Dokumentation von Management‑Entscheidungen enthält Entscheidungen zum Umgang mit Restrisiken.",
+    "Der Abschnitt über Dokumentation von Management‑Entscheidungen enthält Beschlüsse zu Änderungen sicherheitsrelevanter Prozesse.",
+    "Der Abschnitt über Archivierung verlangt, dass der Bericht selbst sowie die Management‑Entscheidungen, die im Bericht enthalten sind, revisionssicher archiviert werden, damit jederzeit Nachvollziehbarkeit und Prüfbarkeit gewährleistet sind.",
+    "Ein Management‑Bericht zur Informationssicherheit muss den aktuellen Sicherheitsstatus enthalten.",
+    "Ein Management‑Bericht zur Informationssicherheit muss die Gefährdungslage enthalten.",
+    "Ein Management‑Bericht zur Informationssicherheit muss die Wirksamkeit des Sicherheitsprozesses enthalten.",
+    "Ein Management‑Bericht zur Informationssicherheit muss konkrete Probleme und Erfolge enthalten.",
+    "Ein Management‑Bericht zur Informationssicherheit muss klar priorisierte und Aufwand‑bewertete Maßnahmen enthalten.",
+    "Ein Management‑Bericht zur Informationssicherheit muss die daraus resultierenden Management‑Entscheidungen enthalten.",
+    "Alle Inhalte eines Management‑Berichts zur Informationssicherheit müssen revisionssicher dokumentiert und archiviert werden."
+   ],
+   "reference_claims": [
+    "Managementberichte zur Informationssicherheit geben der Leitung der Organisation einen klaren Überblick über den Sicherheitsstatus.",
+    "Managementberichte zur Informationssicherheit enthalten Informationen zur aktuellen Gefährdungslage.",
+    "Managementberichte zur Informationssicherheit enthalten Informationen zur Wirksamkeit der Sicherheitsmaßnahmen.",
+    "Managementberichte zur Informationssicherheit enthalten Informationen zur Effizienz der Sicherheitsmaßnahmen.",
+    "Managementberichte zur Informationssicherheit stellen Probleme im Sicherheitsprozess dar.",
+    "Managementberichte zur Informationssicherheit stellen Erfolge im Sicherheitsprozess dar.",
+    "Managementberichte zur Informationssicherheit stellen mögliche Verbesserungen im Sicherheitsprozess dar.",
+    "Managementberichte zur Informationssicherheit enthalten priorisierte Maßnahmenvorschläge.",
+    "Priorisierte Maßnahmenvorschläge in Managementberichten zur Informationssicherheit sind mit realistischen Einschätzungen zum erwarteten Umsetzungsaufwand versehen.",
+    "Managemententscheidungen über erforderliche Maßnahmen, den Umgang mit verbleibenden Risiken und Änderungen an sicherheitsrelevanten Prozessen werden dokumentiert.",
+    "Managemententscheidungen über erforderliche Maßnahmen, den Umgang mit verbleibenden Risiken und Änderungen an sicherheitsrelevanten Prozessen werden revisionssicher archiviert."
+   ],
+   "TP": [
+    {
+     "statement": "Der aktuelle Stand der Informationssicherheit beinhaltet einen Überblick über die momentane Gefährdungslage.",
+     "reason": "The statement is supported by the ground truth that management reports contain information on the current threat situation (GT2) and provide an overview of security status."
+    },
+    {
+     "statement": "Der aktuelle Stand der Informationssicherheit beinhaltet eine Bewertung der Wirksamkeit und Effizienz des gesamten Sicherheitsprozesses.",
+     "reason": "This directly matches the ground truth statements about reporting the effectiveness (GT3) and efficiency (GT4) of security measures."
+    },
+    {
+     "statement": "Der Abschnitt über Probleme, Erfolge und Verbesserungspotenziale stellt aufgetretene Sicherheitsprobleme bzw. Schwachstellen dar.",
+     "reason": "The ground truth states that management reports present problems in the security process (GT5)."
+    },
+    {
+     "statement": "Der Abschnitt über Probleme, Erfolge und Verbesserungspotenziale beschreibt bereits erreichte Erfolge, zum Beispiel abgeschlossene Maßnahmen und positive Auditergebnisse.",
+     "reason": "This aligns with the ground truth that reports present successes in the security process (GT6)."
+    },
+    {
+     "statement": "Der Abschnitt über Probleme, Erfolge und Verbesserungspotenziale zeigt Möglichkeiten zur Optimierung des Sicherheitsprozesses auf.",
+     "reason": "The ground truth mentions that reports present possible improvements in the security process (GT7)."
+    },
+    {
+     "statement": "Der Abschnitt über priorisierte Maßnahmenvorschläge enthält eine klare Priorisierung der empfohlenen Maßnahmen, zum Beispiel nach Risiko- bzw. Dringlichkeitsgrad.",
+     "reason": "Ground truth requires that reports contain prioritized measure proposals (GT8)."
+    },
+    {
+     "statement": "Der Abschnitt über priorisierte Maßnahmenvorschläge enthält eine realistische Abschätzung des erwarteten Aufwands für die Umsetzung, einschließlich Ressourcen, Zeit und Kosten.",
+     "reason": "This matches the ground truth that prioritized proposals are accompanied by realistic effort estimates (GT9)."
+    },
+    {
+     "statement": "Der Abschnitt über Dokumentation von Management-Entscheidungen hält fest, welche Aktionen von der Institutionsleitung beschlossen wurden.",
+     "reason": "Ground truth states that management decisions are documented (GT10)."
+    },
+    {
+     "statement": "Der Abschnitt über Dokumentation von Management-Entscheidungen enthält Entscheidungen zum Umgang mit Restrisiken.",
+     "reason": "This is covered by the ground truth requirement to document decisions on handling residual risks (GT10)."
+    },
+    {
+     "statement": "Der Abschnitt über Dokumentation von Management-Entscheidungen enthält Beschlüsse zu Änderungen sicherheitsrelevanter Prozesse.",
+     "reason": "Ground truth includes documentation of decisions about changes to security-relevant processes (GT10)."
+    },
+    {
+     "statement": "Der Abschnitt über Archivierung verlangt, dass der Bericht selbst sowie die Management-Entscheidungen, die im Bericht enthalten sind, revisionssicher archiviert werden, damit jederzeit Nachvollziehbarkeit und Prüfbarkeit gewährleistet sind.",
+     "reason": "This aligns with the ground truth that management decisions are archived revision‑securely (GT11)."
+    },
+    {
+     "statement": "Ein Management-Bericht zur Informationssicherheit muss den aktuellen Sicherheitsstatus enthalten.",
+     "reason": "Ground truth says reports give leadership a clear overview of the security status (GT1)."
+    },
+    {
+     "statement": "Ein Management-Bericht zur Informationssicherheit muss die Gefährdungslage enthalten.",
+     "reason": "Matches the ground truth that reports contain information on the current threat situation (GT2)."
+    },
+    {
+     "statement": "Ein Management-Bericht zur Informationssicherheit muss die Wirksamkeit des Sicherheitsprozesses enthalten.",
+     "reason": "Directly supported by the ground truth that reports contain information on the effectiveness of security measures (GT3)."
+    },
+    {
+     "statement": "Ein Management-Bericht zur Informationssicherheit muss konkrete Probleme und Erfolge enthalten.",
+     "reason": "Ground truth requires presentation of problems (GT5) and successes (GT6) in the security process."
+    },
+    {
+     "statement": "Ein Management-Bericht zur Informationssicherheit muss klar priorisierte und Aufwand-bewertete Maßnahmen enthalten.",
+     "reason": "Corresponds to the ground truth statements about prioritized measures (GT8) and realistic effort assessments (GT9)."
+    },
+    {
+     "statement": "Ein Management-Bericht zur Informationssicherheit muss die daraus resultierenden Management-Entscheidungen enthalten.",
+     "reason": "Supported by the ground truth that management decisions are documented (GT10)."
+    },
+    {
+     "statement": "Alle Inhalte eines Management-Berichts zur Informationssicherheit müssen revisionssicher dokumentiert und archiviert werden.",
+     "reason": "Matches the ground truth that management decisions (and thus report contents) are archived revision‑securely (GT11)."
+    }
+   ],
+   "FP": [
+    {
+     "statement": "Management-Berichte zur Informationssicherheit sollten nach dem IT-Grundschutz-Standard (ISMS.1.A12) mindestens die genannten Inhalte umfassen.",
+     "reason": "The ground truth does not mention any requirement to follow the IT-Grundschutz standard, so this statement is not directly supported."
+    }
+   ],
+   "FN": [],
+   "f1": 0.972972972972973,
+   "similarity": 0.9363830564980229,
+   "score": 0.9638254938542355
+  },
+  "faithfulness": {
+   "claims": [
+    {
+     "statement": "Management‑Berichte zur Informationssicherheit sollten nach dem IT‑Grundschutz‑Standard (ISMS.1.A12) mindestens die folgenden Inhalte umfassen.",
+     "verdict": 1,
+     "reason": "The context specifies that management reports must contain essential information such as problems, successes, improvement possibilities, prioritized measures with effort estimates, and documented decisions, which matches the claim that they should include at least those contents."
+    },
+    {
+     "statement": "Der aktuelle Stand der Informationssicherheit umfasst einen Überblick über die momentane Gefährdungslage.",
+     "verdict": 1,
+     "reason": "The context states that the institution should be informed about the current security status, especially the current threat situation."
+    },
+    {
+     "statement": "Der aktuelle Stand der Informationssicherheit beinhaltet die Bewertung der Wirksamkeit und Effizienz des gesamten Sicherheitsprozesses.",
+     "verdict": 1,
+     "reason": "The context explicitly mentions that the current security status includes the effectiveness and efficiency of the security process."
+    },
+    {
+     "statement": "Probleme, Erfolge und Verbesserungspotenziale umfassen die Darstellung von aufgetretenen Sicherheitsproblemen bzw. Schwachstellen.",
+     "verdict": 1,
+     "reason": "The context requires that reports cover \"Probleme\" (problems), which logically includes the description of security problems or vulnerabilities."
+    },
+    {
+     "statement": "Probleme, Erfolge und Verbesserungspotenziale umfassen die Beschreibung von bereits erreichten Erfolgen, zum Beispiel abgeschlossene Maßnahmen und positive Auditergebnisse.",
+     "verdict": 0,
+     "reason": "While the context mentions \"Erfolge\", it does not provide concrete examples such as completed measures or audit results, so this specific elaboration is not directly stated."
+    },
+    {
+     "statement": "Probleme, Erfolge und Verbesserungspotenziale umfassen das Aufzeigen von Möglichkeiten zur Optimierung des Sicherheitsprozesses.",
+     "verdict": 1,
+     "reason": "The context explicitly calls for \"Verbesserungsmöglichkeiten\" (improvement possibilities), i.e., ways to optimise the security process."
+    },
+    {
+     "statement": "Priorisierte Maßnahmenvorschläge enthalten eine klare Priorisierung der empfohlenen Maßnahmen, zum Beispiel nach Risiko‑ bzw. Dringlichkeitsgrad.",
+     "verdict": 1,
+     "reason": "The context requires \"klar priorisierte Maßnahmenvorschläge\", which directly supports the claim of clear prioritisation (examples are an elaboration)."
+    },
+    {
+     "statement": "Priorisierte Maßnahmenvorschläge enthalten eine realistische Abschätzung des erwarteten Aufwands für die Umsetzung, einschließlich Ressourcen, Zeit und Kosten.",
+     "verdict": 1,
+     "reason": "The context states that measure proposals must have realistic estimates of the expected implementation effort, which covers resources, time and cost."
+    },
+    {
+     "statement": "Die Dokumentation von Management‑Entscheidungen hält fest, welche Aktionen von der Institutionsleitung beschlossen wurden.",
+     "verdict": 1,
+     "reason": "The context says that management decisions about required actions must be documented."
+    },
+    {
+     "statement": "Die Dokumentation von Management‑Entscheidungen enthält Entscheidungen zum Umgang mit Restrisiken.",
+     "verdict": 1,
+     "reason": "The context explicitly mentions that decisions concerning the handling of residual risks must be documented."
+    },
+    {
+     "statement": "Die Dokumentation von Management‑Entscheidungen enthält Beschlüsse zu Änderungen sicherheitsrelevanter Prozesse.",
+     "verdict": 1,
+     "reason": "The context requires documentation of decisions regarding changes to security‑relevant processes."
+    },
+    {
+     "statement": "Die Archivierung stellt sicher, dass der Bericht selbst sowie die darin enthaltenen Management‑Entscheidungen revisionssicher archiviert werden.",
+     "verdict": 1,
+     "reason": "The context mandates that both the management reports and the management decisions be archived in a revision‑safe manner."
+    },
+    {
+     "statement": "Die revisionssichere Archivierung ermöglicht, dass der Bericht jederzeit nachvollziehbar und prüfbar ist.",
+     "verdict": 0,
+     "reason": "The text states that archiving must be revision‑safe but does not explicitly claim that this guarantees anytime traceability and auditability."
+    },
+    {
+     "statement": "Ein Management‑Bericht zur Informationssicherheit muss den aktuellen Sicherheitsstatus, die Gefährdungslage, die Wirksamkeit des Sicherheitsprozesses, konkrete Probleme und Erfolge, klar priorisierte und Aufwand‑bewertete Maßnahmen sowie die daraus resultierenden Management‑Entscheidungen enthalten.",
+     "verdict": 1,
+     "reason": "All these elements are listed in the context as required contents of a management report."
+    },
+    {
+     "statement": "Alle Inhalte eines Management‑Berichts zur Informationssicherheit müssen revisionssicher dokumentiert und archiviert werden.",
+     "verdict": 1,
+     "reason": "The context requires that the reports and the management decisions they contain be documented and archived in a revision‑safe way, which covers all report contents."
+    }
+   ],
+   "score": 0.8666666666666667
+  },
+  "words_answer": 176,
+  "words_reference": 76
+ },
+ "check21": {
+  "ac": {
+   "answer_claims": [
+    "All documentation and policies created for the used cloud services must be regularly updated.",
+    "The organization must periodically check whether the cloud provider delivers the contractually promised services.",
+    "The organization must maintain regular coordination between the cloud provider and the institution.",
+    "The organization must obtain demonstrable confirmation from the cloud provider that the agreed security requirements are met.",
+    "The proof of security compliance must be based on an internationally recognized framework such as IT‑Grundschutz, ISO/IEC 27001, C5, or CCM.",
+    "When subcontractors are used, the cloud provider must demonstrate that the subcontractors perform the necessary audits.",
+    "The organization must contractually stipulate that control over all institutional processes remains in‑house even when cloud services are used.",
+    "The organization must conduct migration according to an approved migration concept.",
+    "During migration, the organization must assess whether the security concept must be adjusted and whether all emergency preparedness measures are up to date.",
+    "After go‑live, the organization must verify whether the cloud provider fulfills the defined requirements.",
+    "The organization must perform automatic audits of node, Kubernetes, and pod settings against a defined whitelist and standardized benchmarks.",
+    "Kubernetes must enforce the defined rules in the cluster through appropriate tools.",
+    "The organization must plan and conduct rehearsal tests on how to respond to system failures.",
+    "The organization must regularly update all cloud‑related documents and policies.",
+    "The organization must perform periodic performance and contract checks and maintain close coordination with the cloud provider.",
+    "The organization must provide evidence of fulfillment of security requirements based on recognized standards, including audits of subcontractors.",
+    "The organization must contractually ensure institutional process control.",
+    "The organization must conduct controlled migration with test runs, adjust the security concept, and perform final verification of provider fulfillment.",
+    "The organization must execute automated audits of the cloud infrastructure, such as Kubernetes, against defined configuration and benchmark lists.",
+    "The organization must conduct emergency and recovery exercises to ensure response capability during outages."
+   ],
+   "reference_claims": [
+    "Das Unternehmen aktualisiert Dokumentationen und Richtlinien regelmäßig.",
+    "Das Unternehmen kontrolliert periodisch vertraglich zugesicherte Leistungen.",
+    "Das Unternehmen führt regelmäßige Abstimmungen mit Anbietern durch.",
+    "Das Unternehmen übt Reaktionen auf Systemausfälle ein.",
+    "Der Cloud-Diensteanbieter legt dem Unternehmen regelmäßig Sicherheitsnachweise nach anerkannten Standards vor."
+   ],
+   "TP": [
+    {
+     "statement": "All documentation and policies created for the used cloud services must be regularly updated.",
+     "reason": "Directly matches ground truth that the company updates documentation and policies regularly."
+    },
+    {
+     "statement": "The organization must periodically check whether the cloud provider delivers the contractually promised services.",
+     "reason": "Directly matches ground truth that the company controls periodically the contractually promised services."
+    },
+    {
+     "statement": "The organization must maintain regular coordination between the cloud provider and the institution.",
+     "reason": "Directly matches ground truth that the company conducts regular coordination with providers."
+    },
+    {
+     "statement": "The organization must obtain demonstrable confirmation from the cloud provider that the agreed security requirements are met.",
+     "reason": "Supported by ground truth that the cloud provider regularly provides security evidence according to recognized standards."
+    },
+    {
+     "statement": "The proof of security compliance must be based on an internationally recognized framework such as IT‑Grundschutz, ISO/IEC 27001, C5, or CCM.",
+     "reason": "Ground truth states that security evidence must be based on recognized standards, which this statement specifies."
+    },
+    {
+     "statement": "The organization must plan and conduct rehearsal tests on how to respond to system failures.",
+     "reason": "Directly matches ground truth that the company practices reactions to system failures."
+    },
+    {
+     "statement": "The organization must regularly update all cloud‑related documents and policies.",
+     "reason": "Same content as the ground truth about regular updates of documentation and policies."
+    },
+    {
+     "statement": "The organization must perform periodic performance and contract checks and maintain close coordination with the cloud provider.",
+     "reason": "Combines two ground‑truth points: periodic contract checks and regular coordination with the provider."
+    },
+    {
+     "statement": "The organization must provide evidence of fulfillment of security requirements based on recognized standards, including audits of subcontractors.",
+     "reason": "Ground truth requires regular security evidence based on recognized standards; the added subcontractor audit is extra but the core claim is supported."
+    },
+    {
+     "statement": "The organization must conduct emergency and recovery exercises to ensure response capability during outages.",
+     "reason": "Directly aligns with ground truth that the company practices reactions to system failures."
+    }
+   ],
+   "FP": [
+    {
+     "statement": "When subcontractors are used, the cloud provider must demonstrate that the subcontractors perform the necessary audits.",
+     "reason": "No ground‑truth statement mentions subcontractor audit requirements."
+    },
+    {
+     "statement": "The organization must contractually stipulate that control over all institutional processes remains in‑house even when cloud services are used.",
+     "reason": "Not covered by any ground‑truth statement."
+    },
+    {
+     "statement": "The organization must conduct migration according to an approved migration concept.",
+     "reason": "Migration procedures are not addressed in the ground truth."
+    },
+    {
+     "statement": "During migration, the organization must assess whether the security concept must be adjusted and whether all emergency preparedness measures are up to date.",
+     "reason": "Ground truth does not contain any statement about migration‑related security assessments."
+    },
+    {
+     "statement": "After go‑live, the organization must verify whether the cloud provider fulfills the defined requirements.",
+     "reason": "Verification after go‑live is not mentioned in the ground truth."
+    },
+    {
+     "statement": "The organization must perform automatic audits of node, Kubernetes, and pod settings against a defined whitelist and standardized benchmarks.",
+     "reason": "Specific automated Kubernetes audits are not present in the ground truth."
+    },
+    {
+     "statement": "Kubernetes must enforce the defined rules in the cluster through appropriate tools.",
+     "reason": "No ground‑truth statement refers to Kubernetes enforcement."
+    },
+    {
+     "statement": "The organization must contractually ensure institutional process control.",
+     "reason": "Not mentioned in any ground‑truth statement."
+    },
+    {
+     "statement": "The organization must conduct controlled migration with test runs, adjust the security concept, and perform final verification of provider fulfillment.",
+     "reason": "Migration and related verification steps are absent from the ground truth."
+    },
+    {
+     "statement": "The organization must execute automated audits of the cloud infrastructure, such as Kubernetes, against defined configuration and benchmark lists.",
+     "reason": "Automated cloud‑infrastructure audits are not covered by the ground truth."
+    }
+   ],
+   "FN": [],
+   "f1": 0.6666666666666666,
+   "similarity": 0.7349279081653974,
+   "score": 0.6837319770413494
+  },
+  "faithfulness": {
+   "claims": [
+    {
+     "statement": "Kontinuierliche Compliance im Cloud‑Betrieb lässt sich anhand der im Kontext genannten Maßnahmen in mehrere Handlungsfelder gliedern.",
+     "verdict": 0,
+     "reason": "Der Kontext listet einzelne Soll‑Maßnahmen auf, gibt jedoch keine Aussage darüber, dass diese Maßnahmen zu einer strukturierten Gliederung der Compliance führen."
+    },
+    {
+     "statement": "Alle für die genutzten Cloud‑Dienste erstellten Dokumentationen und Richtlinien werden regelmäßig aktualisiert (OPS.2.2.A12).",
+     "verdict": 0,
+     "reason": "Im Kontext steht, dass die Dokumentationen und Richtlinien *sollten* regelmäßig aktualisiert werden (modaler Ausdruck), nicht dass sie tatsächlich aktualisiert werden."
+    },
+    {
+     "statement": "Periodisch wird geprüft, ob die vertraglich zugesicherten Leistungen vom Cloud‑Anbieter erbracht werden (OPS.2.2.A12).",
+     "verdict": 0,
+     "reason": "Der Kontext formuliert dies als Soll‑Anforderung (\"es SOLLTE periodisch kontrolliert werden\"), nicht als bereits durchgeführte Prüfung."
+    },
+    {
+     "statement": "Regelmäßige Abstimmung zwischen Anbieter und Institution wird durchgeführt (OPS.2.2.A12).",
+     "verdict": 0,
+     "reason": "Im Text wird nur gefordert, dass sich Anbieter und Institution regelmäßig abstimmen *sollten*, nicht dass dies bereits geschieht."
+    },
+    {
+     "statement": "Der Anbieter muss nachweislich bestätigen, dass die vereinbarten Sicherheitsanforderungen erfüllt sind (OPS.2.2.A13).",
+     "verdict": 0,
+     "reason": "Der Kontext spricht von einer *Soll‑Anforderung* (\"die Institution SOLLTE sich von den Cloud‑Diensteanbietenden regelmäßig nachweisen lassen\"), nicht von einer bereits bestehenden Pflicht."
+    },
+    {
+     "statement": "Der Nachweis muss auf einem international anerkannten Regelwerk basieren, zum Beispiel IT‑Grundschutz, ISO/IEC 27001, C5 oder CCM (OPS.2.2.A13).",
+     "verdict": 0,
+     "reason": "Der Kontext formuliert dies als Empfehlung (\"Der Nachweis SOLLTE auf einem international anerkannten Regelwerk basieren\"), nicht als zwingende Vorgabe, die bereits umgesetzt ist."
+    },
+    {
+     "statement": "Bei Einsatz von Subunternehmen muss der Anbieter nachweisen, dass diese die notwendigen Audits durchführen (OPS.2.2.A13).",
+     "verdict": 0,
+     "reason": "Im Kontext wird dies als Soll‑Anforderung (\"SOLLTEN ... nachweisen, dass diese Subunternehmen die notwendigen Audits durchführen\") ausgedrückt, nicht als bereits erfüllte Pflicht."
+    },
+    {
+     "statement": "Vertraglich wird festgelegt, dass die Kontrolle über alle institutionellen Prozesse im eigenen Haus verbleibt, auch wenn Cloud‑Dienste genutzt werden (INF.13.A24).",
+     "verdict": 0,
+     "reason": "Der Text verlangt, dass dies *sollte* vertraglich festgelegt werden, liefert jedoch keine Aussage, dass eine solche vertragliche Regelung bereits besteht."
+    },
+    {
+     "statement": "Migration wird nach einem genehmigten Migrationskonzept durchgeführt (OPS.2.2.A10).",
+     "verdict": 0,
+     "reason": "Der Kontext sagt, die Migration *sollte* auf Basis des erstellten Migrationskonzeptes erfolgen – das ist eine Empfehlung, nicht ein bestätigtes Vorgehen."
+    },
+    {
+     "statement": "Während der Migration wird geprüft, ob das Sicherheitskonzept angepasst werden muss und ob alle Notfall‑Vorsorgemaßnahmen aktuell sind (OPS.2.2.A10).",
+     "verdict": 0,
+     "reason": "Der Kontext formuliert diese Prüfungen als Soll‑Maßnahmen (\"SOLLTE überprüft werden\"), nicht als bereits durchgeführte Aktivitäten."
+    },
+    {
+     "statement": "Nach dem Go‑Live wird abgeglichen, ob der Cloud‑Anbieter die definierten Anforderungen erfüllt (OPS.2.2.A10).",
+     "verdict": 0,
+     "reason": "Im Text steht, dass ein Abgleich *sollte* erfolgen, nicht dass er bereits durchgeführt wird."
+    },
+    {
+     "statement": "Ein automatisches Audit der Node‑, Kubernetes‑ und Pod‑Einstellungen wird gegen eine definierte Whitelist und standardisierte Benchmarks durchgeführt (APP.4.4.A13).",
+     "verdict": 0,
+     "reason": "Der Kontext verlangt ein automatisches Audit (\"SOLLTE ein automatisches Audit ... erfolgen\"), aber gibt keine Bestätigung, dass es tatsächlich durchgeführt wird."
+    },
+    {
+     "statement": "Kubernetes muss die definierten Regeln durch geeignete Werkzeuge im Cluster durchsetzen (APP.4.4.A13).",
+     "verdict": 0,
+     "reason": "Der Text formuliert dies als Soll‑Anforderung (\"Kubernetes SOLLTE die ... Regeln ... durchsetzen\"), nicht als bereits erfüllte Pflicht."
+    },
+    {
+     "statement": "Planung und übungsweiser Test von Reaktionsmaßnahmen auf Systemausfälle wird durchgeführt (OPS.2.2.A12).",
+     "verdict": 0,
+     "reason": "Der Kontext sagt, dass dies *sollte* geplant und geübt werden, liefert jedoch keine Aussage, dass es bereits umgesetzt ist."
+    },
+    {
+     "statement": "Alle Cloud‑bezogenen Dokumente und Richtlinien werden regelmäßig aktualisiert.",
+     "verdict": 0,
+     "reason": "Wie bei Aussage 2 ist im Kontext nur die Empfehlung zur regelmäßigen Aktualisierung (\"SOLLTEN regelmäßig aktualisiert werden\") enthalten, nicht die Feststellung, dass sie tatsächlich aktualisiert werden."
+    },
+    {
+     "statement": "Periodische Leistungs‑ und Vertragskontrollen sowie enge Abstimmung mit dem Cloud‑Anbieter werden durchgeführt.",
+     "verdict": 0,
+     "reason": "Der Kontext formuliert diese Aktivitäten als Soll‑Maßnahmen, nicht als bereits erfolgte Kontrollen oder Abstimmungen."
+    },
+    {
+     "statement": "Nachweisführung über die Erfüllung der Sicherheitsanforderungen erfolgt anhand anerkannter Standards und beinhaltet Audits von Sub‑Dienstleistern.",
+     "verdict": 0,
+     "reason": "Der Text legt fest, dass ein solcher Nachweis *sollte* erfolgen, gibt jedoch keine Bestätigung, dass er bereits durchgeführt wird."
+    },
+    {
+     "statement": "Vertragliche Sicherstellung der institutionellen Prozesskontrolle wird gewährleistet.",
+     "verdict": 0,
+     "reason": "Im Kontext wird nur gefordert, dass die Kontrolle vertraglich festgelegt werden *sollte*, nicht dass sie bereits gewährleistet ist."
+    },
+    {
+     "statement": "Kontrollierte Migration wird mit Testlauf, Anpassung des Sicherheitskonzepts und finalem Abgleich der Anbieter‑Erfüllung durchgeführt.",
+     "verdict": 0,
+     "reason": "Der Kontext beschreibt diese Schritte als Soll‑Anforderungen (\"SOLLTE ...\"), nicht als bereits abgeschlossene Migration."
+    },
+    {
+     "statement": "Automatisierte Audits der Cloud‑Infrastruktur, zum Beispiel Kubernetes, werden gegen definierte Konfigurations‑ und Benchmark‑Listen durchgeführt.",
+     "verdict": 0,
+     "reason": "Der Text fordert ein automatisches Audit (\"SOLLTE ... erfolgen\"), liefert jedoch keine Aussage, dass es bereits durchgeführt wird."
+    },
+    {
+     "statement": "Notfall‑ und Wiederherstellungsübungen werden durchgeführt, um die Reaktionsfähigkeit bei Ausfällen zu gewährleisten.",
+     "verdict": 0,
+     "reason": "Der Kontext spricht von einer geplanten und geübten Reaktion (\"SOLLTE geplant und geübt werden\"), nicht von bereits durchgeführten Übungen."
+    },
+    {
+     "statement": "Die Kombination dieser Maßnahmen stellt die laufende Einhaltung (Compliance) der Sicherheits‑ und Prozessanforderungen im Cloud‑Betrieb sicher.",
+     "verdict": 0,
+     "reason": "Der Kontext listet einzelne Soll‑Maßnahmen auf, enthält jedoch keine explizite Aussage, dass deren Kombination die Compliance garantiert."
+    }
+   ],
+   "score": 0.0
+  },
+  "chunks": [
+   {
+    "text": "OPS.2.2.A12 Aufrechterhaltung der Informationssicherheit im laufenden Cloud-Nutzungs-Betrieb (S)\n\nAlle für die eingesetzten Cloud-Dienste erstellten Dokumentationen und Richtlinien SOLLTEN regelmäßig aktualisiert werden. Es SOLLTE außerdem periodisch kontrolliert werden, ob die vertraglich zugesicherten Leistungen erbracht werden. Auch SOLLTEN sich die Cloud-Diensteanbietenden und die Institution nach Möglichkeit regelmäßig abstimmen. Ebenso SOLLTE geplant und geübt werden, wie auf Systemausfälle zu reagieren ist.",
+    "pages": "S. 282",
+    "chunk_id": 1085
+   },
+   {
+    "text": "OPS.2.2.A13 Nachweis einer ausreichenden Informationssicherheit bei der Cloud-Nutzung (S)\n\nDie Institution SOLLTE sich von den Cloud-Diensteanbietenden regelmäßig nachweisen lassen, dass die vereinbarten Sicherheitsanforderungen erfüllt sind. Der Nachweis SOLLTE auf einem international anerkannten Regelwerk basieren (z. B. IT -Grundschutz, ISO/IEC 27001, Anforderungskatalog Cloud Computing (C5), Cloud Controls Matrix der Cloud Security Alliance). Die Institution SOLLTE prüfen, ob der Geltungsbereich und Schutzbedarf die genutzten Cloud-Dienste erfasst. Nutzen Cloud-Diensteanbietende Subunternehmen, um die Cloud-Dienste zu erbringen, SOLLTEN Cloud-Diensteanbietende der Institution regelmäßig nachweisen, dass diese Subunternehmen die notwendigen Audits durchführen.",
+    "pages": "S. 282",
+    "chunk_id": 1086
+   },
+   {
+    "text": "INF.13.A24 Sicherstellung der Kontrolle über die Prozesse bei Cloud-Nutzung für das TGM (S) [Planende]\n\nWerden im TGM Cloud-basierte Dienste genutzt, SOLLTE die Kontrolle über alle TGM-Prozesse im TGM verbleiben. Dies SOLLTE bei Nutzung eines Cloud-Dienstes vertraglich mit dem anbietenden Unternehmen festgelegt werden.",
+    "pages": "S. 840",
+    "chunk_id": 3987
+   },
+   {
+    "text": "OPS.2.2.A10 Sichere Migration zu einem Cloud-Dienst (S) [Fachverantwortliche]\n\nDie Migration zu einem Cloud-Dienst SOLLTE auf Basis des erstellten Migrationskonzeptes erfolgen. Während der Migration SOLLTE überprüft werden, ob das Sicherheitskonzept für die Cloud-Nutzung an potenzielle neue Anforderungen angepasst werden muss. Auch SOLLTEN alle Notfallvorsorgemaßnahmen vollständig und aktuell sein. Die Migration zu einem Cloud-Dienst SOLLTE zunächst in einem Testlauf überprüft werden. Ist der Cloud-Dienst in den produktiven Betrieb übergegangen, SOLLTE abgeglichen werden, ob die Cloud-Diensteanbietenden die definierten Anforderungen der Institution erfüllen.",
+    "pages": "S. 282",
+    "chunk_id": 1083
+   },
+   {
+    "text": "APP.4.4.A13 Automatisierte Auditierung der Konfiguration (H)\n\nEs SOLLTE ein automatisches Audit der Einstellungen der Nodes, von Kubernetes und der Pods der Anwendungen gegen eine definierte Liste der erlaubten Einstellungen und gegen standardisierte Benchmarks erfolgen. Kubernetes SOLLTE die aufgestellten Regeln im Cluster durch Anbindung geeigneter Werkzeuge durchsetzen.",
+    "pages": "S. 438",
+    "chunk_id": 1894
+   }
+  ]
+ },
+ "R": {
+  "index": 38,
+  "question": "Welche Einschränkungen bringt Virtual Secure Mode mit sich?",
+  "reference": "Bei der Nutzung des Virtual Secure Mode (VSM) SOLLTE berücksichtigt werden, dass forensische Untersuchungen, z. B. zur Sicherheitsvorfallbehandlung, eingeschränkt oder erschwert werden.",
+  "fundstelle": "2.4. Eingeschränkte Forensik bei der Nutzung des Virtual Secure Mode (VSM) Durch die Nutzung des Virtual Secure Mode (VSM) werden forensische Untersuchungen, z. B. zur Sicherheitsvorfallbehandlung, eingeschränkt oder erschwert. Prozesse, die durch den Secure Kernel oder den Isolated User Mode (IUM) geschützt werden, sind nicht mehr zugänglich. Beispielsweise können Speicherabbilder dieser Prozesse aufgrund kryptografischer Maßnahmen nicht ausgewertet werden.\n\nSYS.1.2.3.A8 Nutzung des Virtual Secure Mode (VSM) (H) Bei der Nutzung des Virtual Secure Mode (VSM) SOLLTE berücksichtigt werden, dass forensische Untersuchungen, z. B. zur Sicherheitsvorfallbehandlung, eingeschränkt oder erschwert werden.",
+  "answer": "Der Virtual Secure Mode (VSM) führt zu folgenden Einschränkungen:\n\n* **Eingeschränkte Forensik**  \n  * Bei der Analyse von Sicherheitsvorfällen können forensische Untersuchungen nur noch eingeschränkt oder stark erschwert durchgeführt werden.  \n  * Prozesse, die vom Secure Kernel bzw. vom Isolated User Mode (IUM) geschützt werden, sind nicht mehr direkt zugänglich.  \n\n* **Unzugängliche Speicherabbilder**  \n  * Speicher‑ bzw. Dump‑Abbilder dieser geschützten Prozesse können aufgrund der im VSM eingesetzten kryptografischen Maßnahmen nicht ausgewertet werden.  \n\nDamit bedeutet die Nutzung von VSM, dass klassische forensische Techniken (z. B. Speicher‑Forensik, Prozess‑Analyse) auf den geschützten Komponenten des Systems nicht mehr anwendbar sind. Diese Einschränkung muss bei der Planung und beim Betrieb von Systemen, die VSM einsetzen, berücksichtigt werden.",
+  "context_precision": 0.999999999975,
+  "context_recall": 1.0,
+  "ac": {
+   "answer_claims": [
+    "Der Virtual Secure Mode (VSM) führt zu eingeschränkter Forensik.",
+    "Forensische Untersuchungen bei der Analyse von Sicherheitsvorfällen können nur noch eingeschränkt durchgeführt werden.",
+    "Forensische Untersuchungen bei der Analyse von Sicherheitsvorfällen können stark erschwert durchgeführt werden.",
+    "Prozesse, die vom Secure Kernel geschützt werden, sind nicht mehr direkt zugänglich.",
+    "Prozesse, die vom Isolated User Mode (IUM) geschützt werden, sind nicht mehr direkt zugänglich.",
+    "Speicher‑ bzw. Dump‑Abbilder geschützter Prozesse können aufgrund der im VSM eingesetzten kryptografischen Maßnahmen nicht ausgewertet werden.",
+    "Die Nutzung von VSM bedeutet, dass klassische forensische Techniken wie Speicher‑Forensik auf den geschützten Komponenten des Systems nicht mehr anwendbar sind.",
+    "Die Nutzung von VSM bedeutet, dass klassische forensische Techniken wie Prozess‑Analyse auf den geschützten Komponenten des Systems nicht mehr anwendbar sind.",
+    "Die Einschränkung muss bei der Planung von Systemen, die VSM einsetzen, berücksichtigt werden.",
+    "Die Einschränkung muss beim Betrieb von Systemen, die VSM einsetzen, berücksichtigt werden."
+   ],
+   "reference_claims": [
+    "The use of Virtual Secure Mode (VSM) may limit forensic investigations.",
+    "The use of Virtual Secure Mode (VSM) may make forensic investigations for security incident handling more difficult."
+   ],
+   "TP": [
+    {
+     "statement": "Der Virtual Secure Mode (VSM) führt zu eingeschränkter Forensik.",
+     "reason": "The ground truth states that VSM may limit forensic investigations, which directly supports this claim of limited forensics."
+    },
+    {
+     "statement": "Forensische Untersuchungen bei der Analyse von Sicherheitsvorfällen können nur noch eingeschränkt durchgeführt werden.",
+     "reason": "The ground truth mentions that VSM may make forensic investigations for security incident handling more difficult, directly matching this statement about limited investigations."
+    },
+    {
+     "statement": "Forensische Untersuchungen bei der Analyse von Sicherheitsvorfällen können stark erschwert durchgeführt werden.",
+     "reason": "This statement conveys the same idea as the ground truth that VSM can make forensic investigations for security incidents more difficult, thus it is directly supported."
+    }
+   ],
+   "FP": [
+    {
+     "statement": "Prozesse, die vom Secure Kernel geschützt werden, sind nicht mehr direkt zugänglich.",
+     "reason": "The ground truth does not mention any restriction on accessing processes protected by the Secure Kernel."
+    },
+    {
+     "statement": "Prozesse, die vom Isolated User Mode (IUM) geschützt werden, sind nicht mehr direkt zugänglich.",
+     "reason": "No information about IUM‑protected processes being inaccessible is present in the ground truth."
+    },
+    {
+     "statement": "Speicher‑ bzw. Dump‑Abbilder geschützter Prozesse können aufgrund der im VSM eingesetzten kryptografischen Maßnahmen nicht ausgewertet werden.",
+     "reason": "The ground truth does not specify that memory or dump images of protected processes cannot be analyzed."
+    },
+    {
+     "statement": "Die Nutzung von VSM bedeutet, dass klassische forensische Techniken wie Speicher‑Forensik auf den geschützten Komponenten des Systems nicht mehr anwendbar sind.",
+     "reason": "While the ground truth says VSM may limit forensic investigations, it does not explicitly state that classic memory‑forensic techniques are no longer applicable."
+    },
+    {
+     "statement": "Die Nutzung von VSM bedeutet, dass klassische forensische Techniken wie Prozess‑Analyse auf den geschützten Komponenten des Systems nicht mehr anwendbar sind.",
+     "reason": "The ground truth does not directly mention that process‑analysis techniques are unusable on protected components."
+    },
+    {
+     "statement": "Die Einschränkung muss bei der Planung von Systemen, die VSM einsetzen, berücksichtigt werden.",
+     "reason": "No statement in the ground truth refers to planning considerations for systems using VSM."
+    },
+    {
+     "statement": "Die Einschränkung muss beim Betrieb von Systemen, die VSM einsetzen, berücksichtigt werden.",
+     "reason": "The ground truth does not address operational considerations for VSM‑enabled systems."
+    }
+   ],
+   "FN": [],
+   "f1": 0.4615384615384615,
+   "similarity": 0.9117745305555682,
+   "score": 0.5740974787927382
+  },
+  "words_answer": 109,
+  "words_reference": 22
+ }
+}

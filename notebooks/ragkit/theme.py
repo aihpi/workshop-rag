@@ -6,6 +6,8 @@ matplotlib to thin axes, no grid and Inter (or the nearest installed sans).
 marimo notebooks pass `CSS_FILE` and `HEAD_FILE` to `marimo.App`.
 """
 
+import base64
+from functools import cache
 from pathlib import Path
 
 import matplotlib as mpl
@@ -23,6 +25,14 @@ GREYS = ['#212427', '#5a6065', '#83888c', '#acb0b2', '#d6d7d8']
 _HERE = Path(__file__).resolve().parent
 CSS_FILE = _HERE / 'theme.css'
 HEAD_FILE = _HERE / 'head.html'
+_IMG_DIR = _HERE.parent / 'public' / 'img'
+
+
+@cache
+def _logo_uri(name: str) -> str:
+    """A logo from public/img as a data URI, so it shows without marimo's /public/ route."""
+    data = base64.b64encode((_IMG_DIR / name).read_bytes()).decode('ascii')
+    return f'data:image/png;base64,{data}'
 
 
 def tint(hex_colour: str, percent: int) -> str:
@@ -79,15 +89,177 @@ def apply_mpl(accent: str | None = None) -> None:
     mpl.rcParams.update(mpl_rc(accent))
 
 
+def task_box(label: str, steps: list[str], time: str = '', title: str = '', kind: str = '') -> str:
+    """HTML of a task box for every place where participants do something themselves.
+
+    `label` is the localized marker ("Ihre Aufgabe 1 von 4" / "Your task 1 of 4"), `steps` the
+    imperative steps (one per line, numbered automatically), `time` a hint like "etwa 2 Minuten",
+    `title` an optional short name of the task. `kind` picks the colour coding of the meta plan:
+    'task' (HPI Dark Green) or 'extra' (HPI Orange); the default '' keeps the ink frame of the
+    first version. Needs css_file="ragkit/theme.css". Show it with mo.Html(theme.task_box(...)).
+    Text is escaped; pass plain text.
+    """
+    from html import escape
+
+    head = (f'<div class="hpi-task-head"><span class="hpi-task-label">{escape(label)}</span>'
+            + (f'<span class="hpi-task-time">{escape(time)}</span>' if time else '') + '</div>')
+    ttl = f'<div class="hpi-task-title">{escape(title)}</div>' if title else ''
+    items = ''.join(f'<li>{escape(s)}</li>' for s in steps)
+    cls = 'hpi-task' + (f' hpi-box hpi-box-{kind}' if kind in ('task', 'extra') else '')
+    return f'<div class="{cls}">{head}{ttl}<ol>{items}</ol></div>'
+
+
+def info_box(label: str, body_html: str, kind: str = 'info') -> str:
+    """HTML of a colour-coded information box (HPI Yellow by default): a label word, then the body.
+
+    `body_html` is inserted as it is (for example `mo.md(text).text`); `label` is escaped. `kind`
+    is 'info', 'task' or 'extra' as in task_box. Show it with mo.Html(theme.info_box(...)).
+    """
+    from html import escape
+
+    return (f'<div class="hpi-box hpi-box-{kind}"><div class="hpi-box-head"><span class="hpi-box-label">{escape(label)}</span></div>'
+            f'{body_html}</div>')
+
+
+def feedback_box(ok: bool | None, explanation_html: str, t) -> str:
+    """HTML of the feedback box for quiz answers and checkable predictions (meta plan 10.4a).
+
+    `ok` True gives a large check mark and "Richtig" / "Correct", False a large cross and "Nicht ganz" /
+    "Not quite", None (a choice without a right answer) "Hier gibt es kein Richtig oder Falsch." /
+    "There is no right or wrong here." `explanation_html` follows as it is (for example
+    `mo.md(text).text`; '' for none). `t` picks the language like ragkit.i18n.T. The box is neutral on
+    purpose: white ground and a frame in HPI Dark Grey, no green (task boxes) and no yellow (information).
+    Show it with mo.Html(theme.feedback_box(...)).
+    """
+    if ok is None:
+        mark, verdict, state = '', t('Hier gibt es kein Richtig oder Falsch.', 'There is no right or wrong here.'), 'open'
+    elif ok:
+        mark, verdict, state = '&#10003;', t('Richtig', 'Correct'), 'ok'
+    else:
+        mark, verdict, state = '&#10007;', t('Nicht ganz', 'Not quite'), 'no'
+    mark_html = f'<span class="hpi-feedback-mark" aria-hidden="true">{mark}</span>' if mark else ''
+    body = f'<div class="hpi-feedback-body">{explanation_html}</div>' if explanation_html else ''
+    return (f'<div class="hpi-feedback hpi-feedback-{state}" role="status">'
+            f'<div class="hpi-feedback-head">{mark_html}<span class="hpi-feedback-verdict">{verdict}</span></div>'
+            f'{body}</div>')
+
+
+def cta_label(text: str) -> str:
+    """Label for a call-to-action run button. The class lets theme.css find the button inside marimo's
+    shadow root (button:has(.hpi-cta-label)) and colour it HPI Dark Green. See .hpi-cta in theme.css."""
+    from html import escape
+
+    return f'<span class="hpi-cta-label">{escape(text)}</span>'
+
+
+def box_legend(t) -> str:
+    """HTML of a small legend of the three box types, in their real style.
+
+    `t` picks the language like ragkit.i18n.T: t(german, english). Show it once above the first
+    section (outside any H2) with mo.Html(theme.box_legend(t)).
+    """
+    from html import escape
+
+    items = [('info', t('Information', 'Information'), t('zum Lesen', 'to read')),
+             ('task', t('Ihre Aufgabe', 'Your task'), t('hier sind Sie dran', 'your turn')),
+             ('extra', t('Zusatzaufgabe, für alle, die schon fertig sind', 'Extra task, for everyone who is already done'),
+              t('freiwillig, wenn Sie fertig sind', 'optional, once you are done'))]
+    boxes = ''.join(f'<div class="hpi-box hpi-box-{k}"><span class="hpi-box-label">{escape(label)}</span>{escape(note)}</div>'
+                    for k, label, note in items)
+    return f'<div class="hpi-legend" role="note">{boxes}</div>'
+
+
+# --- Slide building blocks for marimo ------------------------------------------
+# Shared by the w3 notebooks: key sentence on the note ground, hairline cards, grey hint lines,
+# information boxes and numbered task boxes. One red mark per view (the title rule), everything
+# else ink, grey, rule, note. marimo is imported inside each function, so this module stays
+# importable without it.
+
+def key_sentence(text: str):
+    """The one key sentence of a slide, large, on the note ground."""
+    import marimo as mo
+
+    return mo.md(text).style({'background': NOTE, 'padding': '.75rem 1rem', 'border-radius': '2px',
+                              'border-left': f'7px solid {PRIMARY["yellow"]}', 'font-size': '1.15rem', 'line-height': '1.35'})
+
+
+def card(title: str, body: str, foot: str | None = None, corpus: bool = False):
+    """A small card: a keyword, one sentence, an optional grey foot line; corpus=True marks RAGAS or corpus text."""
+    import marimo as mo
+
+    if corpus:
+        body = f'<span class="hpi-corpus">{body}</span>'
+    md = f'**{title}**\n\n{body}' + (f'\n\n<span style="color:{GREY};font-size:.85rem">{foot}</span>' if foot else '')
+    return mo.md(md).style({'border': f'1px solid {RULE}', 'border-radius': '2px', 'padding': '.75rem 1rem',
+                            'height': '100%', 'background': '#ffffff'})
+
+
+def cards(items: list, widths='equal'):
+    """A row of cards of equal height."""
+    import marimo as mo
+
+    return mo.hstack(items, widths=widths, gap=1, align='stretch', wrap=False)
+
+
+def hint(text: str):
+    """A grey hint line; `text` is Markdown."""
+    import marimo as mo
+
+    return mo.Html(f'<div class="hpi-hint">{mo.md(text).text}</div>')
+
+
+def frame(title: str, text: str):
+    """An information box (HPI Yellow) with its label word, for a statement that must stand out; `text` is Markdown."""
+    import marimo as mo
+
+    return mo.Html(info_box(title, mo.md(text).text))
+
+
+def info(label: str, content):
+    """An information box around marimo content (source lines, gold passage, notes, solutions)."""
+    import marimo as mo
+
+    return mo.Html(info_box(label, content.text))
+
+
+def left(table_md: str) -> str:
+    """Left-align every column of a Markdown table (marimo right-aligns by default)."""
+    return table_md.replace('---|', ':---|')
+
+
+def numbered_task(t, order: list[str], name: str, title: str, steps: list[str], time: str):
+    """The task box of a numbered task ("Ihre Aufgabe 2 von 5"), or of the extra task (name='extra').
+
+    `t` picks the language like ragkit.i18n.T, `order` lists the task names of this notebook and
+    version. A name missing from `order` (a task the short version hides) gives empty output.
+    """
+    import marimo as mo
+
+    if name == 'extra':
+        label = t('Zusatzaufgabe, für alle, die schon fertig sind', 'Extra task, for everyone who is already done')
+    elif name not in order:  # not in this version; callers hide it with t.full, but arguments run first
+        return mo.md('')
+    else:
+        label = t(f'Ihre Aufgabe {order.index(name) + 1} von {len(order)}',
+                  f'Your task {order.index(name) + 1} of {len(order)}')
+    return mo.Html(task_box(label, steps, time, title, kind='extra' if name == 'extra' else 'task'))
+
+
+# Opt-in for collapsible H2 sections (script and style in head.html). Render it once, e.g.
+# mo.Html(theme.header_html(...) + theme.SECTIONS_MARKER). Needs html_head_file="ragkit/head.html".
+SECTIONS_MARKER = '<span data-hpi-sections hidden></span>'
+
+
 def header_html(title: str, subtitle: str = '', logos: bool = True) -> str:
     """Notebook header: title, the single red rule, optional subtitle and logos.
 
-    Logo files are served by marimo from `<notebook_dir>/public/img/`.
+    The logos are embedded as data URIs. marimo serves `/public/` only through a service worker
+    that is not active on the very first page load, so linked logos were missing until a reload.
     """
     logo_html = (
         '<div class="hpi-logos">'
-        '<img src="/public/img/logo_aisc_150dpi.png" alt="HPI AI Service Centre">'
-        '<img src="/public/img/logo_bmftr_de.png" alt="BMFTR">'
+        f'<img src="{_logo_uri("logo_aisc_150dpi.png")}" alt="HPI AI Service Centre">'
+        f'<img src="{_logo_uri("logo_bmftr_de.png")}" alt="BMFTR">'
         '</div>'
     ) if logos else ''
     sub = f'<p class="hpi-subtitle">{subtitle}</p>' if subtitle else ''

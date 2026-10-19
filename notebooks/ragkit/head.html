@@ -1,2 +1,103 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+<!--
+  Collapsible sections for the app view (marimo run) and HTML exports.
+
+  Inert unless a notebook opts in by rendering the marker element anywhere, usually in the
+  header cell:  mo.Html(theme.header_html(...) + theme.SECTIONS_MARKER)
+
+  Then every H2 in a cell output becomes a toggle. A click (or Enter or Space) hides
+  everything after the H2 in its own cell and every following cell up to the next cell that
+  contains an H2. All sections start closed; the header and anything before the first H2 stay
+  visible. Hiding is CSS only (display: none), so widgets keep
+  their values and nothing re-runs. Cells that marimo re-renders while a section is closed are
+  hidden again. marimo writes its mode into the page ("read" in marimo run and in HTML exports,
+  "edit" in marimo edit); in edit mode the script does nothing.
+  Rule for notebooks: one H2 per cell, and the H2 starts its section.
+-->
+<style>
+  .hpi-sec-hidden { display: none !important; }
+  h2.hpi-sec-head { cursor: pointer; user-select: none; }
+  h2.hpi-sec-head::before {
+    content: ""; display: inline-block; width: .45em; height: .45em; margin: 0 .55em .15em 0;
+    border-right: 2px solid #5a6065; border-bottom: 2px solid #5a6065;
+    transform: rotate(45deg); transition: transform .15s;
+  }
+  h2.hpi-sec-head[aria-expanded="false"]::before { transform: rotate(-45deg); }
+  h2.hpi-sec-head:hover { color: #b1063a; }
+  h2.hpi-sec-head:focus-visible { outline: 2px solid #b1063a; outline-offset: 2px; }
+</style>
+<script>
+(() => {
+  const opened = new Set();  // keys of opened sections, kept while the page is open; all start closed
+
+  const keyOf = (h) => h.id || h.textContent.trim();
+
+  // marimo's mount config sets the mode key to edit only in marimo edit; read once.
+  // This script's own text is skipped so the pattern below never matches itself.
+  const self = document.currentScript;
+  let editMode = null;
+  const isEdit = () => {
+    if (editMode === null) {
+      const inline = [...document.scripts].filter((s) => s !== self).map((s) => s.textContent).join('\n');
+      editMode = /"mode"\s*:\s*"edit"/.test(inline);
+    }
+    return editMode;
+  };
+
+  // Everything after `h` inside `root`: following siblings of h and of each ancestor up to root.
+  function afterInCell(h, root) {
+    const out = [];
+    for (let el = h; el && el !== root; el = el.parentElement) {
+      for (let s = el.nextElementSibling; s; s = s.nextElementSibling) out.push(s);
+    }
+    return out;
+  }
+
+  function apply() {
+    if (!document.querySelector('[data-hpi-sections]')) return;
+    if (isEdit()) return;  // marimo edit: leave the notebook alone
+    let open = true;
+    for (const cell of document.querySelectorAll('.marimo-cell')) {
+      const area = cell.querySelector('.output-area');
+      const h = area && area.querySelector('h2');
+      if (h) {
+        const key = keyOf(h);
+        open = opened.has(key);
+        if (!h.classList.contains('hpi-sec-head')) {
+          h.classList.add('hpi-sec-head');
+          h.tabIndex = 0;
+          h.setAttribute('role', 'button');
+          const toggle = () => {
+            const k = keyOf(h);
+            opened.has(k) ? opened.delete(k) : opened.add(k);
+            apply();
+          };
+          h.addEventListener('click', toggle);
+          h.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+          });
+        }
+        h.setAttribute('aria-expanded', String(open));
+        cell.classList.remove('hpi-sec-hidden');
+        for (const el of area.querySelectorAll('.hpi-sec-hidden')) el.classList.remove('hpi-sec-hidden');
+        if (!open) for (const el of afterInCell(h, area)) el.classList.add('hpi-sec-hidden');
+      } else {
+        cell.classList.toggle('hpi-sec-hidden', !open);
+      }
+    }
+  }
+
+  let queued = false;
+  const schedule = () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(() => { queued = false; apply(); });
+  };
+  const start = () => {
+    new MutationObserver(schedule).observe(document.body, { childList: true, subtree: true });
+    schedule();
+  };
+  document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', start) : start();
+})();
+</script>

@@ -1,0 +1,353 @@
+{
+ "B": {
+  "kind": "manual",
+  "i": 0,
+  "prompt": "original",
+  "question": "Welche Angebote bietet das KI-Servicezentrum an?",
+  "reference": "Das KI-Servicezentrum bietet kostenlose Beratung, Weiterbildung und Rechenleistung (Infrastruktur) an.",
+  "answer": "Das KI‑Servicezentrum bietet folgende kostenfreie Angebote an:\n\n* **Beratung** – Hilfe zur Selbsthilfe, um KI‑Kompetenzen gezielt auszubauen und fundierte Entscheidungen zu treffen.  \n* **Weiterbildung** – Schulungen und Trainings, damit Sie KI‑Anwendungen eigenständig entwickeln und betreiben können.  \n* **Infrastruktur** – Bereitstellung technischer Grundlagen, die für die eigenständige Entwicklung, den Betrieb und den erfolgreichen Einsatz von KI‑Lösungen nötig sind.",
+  "chunk_ids": [
+   0,
+   3,
+   17
+  ],
+  "contexts": [
+   "# KI-Servicezentrum",
+   "Wir bieten Beratung, Weiterbildung und Infrastruktur, um KI-Anwendungen eigenständig zu entwickeln, zu betreiben und erfolgreich einzusetzen. Alle unsere Angebote sind kostenlos.",
+   "Mit unseren Beratungsangeboten leisten wir Hilfe zur Selbsthilfe. Wir unterstützen Sie dabei, Ihre KI-Kompetenzen gezielt auszubauen, damit Sie fundierte Entscheidungen treffen und KI-Projekte eigenständig umsetzen können."
+  ],
+  "source_ids": [
+   3
+  ],
+  "source_lines": [
+   "Wir bieten Beratung, Weiterbildung und Infrastruktur, um KI-Anwendungen eigenständig zu entwickeln, zu betreiben und erfolgreich einzusetzen. Alle unsere Angebote sind kostenlos."
+  ],
+  "context_precision": 0.5833333333041666,
+  "context_recall": 1.0,
+  "words_answer": 57,
+  "words_reference": 10,
+  "ac": {
+   "answer_claims": [
+    "Das KI‑Servicezentrum bietet das kostenfreie Angebot Beratung an.",
+    "Das Angebot Beratung unterstützt Hilfe zur Selbsthilfe und ermöglicht den gezielten Ausbau von KI‑Kompetenzen sowie das Treffen fundierter Entscheidungen.",
+    "Das KI‑Servicezentrum bietet das kostenfreie Angebot Weiterbildung an.",
+    "Das Angebot Weiterbildung umfasst Schulungen und Trainings.",
+    "Schulungen und Trainings ermöglichen die eigenständige Entwicklung und den Betrieb von KI‑Anwendungen.",
+    "Das KI‑Servicezentrum bietet das kostenfreie Angebot Infrastruktur an.",
+    "Das Angebot Infrastruktur stellt technische Grundlagen bereit.",
+    "Technische Grundlagen sind notwendig für die eigenständige Entwicklung, den Betrieb und den erfolgreichen Einsatz von KI‑Lösungen."
+   ],
+   "reference_claims": [
+    "Das KI-Servicezentrum bietet kostenlose Beratung an.",
+    "Das KI-Servicezentrum bietet Weiterbildung an.",
+    "Das KI-Servicezentrum bietet Rechenleistung (Infrastruktur) an."
+   ],
+   "TP": [
+    {
+     "statement": "Das KI‑Servicezentrum bietet das kostenfreie Angebot Beratung an.",
+     "reason": "This statement directly corresponds to the ground truth sentence \"Das KI-Servicezentrum bietet kostenlose Beratung an.\" Both convey that the centre offers free consulting."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet das kostenfreie Angebot Weiterbildung an.",
+     "reason": "This statement directly matches the ground truth sentence \"Das KI-Servicezentrum bietet Weiterbildung an.\" The addition of \"kostenfreie Angebot\" does not change the core offering."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet das kostenfreie Angebot Infrastruktur an.",
+     "reason": "This statement aligns with the ground truth sentence \"Das KI-Servicezentrum bietet Rechenleistung (Infrastruktur) an.\" Both indicate that the centre provides infrastructure/rechenleistung."
+    }
+   ],
+   "FP": [
+    {
+     "statement": "Das Angebot Beratung unterstützt Hilfe zur Selbsthilfe und ermöglicht den gezielten Ausbau von KI‑Kompetenzen sowie das Treffen fundierter Entscheidungen.",
+     "reason": "The ground truth only states that Beratung is offered; it does not describe these specific benefits, so this statement is not directly supported."
+    },
+    {
+     "statement": "Das Angebot Weiterbildung umfasst Schulungen und Trainings.",
+     "reason": "The ground truth mentions Weiterbildung as an offering but does not specify that it includes Schulungen und Trainings."
+    },
+    {
+     "statement": "Schulungen und Trainings ermöglichen die eigenständige Entwicklung und den Betrieb von KI‑Anwendungen.",
+     "reason": "This explanatory detail about Schulungen und Trainings is not present in the ground truth."
+    },
+    {
+     "statement": "Das Angebot Infrastruktur stellt technische Grundlagen bereit.",
+     "reason": "While the ground truth says Infrastruktur is offered, it does not state that it provides technical foundations."
+    },
+    {
+     "statement": "Technische Grundlagen sind notwendig für die eigenständige Entwicklung, den Betrieb und den erfolgreichen Einsatz von KI‑Lösungen.",
+     "reason": "This statement provides additional rationale not mentioned in the ground truth, thus it is not directly supported."
+    }
+   ],
+   "FN": [],
+   "f1": 0.5454545454545454,
+   "similarity": 0.9053614988872399,
+   "score": 0.6354312838127191
+  },
+  "faithfulness": {
+   "claims": [
+    {
+     "statement": "Das KI‑Servicezentrum bietet kostenfreie Beratung, inklusive Hilfe zur Selbsthilfe, um KI‑Kompetenzen gezielt auszubauen und fundierte Entscheidungen zu treffen.",
+     "verdict": 1,
+     "reason": "Der Kontext erwähnt ausdrücklich, dass das KI‑Servicezentrum Beratung kostenlos anbietet, dass diese Beratung Hilfe zur Selbsthilfe beinhaltet und dass damit KI‑Kompetenzen gezielt ausgebaut sowie fundierte Entscheidungen ermöglicht werden."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet kostenfreie Weiterbildung, bestehend aus Schulungen und Trainings, um KI‑Anwendungen eigenständig zu entwickeln und zu betreiben.",
+     "verdict": 0,
+     "reason": "Der Kontext bestätigt, dass das KI‑Servicezentrum kostenlose Weiterbildung anbietet, jedoch wird nicht konkret angegeben, dass diese Weiterbildung aus Schulungen und Trainings besteht; diese Detailangabe ist nicht im Kontext enthalten."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet kostenfreie Infrastruktur, bestehend aus technischen Grundlagen für die eigenständige Entwicklung, den Betrieb und den erfolgreichen Einsatz von KI‑Lösungen.",
+     "verdict": 0,
+     "reason": "Der Kontext sagt, dass das KI‑Servicezentrum kostenlose Infrastruktur bereitstellt, aber er liefert keine spezifischen Informationen darüber, dass diese Infrastruktur aus technischen Grundlagen besteht; diese Spezifizierung fehlt im Kontext."
+    }
+   ],
+   "score": 0.3333333333333333
+  },
+  "answer_correctness": 0.6354312838127191,
+  "faithfulness_score": 0.3333333333333333,
+  "short": {
+   "answer": "Das KI‑Servicezentrum bietet **Beratung, Weiterbildung und Infrastruktur** an – alle Angebote sind kostenlos.",
+   "answer_correctness": 0.7823267529773124,
+   "faithfulness_score": 1.0,
+   "words_answer": 13
+  }
+ },
+ "cards": [
+  {
+   "kind": "manual",
+   "i": 2,
+   "prompt": "pipeline",
+   "question": "Welche Beratungsangebote bietet das KI-Servicezentrum?",
+   "reference": "Das KI-Servicezentrum bietet Gruppensprechstunden und individuelle Beratung zum Einsatz von KI. Zudem können dreimonatige Pilotprojekte gemeinsam durchgeführt werden.",
+   "answer": "Das KI‑Servicezentrum bietet **Beratung, Weiterbildung und Infrastruktur** an, um Ihre KI‑Kompetenzen gezielt auszubauen und KI‑Projekte eigenständig zu planen, zu entwickeln und zu betreiben.",
+   "chunk_ids": [
+    0,
+    17,
+    3
+   ],
+   "contexts": [
+    "# KI-Servicezentrum",
+    "Mit unseren Beratungsangeboten leisten wir Hilfe zur Selbsthilfe. Wir unterstützen Sie dabei, Ihre KI-Kompetenzen gezielt auszubauen, damit Sie fundierte Entscheidungen treffen und KI-Projekte eigenständig umsetzen können.",
+    "Wir bieten Beratung, Weiterbildung und Infrastruktur, um KI-Anwendungen eigenständig zu entwickeln, zu betreiben und erfolgreich einzusetzen. Alle unsere Angebote sind kostenlos."
+   ],
+   "source_ids": [
+    26,
+    36
+   ],
+   "source_lines": [
+    "Unsere Sprechstunden finden online in Gruppen von maximal zehn Teilnehmer:innen aus unterschiedlichen Organisationen statt. Wenn Sie im Anschluss noch weitere Fragen haben, beraten wir Sie gerne in einem individuellen Einzeltermin.",
+    "Bewerbungen für ein begleitetes KI-Pilotprojekt sind alle drei Monate möglich. Den Starttermin der nächsten Bewerbungsphase erfahren Sie in unserem [Newsletter](https://hpi.de/registrierung/ai-service-center-newsletter/) oder direkt in unserem [Bewerbungsformular](https://hpi.de/bewerbung/2027/ki-pilotprojekt-bewerbung/) ."
+   ],
+   "context_precision": 0.0,
+   "context_recall": 0.0,
+   "words_answer": 23,
+   "words_reference": 18,
+   "answer_correctness": 0.35073014089985843,
+   "faithfulness_score": 0.8571428571428571
+  },
+  {
+   "kind": "manual",
+   "i": 0,
+   "prompt": "pipeline",
+   "question": "Welche Angebote bietet das KI-Servicezentrum an?",
+   "reference": "Das KI-Servicezentrum bietet kostenlose Beratung, Weiterbildung und Rechenleistung (Infrastruktur) an.",
+   "answer": "Das KI‑Servicezentrum bietet **Beratung, Weiterbildung und Infrastruktur** an – alle Angebote sind kostenlos.",
+   "chunk_ids": [
+    0,
+    3,
+    17
+   ],
+   "contexts": [
+    "# KI-Servicezentrum",
+    "Wir bieten Beratung, Weiterbildung und Infrastruktur, um KI-Anwendungen eigenständig zu entwickeln, zu betreiben und erfolgreich einzusetzen. Alle unsere Angebote sind kostenlos.",
+    "Mit unseren Beratungsangeboten leisten wir Hilfe zur Selbsthilfe. Wir unterstützen Sie dabei, Ihre KI-Kompetenzen gezielt auszubauen, damit Sie fundierte Entscheidungen treffen und KI-Projekte eigenständig umsetzen können."
+   ],
+   "source_ids": [
+    3
+   ],
+   "source_lines": [
+    "Wir bieten Beratung, Weiterbildung und Infrastruktur, um KI-Anwendungen eigenständig zu entwickeln, zu betreiben und erfolgreich einzusetzen. Alle unsere Angebote sind kostenlos."
+   ],
+   "context_precision": 0.5833333333041666,
+   "context_recall": 1.0,
+   "words_answer": 13,
+   "words_reference": 10,
+   "answer_correctness": 0.7823267529773124,
+   "faithfulness_score": 1.0
+  }
+ ],
+ "extra_a": [
+  {
+   "kind": "manual",
+   "i": 3,
+   "prompt": "pipeline",
+   "question": "Was passiert in einem Pilotprojekt?",
+   "reference": "Unternehmen können sich für Pilotprojekte bewerben und erhalten 2-3 Tage pro Woche aktive Projektbegleitung, um gemeinsam einen Prototypen zu entwickeln. Dabei können sie auch die Recheninfrastruktur nutzen.",
+   "answer": "In einem KI‑Pilotprojekt wird gemeinsam mit den Teilnehmenden ein Prototyp entwickelt, um erste Konzepte und deren Machbarkeit zu erproben. KI‑Expert*innen arbeiten dabei zusammen mit den Teilnehmenden (oft an Laptops), um die Basis für eine spätere kommerzielle, marktfähige Lösung zu schaffen.",
+   "chunk_ids": [
+    31,
+    37,
+    36
+   ],
+   "contexts": [
+    "In unseren KI-Pilotprojekten entwickeln wir gemeinsam mit Ihnen einen Prototypen. Dieser dient der ersten Erprobung von Konzepten und Machbarkeit und ist eine hervorragende Grundlage für die Weiterentwicklung zu einer kommerziellen, marktfähigen Lösung.",
+    "KI-Experte und KI-Expertin am Tisch mit Teilnehmenden eines Pilotprojekts, vor ihnen Laptops.",
+    "Bewerbungen für ein begleitetes KI-Pilotprojekt sind alle drei Monate möglich. Den Starttermin der nächsten Bewerbungsphase erfahren Sie in unserem [Newsletter](https://hpi.de/registrierung/ai-service-center-newsletter/) oder direkt in unserem [Bewerbungsformular](https://hpi.de/bewerbung/2027/ki-pilotprojekt-bewerbung/) ."
+   ],
+   "source_ids": [
+    31,
+    34,
+    35,
+    36
+   ],
+   "source_lines": [
+    "In unseren KI-Pilotprojekten entwickeln wir gemeinsam mit Ihnen einen Prototypen. Dieser dient der ersten Erprobung von Konzepten und Machbarkeit und ist eine hervorragende Grundlage für die Weiterentwicklung zu einer kommerziellen, marktfähigen Lösung.",
+    "- 2-3 Tage pro Woche aktive Projektbegleitung durch unsere KI-Expert:innen",
+    "- Nutzung unserer Infrastruktur für Training und Evaluierung",
+    "Bewerbungen für ein begleitetes KI-Pilotprojekt sind alle drei Monate möglich. Den Starttermin der nächsten Bewerbungsphase erfahren Sie in unserem [Newsletter](https://hpi.de/registrierung/ai-service-center-newsletter/) oder direkt in unserem [Bewerbungsformular](https://hpi.de/bewerbung/2027/ki-pilotprojekt-bewerbung/) ."
+   ],
+   "context_precision": 0.9999999999,
+   "context_recall": 0.0,
+   "words_answer": 40,
+   "words_reference": 27,
+   "answer_correctness": 0.33445612037746486,
+   "faithfulness_score": 1.0
+  },
+  {
+   "kind": "manual",
+   "i": 1,
+   "prompt": "pipeline",
+   "question": "Sind alle Services kostenlos?",
+   "reference": "Ja, alle Services sind kostenlos, da das KI-Servicezentrum vom Bundesministerium für Forschung, Technologie und Raumfahrt gefördert wird.",
+   "answer": "Ja. Laut Quelle 1 sind alle angebotenen Services kostenlos.",
+   "chunk_ids": [
+    3,
+    0,
+    4
+   ],
+   "contexts": [
+    "Wir bieten Beratung, Weiterbildung und Infrastruktur, um KI-Anwendungen eigenständig zu entwickeln, zu betreiben und erfolgreich einzusetzen. Alle unsere Angebote sind kostenlos.",
+    "# KI-Servicezentrum",
+    "### Unsere Angebote:"
+   ],
+   "source_ids": [
+    3,
+    104
+   ],
+   "source_lines": [
+    "Wir bieten Beratung, Weiterbildung und Infrastruktur, um KI-Anwendungen eigenständig zu entwickeln, zu betreiben und erfolgreich einzusetzen. Alle unsere Angebote sind kostenlos.",
+    "Das zugrunde liegende Vorhaben wurde mit Mitteln des Bundesministeriums für Forschung, Technologie und Raumfahrt unter dem Förderkennzeichen »KI-Servicezentrum Berlin-Brandenburg« 16IS22092 gefördert. Die Verantwortung für den Inhalt dieser Seite liegt bei der Autorin/beim Autor."
+   ],
+   "context_precision": 0.9999999999,
+   "context_recall": 0.5,
+   "words_answer": 9,
+   "words_reference": 17,
+   "answer_correctness": 0.763872984931253,
+   "faithfulness_score": 0.5
+  }
+ ],
+ "extra_d": {
+  "kind": "manual",
+  "i": 4,
+  "prompt": "pipeline",
+  "question": "Muss man sich auf ein Pilotprojekt bewerben, um die Recheninfrastruktur nutzen zu können?",
+  "reference": "Nein. Wenn Sie die Recheninfrastruktur nutzen möchten, reichen Sie über das Portal des KI-Servicezentrums eine Beschreibung Ihres Vorhabens ein. Ein Produktivbetrieb wird nicht angeboten.",
+  "answer": "Ja. Um die Recheninfrastruktur zu nutzen, müssen Sie sich bewerben – entweder indem Sie über das Portal eine Projektbeschreibung einreichen oder sich im Rahmen des begleitenden KI‑Pilotprojekts, das alle drei Monate ausgeschrieben wird, bewerben.",
+  "chunk_ids": [
+   72,
+   101,
+   36
+  ],
+  "contexts": [
+   "Wenn Sie Ihre KI-Anwendung mit unserer Infrastruktur entwickeln und erproben möchten, reichen Sie eine Beschreibung für Ihr Vorhaben über unser Portal ein. Bitte beachten Sie, dass wir keinen Produktivbetrieb anbieten.",
+   "### Sie möchten unsere Infrastruktur nutzen?",
+   "Bewerbungen für ein begleitetes KI-Pilotprojekt sind alle drei Monate möglich. Den Starttermin der nächsten Bewerbungsphase erfahren Sie in unserem [Newsletter](https://hpi.de/registrierung/ai-service-center-newsletter/) oder direkt in unserem [Bewerbungsformular](https://hpi.de/bewerbung/2027/ki-pilotprojekt-bewerbung/) ."
+  ],
+  "source_ids": [
+   72
+  ],
+  "source_lines": [
+   "Wenn Sie Ihre KI-Anwendung mit unserer Infrastruktur entwickeln und erproben möchten, reichen Sie eine Beschreibung für Ihr Vorhaben über unser Portal ein. Bitte beachten Sie, dass wir keinen Produktivbetrieb anbieten."
+  ],
+  "context_precision": 0.9999999999,
+  "context_recall": 1.0,
+  "words_answer": 34,
+  "words_reference": 24,
+  "answer_correctness": 0.18511162429238476,
+  "faithfulness_score": 1.0
+ },
+ "ref": {
+  "kind": "synthetic",
+  "i": 0,
+  "prompt": "pipeline",
+  "question": "How can I stay informed about upcoming KI‑Pilotprojekt application phases through the Newsletter?",
+  "reference": "You can stay informed about upcoming KI‑Pilotprojekt application phases by subscribing to the Newsletter via the link https://hpi.de/registrierung/ai-service-center-newsletter/. The Newsletter announces the start term of the next application phase, allowing you to receive timely updates.",
+  "answer": "Abonnieren Sie den Newsletter – über den Link https://hpi.de/registrierung/ai-service-center-newsletter/ erhalten Sie regelmäßig die Informationen zum Starttermin der nächsten Bewerbungsphase.",
+  "chunk_ids": [
+   36,
+   13,
+   12
+  ],
+  "contexts": [
+   "Bewerbungen für ein begleitetes KI-Pilotprojekt sind alle drei Monate möglich. Den Starttermin der nächsten Bewerbungsphase erfahren Sie in unserem [Newsletter](https://hpi.de/registrierung/ai-service-center-newsletter/) oder direkt in unserem [Bewerbungsformular](https://hpi.de/bewerbung/2027/ki-pilotprojekt-bewerbung/) .",
+   "- [Newsletter abonnieren](https://hpi.de/registrierung/ai-service-center-newsletter/)",
+   "- [E-Mail schreiben](mailto:KI-Servicezentrum@hpi.de)"
+  ],
+  "source_ids": [
+   13,
+   36
+  ],
+  "source_lines": [
+   "- [Newsletter abonnieren](https://hpi.de/registrierung/ai-service-center-newsletter/)",
+   "Bewerbungen für ein begleitetes KI-Pilotprojekt sind alle drei Monate möglich. Den Starttermin der nächsten Bewerbungsphase erfahren Sie in unserem [Newsletter](https://hpi.de/registrierung/ai-service-center-newsletter/) oder direkt in unserem [Bewerbungsformular](https://hpi.de/bewerbung/2027/ki-pilotprojekt-bewerbung/) ."
+  ],
+  "context_precision": 0.99999999995,
+  "context_recall": 1.0,
+  "words_answer": 19,
+  "words_reference": 35,
+  "ac": {
+   "answer_claims": [
+    "Der Nutzer kann den Newsletter abonnieren.",
+    "Der Nutzer erhält über den Link https://hpi.de/registrierung/ai-service-center-newsletter/ regelmäßig Informationen zum Starttermin der nächsten Bewerbungsphase."
+   ],
+   "reference_claims": [
+    "Individuals can stay informed about upcoming KI‑Pilotprojekt application phases by subscribing to the Newsletter via the link https://hpi.de/registrierung/ai-service-center-newsletter/.",
+    "The Newsletter announces the start term of the next application phase.",
+    "The Newsletter enables receipt of timely updates."
+   ],
+   "TP": [
+    {
+     "statement": "Der Nutzer kann den Newsletter abonnieren.",
+     "reason": "The ground truth statement a explicitly says individuals can stay informed by subscribing to the Newsletter via the same link, which directly supports the answer's claim that the user can subscribe to the Newsletter."
+    },
+    {
+     "statement": "Der Nutzer erhält über den Link https://hpi.de/registrierung/ai-service-center-newsletter/ regelmäßig Informationen zum Starttermin der nächsten Bewerbungsphase.",
+     "reason": "The ground truth statements a, b, and c together confirm that the Newsletter (accessed via the given link) provides regular information about the start term of the next application phase and timely updates, directly supporting this answer statement."
+    }
+   ],
+   "FP": [],
+   "FN": [],
+   "f1": 1.0,
+   "similarity": 0.7144656401074904,
+   "score": 0.9286164100268726
+  },
+  "faithfulness": {
+   "claims": [
+    {
+     "statement": "Der Newsletter kann über den Link https://hpi.de/registrierung/ai-service-center-newsletter/ abonniert werden.",
+     "verdict": 1,
+     "reason": "The context includes a bullet '- [Newsletter abonnieren](https://hpi.de/registrierung/ai-service-center-newsletter/)' which explicitly shows that the newsletter can be subscribed to via that link."
+    },
+    {
+     "statement": "Der Newsletter liefert regelmäßig Informationen zum Starttermin der nächsten Bewerbungsphase.",
+     "verdict": 0,
+     "reason": "The context states that the start date of the next application phase can be learned from the newsletter, but it does not mention that the newsletter provides this information regularly; the claim of regularity is not directly supported."
+    }
+   ],
+   "score": 0.5
+  },
+  "answer_correctness": 0.9286164100268726,
+  "faithfulness_score": 0.5,
+  "answer_correctness_w3_01": 0.7785903318327467
+ }
+}
