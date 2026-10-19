@@ -1,0 +1,24 @@
+{
+ "question": "Welche Angebote bietet das KI-Servicezentrum an?",
+ "reference": "Das KI-Servicezentrum bietet kostenlose Beratung, Weiterbildung und Rechenleistung (Infrastruktur) an.",
+ "source_ids": [
+  3
+ ],
+ "source_lines": [
+  "Wir bieten Beratung, Weiterbildung und Infrastruktur, um KI-Anwendungen eigenständig zu entwickeln, zu betreiben und erfolgreich einzusetzen. Alle unsere Angebote sind kostenlos."
+ ],
+ "short": {
+  "answer": "Das KI‑Servicezentrum bietet **Beratung, Weiterbildung und Infrastruktur** an – alle Angebote sind kostenlos.",
+  "words": 13,
+  "answer_correctness": 0.7823267529773124,
+  "faithfulness": 1.0,
+  "origin": "w3_01"
+ },
+ "full": {
+  "answer": "Das KI‑Servicezentrum bietet folgende kostenfreie Angebote an:\n\n* **Beratung** – Hilfe zur Selbsthilfe, um KI‑Kompetenzen gezielt auszubauen und fundierte Entscheidungen zu treffen.  \n* **Weiterbildung** – Schulungen und Trainings, damit Sie KI‑Anwendungen eigenständig entwickeln und betreiben können.  \n* **Infrastruktur** – Bereitstellung technischer Grundlagen, die für die eigenständige Entwicklung, den Betrieb und den erfolgreichen Einsatz von KI‑Lösungen nötig sind.",
+  "words": 57,
+  "answer_correctness": 0.6354312838127191,
+  "faithfulness": 0.3333333333333333,
+  "origin": "w3_03 B"
+ }
+}

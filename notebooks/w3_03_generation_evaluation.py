@@ -1349,11 +1349,12 @@ def _(card, cards, frame, hint, key, mo, t):
                                                   'Can you say in one sentence each what Answer Correctness and what Faithfulness measure?')),
         mo.hstack([
             mo.vstack([mo.md(t('#### Ausblick', '#### Outlook')),
-                       mo.md(t('Im Abschluss formulieren Sie zwei Sätze für Ihre Leitung: was die Zahlen über Ihr System sagen, und was nicht. Abbildung 1 und die vier Mittelwerte darüber sind Ihre Vorlage; nennen Sie dabei den Richter, der gemessen hat.',
-                               'In the closing part you write two sentences for your management: what the numbers say about your system, and what they do not. Figure 1 and the four means above it are your template; name the judge that measured.'))]),
+                       mo.md(t('Notebook 4 zeigt, wie Urteile wie die des Richters genutzt werden, um das Sprachmodell selbst zu verbessern.',
+                               "Notebook 4 shows how judgments like the judge's are used to improve the language model itself."))]),
             mo.vstack([mo.md(t('#### Nächster Schritt', '#### Next step')),
-                       mo.md(t('Zurück zu den Folien für den Abschluss.', 'Back to the slides for the closing part.')),
-                       hint(t('Lassen Sie diese Seite offen.', 'Keep this page open.'))]),
+                       mo.md(t('Weiter mit Notebook 4 zu RLHF und RLAIF.', 'Continue with notebook 4 on RLHF and RLAIF.')),
+                       mo.md('`uv run marimo run w3_04_rlhf_rlaif.py`'),
+                       hint(t('Im Ordner notebooks.', 'In the notebooks folder.'))]),
         ], widths='equal', gap=2, align='start'),
     ], gap=1)
     return

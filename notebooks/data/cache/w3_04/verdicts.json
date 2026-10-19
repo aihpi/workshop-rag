@@ -1,0 +1,122 @@
+{
+ "model": "gpt-oss-120b",
+ "temperature": 0.7,
+ "prompt_plain": "Sie beurteilen Antworten eines Assistenten. Sie sehen eine Frage, die passende Stelle der Webseite und zwei Antworten, A und B. Entscheiden Sie, welche Antwort besser ist.\n\nAntworten Sie nur mit einem JSON-Objekt, ohne weiteren Text:\n{\"besser\": \"A\" oder \"B\", \"grund\": einer von \"richtiger\", \"vollständiger\", \"kürzer\", \"belegter\", \"begruendung\": ein bis zwei Sätze auf Deutsch}",
+ "plain": {
+  "short_first": [
+   {
+    "label": "A",
+    "winner": "short",
+    "reason": "richtiger",
+    "text": "Antwort A nennt alle drei Angebote (Beratung, Weiterbildung, Infrastruktur) und erwähnt, dass sie kostenlos sind, und fasst die Information kompakt zusammen."
+   },
+   {
+    "label": "B",
+    "winner": "full",
+    "reason": "vollständiger",
+    "text": "Antwort B listet nicht nur die drei Angebote, sondern erläutert sie kurz und belegt damit die Angaben aus dem Text ausführlicher. Damit ist sie umfassender und besser begründet."
+   },
+   {
+    "label": "A",
+    "winner": "short",
+    "reason": "kürzer",
+    "text": "Antwort A liefert die geforderten Angebote präzise und knapp, exakt wie im Text angegeben, ohne zusätzliche, nicht belegte Erläuterungen."
+   },
+   {
+    "label": "B",
+    "winner": "full",
+    "reason": "vollständiger",
+    "text": "Antwort B liefert nicht nur die geforderten Angebote, sondern erläutert deren Inhalte, was die Information umfassender macht, während sie trotzdem korrekt und belegt ist."
+   },
+   {
+    "label": "B",
+    "winner": "full",
+    "reason": "vollständiger",
+    "text": "Antwort B enthält nicht nur die genannten Angebote, sondern erklärt zudem jeweils deren Zweck, was die Information umfassender macht."
+   }
+  ],
+  "full_first": [
+   {
+    "label": "A",
+    "winner": "full",
+    "reason": "vollständiger",
+    "text": "Antwort A nennt die drei Angebote und erläutert jedes kurz, sodass die Frage umfassender beantwortet wird."
+   },
+   {
+    "label": "A",
+    "winner": "full",
+    "reason": "vollständiger",
+    "text": "Antwort A listet die drei Angebote mit kurzen Erläuterungen und entspricht damit vollständig dem Webseitentext, während Antwort B nur die Aufzählung nennt."
+   },
+   {
+    "label": "A",
+    "winner": "full",
+    "reason": "vollständiger",
+    "text": "Antwort A nennt die drei Angebote und beschreibt jeweils kurz, was sie beinhalten, während Antwort B nur die Aufzählung ohne Erläuterung liefert."
+   },
+   {
+    "label": "A",
+    "winner": "full",
+    "reason": "richtiger",
+    "text": "Antwort A gibt alle genannten Angebote korrekt wieder und ergänzt sie mit kurzen Erläuterungen, was die Antwort vollständiger macht."
+   },
+   {
+    "label": "A",
+    "winner": "full",
+    "reason": "vollständiger",
+    "text": "Antwort A listet die drei Angebote und erläutert jeweils kurz, was sie beinhalten, und entspricht damit genauer dem Webseiten‑Text."
+   }
+  ]
+ },
+ "principles_de": [
+  "Bevorzugen Sie die Antwort, die nur sagt, was in der Quelle steht.",
+  "Bevorzugen Sie bei gleichem Inhalt die kürzere Antwort."
+ ],
+ "principles_en": [
+  "Prefer the answer that says only what the source says.",
+  "With the same content, prefer the shorter answer."
+ ],
+ "prompt_principle": "Sie beurteilen Antworten eines Assistenten. Sie sehen eine Frage, die passende Stelle der Webseite und zwei Antworten, A und B. Entscheiden Sie nach diesen Grundsätzen, welche Antwort besser ist:\n1. Bevorzugen Sie die Antwort, die nur sagt, was in der Quelle steht.\n2. Bevorzugen Sie bei gleichem Inhalt die kürzere Antwort.\n\nAntworten Sie nur mit einem JSON-Objekt, ohne weiteren Text:\n{\"besser\": \"A\" oder \"B\", \"grund\": einer von \"richtiger\", \"vollständiger\", \"kürzer\", \"belegter\", \"begruendung\": ein bis zwei Sätze auf Deutsch}",
+ "principle": {
+  "short_first": [
+   {
+    "label": "A",
+    "winner": "short",
+    "reason": "richtiger",
+    "text": "Antwort A gibt exakt die im Quelltext genannten Angebote wieder, ohne zusätzliche Informationen hinzuzufügen, und ist zudem kürzer."
+   },
+   {
+    "label": "A",
+    "winner": "short",
+    "reason": "richtiger",
+    "text": "Antwort A gibt exakt die im Quelltext genannten Angebote wieder, ohne zusätzliche Informationen, und ist zudem kürzer als Antwort B."
+   },
+   {
+    "label": "A",
+    "winner": "short",
+    "reason": "richtiger",
+    "text": "Antwort A gibt exakt die im Quelltext genannten Angebote wieder, ohne zusätzliche nicht im Text enthaltene Erläuterungen."
+   }
+  ],
+  "full_first": [
+   {
+    "label": "B",
+    "winner": "short",
+    "reason": "richtiger",
+    "text": "Antwort B gibt exakt die im Quelltext genannten Angebote wieder und fügt keine zusätzlichen Informationen hinzu."
+   },
+   {
+    "label": "B",
+    "winner": "short",
+    "reason": "richtiger",
+    "text": "Antwort B gibt exakt die im Quelltext genannten Angebote und den Hinweis auf die Kostenfreiheit wieder, ohne zusätzliche nicht im Text enthaltene Erläuterungen; sie ist zudem kürzer."
+   },
+   {
+    "label": "B",
+    "winner": "short",
+    "reason": "richtiger",
+    "text": "Antwort B gibt exakt die im Quelltext genannten Angebote (Beratung, Weiterbildung, Infrastruktur) und den Hinweis auf die Kostenfreiheit wieder, ohne zusätzliche, nicht im Text enthaltene Details. Sie ist zudem kürzer."
+   }
+  ]
+ }
+}

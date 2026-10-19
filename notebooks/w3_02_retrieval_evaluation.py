@@ -24,8 +24,8 @@ def _(mo, t, theme):
 
 @app.cell(hide_code=True)
 def _():
+    import json  # the cached diagnosis of the extra task, part b
     import os  # the API key check before a live judge run
-    import re  # word boundaries for shortened chunks
 
     import marimo as mo  # the reactive notebook itself
     import matplotlib.pyplot as plt  # figures of sections C, E, F and the extra task
@@ -37,7 +37,7 @@ def _():
     from ragkit.viz import md_table
 
     theme.apply_mpl()
-    return ev, i18n, md_table, mo, os, pd, plt, rag, re, theme
+    return ev, i18n, json, md_table, mo, os, pd, plt, rag, theme
 
 
 @app.cell(hide_code=True)
@@ -182,7 +182,7 @@ def _(cache_ok, ev, mo, rag):
 
 
 @app.cell(hide_code=True)
-def _(KTR, TR, feedback, mo, re, t, theme):
+def _(KTR, TR, feedback, mo, t, theme):
     # Corpus and RAGAS output: shown unchanged and marked with the class hpi-corpus (the language check skips it);
     # in the English version a grey translation below.
     def en_of(text):
@@ -218,23 +218,6 @@ def _(KTR, TR, feedback, mo, re, t, theme):
 
     def is_english(text):
         return sum(w in f' {text.lower()} ' for w in _EN) >= 3
-
-    def _split(text, limit):
-        _m = [m.end() for m in re.finditer(r'\S+', text)]
-        return (text, '') if len(_m) <= limit else (text[:_m[limit - 1]], text[_m[limit - 1]:])
-
-    def long_view(text, limit=150):
-        """A Kompendium chunk; over `limit` words shortened, the whole text in an accordion."""
-        _head, _rest = _split(text, limit)
-        if not _rest:
-            return bi(text)
-        _en = en_of(text)
-        _en_head, _en_rest = _split(_en, limit) if _en else ('', '')
-        return mo.vstack([
-            _corpus(_head + ' ...'), *([theme.hint(_en_head + ' ...')] if _en_head else []),
-            mo.accordion({t('ganzer Chunk', 'whole chunk'): mo.vstack([
-                _corpus('...' + _rest), *([theme.hint('...' + _en_rest)] if _en_rest else [])], gap=0.25)}),
-        ], gap=0.25)
 
     def nw(s):
         """A short table value that must not break inside the word."""
@@ -283,7 +266,7 @@ def _(KTR, TR, feedback, mo, re, t, theme):
         if _x is None:
             return mo.callout(mo.md(t('Geben Sie eine Zahl ein, zum Beispiel 0,50.', 'Enter a number, for example 0.50.')), kind='warn')
         return feedback(True) if abs(_x - target) <= 0.01 + 1e-9 else feedback(False, wrong_text)
-    return ap_steps, bi, bi_cell, check_answer, en_of, is_english, long_view, nw, strip_html, yes_no
+    return ap_steps, bi, bi_cell, check_answer, en_of, is_english, nw, strip_html, yes_no
 
 
 @app.cell(hide_code=True)
@@ -1105,8 +1088,10 @@ def _(CFG, confirmed, ev, feedback, mo, t, ui_kind_go):
 
 
 @app.cell(hide_code=True)
-def _(CFG, TR, gold, hint, mo, pd, plt, t, theme):
-    # Row 18b (former row 13): distribution of both metrics at TOP_K 5 as context, the orange box, the table right below
+def _(CFG, TR, bi, bi_cell, ev, gold, hint, json, left, md_table, mo, pd, plt, retrieval, t, theme, yes_no):
+    # Row 18b (rebuilt 2026-10-19, option b): a short diagnosis of the question with the lowest Context Recall at
+    # TOP_K 5. Distribution as context, all 43 questions only in an accordion, the orange box, then question,
+    # reference, the headings of the five chunks and the judge's verdict per claim; the choice of a cause right below.
     mo.stop(t.short)
     _top5 = CFG['standard']['top5']
     _fig, _axes = plt.subplots(1, 2, figsize=(6.5, 2.3), sharey=True)
@@ -1122,50 +1107,125 @@ def _(CFG, TR, gold, hint, mo, pd, plt, t, theme):
         _ax.xaxis.set_major_formatter(plt.FuncFormatter(lambda v, _pos: t.num(v, 1)))
     _axes[0].set_ylabel(t('Fragen', 'Questions'))
     _fig.tight_layout()
+    _n0 = sum(x == 0 for x in _top5['context_recall'])
+
+    # All 43 questions for the curious, without a task
     _cols = {'#': [g['index'] + 1 for g in gold], t('Frage', 'Question'): [g['question'] for g in gold]}
     if t.lang == 'en':
         _cols['English'] = [TR['en'].get(g['question'], '') for g in gold]
     _cols['Context Precision'] = [round(x, 2) for x in _top5['context_precision']]
     _cols['Context Recall'] = [round(x, 2) for x in _top5['context_recall']]
-    ui_all = mo.ui.table(pd.DataFrame(_cols), selection='single', page_size=10, show_download=False,
-                         show_column_summaries=False, show_data_types=False,
-                         wrapped_columns=[c for c in (t('Frage', 'Question'), 'English') if c in _cols])
+    _all = mo.ui.table(pd.DataFrame(_cols), selection=None, page_size=10, show_download=False,
+                       show_column_summaries=False, show_data_types=False,
+                       wrapped_columns=[c for c in (t('Frage', 'Question'), 'English') if c in _cols])
+
+    # The diagnosed question: tools/precompute_w3_02.py --stage diagnosis (lowest Context Recall, judge run 1)
+    DIAG = json.loads((ev.CACHE / 'diagnosis.json').read_text(encoding='utf-8'))
+    _g = gold[DIAG['index']]
+    _chunks = retrieval[DIAG['index']]['chunks']
+
+    def _head(text):
+        return text.split('\n')[0].strip()
+
+    def _head_cell(text):
+        _en = TR['en'].get(text) if t.lang == 'en' else None
+        _de = f'<span class="hpi-corpus">{_head(text)}</span>'
+        return _de if not _en else f'{_de}<br><span style="color:{theme.GREY};font-size:.85em">{_head(_en)}</span>'
+
+    _nw = '<span style="white-space:nowrap">{}</span>'.format
+    _chunk_rows = [{t('Rang', 'Rank'): str(c['rank']), t('Überschrift des Chunks', 'Heading of the chunk'): _head_cell(c['text'])}
+                   for c in _chunks[:5]]
+    _claim_rows = [{'#': str(n + 1), t('Aussage der Referenzantwort', 'Claim of the reference answer'): bi_cell(c['statement']),
+                    _nw(t('in den Chunks gefunden', 'found in the chunks')): _nw(yes_no(c['attributed'])),
+                    t('Begründung des Richters', "Judge's reason"): bi_cell(c['reason'])} for n, c in enumerate(DIAG['claims'])]
+    _k, _n = sum(c['attributed'] for c in DIAG['claims']), len(DIAG['claims'])
+
+    ui_why = mo.ui.radio({
+        t('Frage und Kompendium verwenden andere Wörter.', 'The question and the Kompendium use different words.'): 'words',
+        t('Die Information ist auf mehrere Stellen verteilt.', 'The information is spread over several places.'): 'spread',
+        t('Die Referenzantwort enthält etwas, das nicht im Kompendium steht.',
+          'The reference answer contains something that is not in the Kompendium.'): 'reference',
+        t('Der Richter ist zu streng.', 'The judge is too strict.'): 'judge',
+    }, label=t('Warum findet die Suche hier wenig?', 'Why does the search find little here?'))
+
     mo.vstack([
-        mo.md(t('### Teil b: alle 43 Fragen', '### Part b: all 43 questions')),
+        mo.md(t('### Teil b: Warum findet die Suche hier wenig?', '### Part b: why does the search find little here?')),
         _fig,
-        hint(t('TOP_K 5, Standard-Konfiguration, 43 Fragen.', 'TOP_K 5, standard configuration, 43 questions.')),
+        hint(t(f'TOP_K 5, Standard-Konfiguration, 43 Fragen. Bei {_n0} Fragen liegt Context Recall bei 0; eine davon sehen Sie unten.',
+               f'TOP_K 5, standard configuration, 43 questions. For {_n0} questions Context Recall is 0; you see one of them below.')),
+        mo.accordion({t('Alle 43 Fragen', 'All 43 questions'): _all}),
         mo.Html(theme.task_box(
             t('Zusatzaufgabe, Teil b', 'Extra task, part b'),
-            t(['Sortieren Sie die Tabelle direkt unter diesem Kasten nach Context Recall.',
-               'Wählen Sie die Frage mit dem niedrigsten Wert.',
-               'Vergleichen Sie darunter: Was steht in der Fundstelle, und was wurde gefunden?'],
-              ['Sort the table right below this box by Context Recall.',
-               'Select the question with the lowest value.',
-               'Compare below: what does the gold passage say, and what was found?']),
-            t('so lange, bis die anderen fertig sind', 'until the others are done'),
-            t('Finden Sie heraus, warum die Suche bei einer Frage wenig findet.',
-              'Find out why the search finds little for one question.'),
+            t(['Lesen Sie direkt unter diesem Kasten die Frage und die Referenzantwort.',
+               'Sehen Sie sich darunter die Überschriften der fünf gefundenen Chunks an.',
+               'Lesen Sie in der Tabelle danach, welche Aussagen der Referenzantwort der Richter in diesen Chunks gefunden hat.',
+               'Wählen Sie unter der Tabelle die Ursache, die Sie für die wahrscheinlichste halten.',
+               'Lesen Sie die Rückmeldung darunter.'],
+              ['Right below this box, read the question and the reference answer.',
+               'Below that, look at the headings of the five retrieved chunks.',
+               'In the table after that, read which claims of the reference answer the judge found in these chunks.',
+               'Below the table, choose the cause you think is most likely.',
+               'Read the feedback below it.']),
+            t('etwa 4 Minuten', 'about 4 minutes'),
+            t(f"Finden Sie heraus, warum die Suche bei Frage {DIAG['index'] + 1} keine Aussage der Referenzantwort findet.",
+              f"Find out why the search finds no claim of the reference answer for question {DIAG['index'] + 1}."),
             kind='extra')),
-        ui_all,
+        mo.md(f"#### {t('Frage', 'Question')} {DIAG['index'] + 1}"), bi(_g['question']),
+        mo.md(f"#### {t('Referenzantwort', 'Reference answer')}"),
+        hint(t('Eine Fachperson hat sie geschrieben. Sie gehört zum Gold-Datensatz und gilt als richtige Antwort.',
+               'An expert wrote it. It belongs to the gold data set and counts as the right answer.')),
+        bi(_g['reference']),
+        mo.md(t('#### Die fünf gefundenen Chunks', '#### The five retrieved chunks')),
+        hint(t('Alle fünf stammen aus dem Baustein APP.3.2 Webserver. Hier stehen nur die Überschriften.',
+               'All five come from the module APP.3.2 Webserver. Only the headings are shown here.')),
+        mo.md(left(md_table(_chunk_rows))),
+        mo.accordion({t('Die fünf Chunks im Volltext', 'The five chunks in full'): mo.vstack(
+            [mo.vstack([mo.md(f"**{t('Rang', 'Rank')} {c['rank']}**"), bi(c['text'])], gap=0.25) for c in _chunks[:5]], gap=1)}),
+        mo.md(t('#### Urteil des Richters je Aussage', "#### The judge's verdict per claim")),
+        mo.md(left(md_table(_claim_rows))),
+        hint(t(f'Context Recall = {_k} von {_n} = {t.num(_k / _n)}. Die Begründungen sind englisch, weil die Prompts von RAGAS englisch sind.',
+               f'Context Recall = {_k} of {_n} = {t.num(_k / _n)}.')),
+        ui_why,
     ], gap=1)
-    return (ui_all,)
+    return DIAG, ui_why
 
 
 @app.cell(hide_code=True)
-def _(bi, gold, info, long_view, mo, retrieval, t, ui_all):
-    # Row 18b: the selected question, gold passage next to the five retrieved chunks
-    _sel = ui_all.value
-    mo.stop(t.short or _sel is None or not len(_sel))
-    _i = int(_sel['#'].iloc[0]) - 1
-    _g = gold[_i]
+def _(DIAG, bi, feedback, gold, info, mo, retrieval, t, ui_why):
+    # Row 18b: feedback right after the choice (meta plan 10.4), then the gold passage as the solution.
+    # The cause was read from the data of question 1 (2026-10-19): A15 and A18 carry only "(H)", not the words of the question.
+    mo.stop(t.short or ui_why.value is None)
+    _i = DIAG['index']
+    _chunks = retrieval[_i]['chunks']
+
+    def _rank(prefix):
+        return next((c['rank'] for c in _chunks if c['text'].startswith(prefix)), None)
+
+    _a15, _a18 = _rank('APP.3.2.A15'), _rank('APP.3.2.A18')
+    mo.stop(_i != 0 or _a18 is None, mo.callout(mo.md(t(
+        'Der Cache zeigt eine andere Frage oder andere Chunks als beim Schreiben dieser Auflösung. Die Auflösung passt nur zu Frage 1.',
+        'The cache shows a different question or different chunks than when this solution was written. The solution fits question 1 only.')),
+        kind='warn'))
+
+    def _where(rank):
+        return t(f'auf Rang {rank}', f'at rank {rank}') if rank else t('nicht unter den ersten 10', 'not among the first 10')
+
+    _why = t(
+        f'Die Antwort steht in zwei Anforderungen des Bausteins APP.3.2 Webserver, A15 und A18 (Kasten unten). Die Frage spricht von "erhöhtem Schutzbedarf". Diese Worte stehen im Kompendium nur über dem ganzen Abschnitt; die beiden Anforderungen tragen dafür nur das Kürzel "(H)". Die Suche findet deshalb den richtigen Baustein, aber allgemeine Teile wie Zielsetzung und Einleitung stehen weiter oben. A18 steht {_where(_a18)}, A15 {_where(_a15)}.',
+        f'The answer is in two requirements of the module APP.3.2 Webserver, A15 and A18 (box below). The question speaks of "erhöhter Schutzbedarf" (increased protection requirements). In the Kompendium these words stand only above the whole section; the two requirements carry only the abbreviation "(H)" for it. The search therefore finds the right module, but general parts such as objective and introduction rank higher. A18 is {_where(_a18)}, A15 is {_where(_a15)}.')
+    _first = {
+        'words': '',
+        'spread': t('Die Antwort steht zwar an zwei Stellen. Das erklärt aber nicht, warum keine der beiden unter den fünf Chunks ist.',
+                    'The answer is indeed in two places. But that does not explain why neither of them is among the five chunks.'),
+        'reference': t('Die Referenzantwort gibt die beiden Anforderungen fast wörtlich wieder; alles darin steht im Kompendium.',
+                       'The reference answer restates the two requirements almost word for word; everything in it is in the Kompendium.'),
+        'judge': t('Der Richter urteilt hier richtig: In den fünf Chunks steht nichts zu Redundanz und nichts zu DDoS-Angriffen.',
+                   'The judge is right here: the five chunks say nothing about redundancy and nothing about DDoS attacks.'),
+    }[ui_why.value]
     mo.vstack([
-        mo.md(f"#### {t('Frage', 'Question')} {_i + 1}"), bi(_g['question']),
-        mo.hstack([
-            info(t('Das steht im Kompendium', 'This is what the Kompendium says'), bi(_g['fundstelle'])),
-            mo.vstack([mo.vstack([mo.md(f"**{t('Rang', 'Rank')} {c['rank']}**"), long_view(c['text'])], gap=0.25)
-                       for c in retrieval[_i]['chunks'][:5]], gap=1),
-        ], widths='equal', gap=2, align='start'),
-    ])
+        feedback(ui_why.value == 'words', f'{_first} {_why}'.strip()),
+        info(t('So steht die Antwort im Kompendium', 'This is how the Kompendium states the answer'), bi(gold[_i]['fundstelle'])),
+    ], gap=1)
     return
 
 
