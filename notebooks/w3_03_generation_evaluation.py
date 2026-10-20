@@ -72,11 +72,7 @@ def _(i18n, mo, theme, ui_lang, ui_scope):
         if value is None:
             return mo.md('')
         ok = None if correct is None else value == correct
-        if hasattr(theme, 'feedback_box'):
-            return mo.Html(theme.feedback_box(ok, mo.md(explanation).text, t))
-        lead = (t('Hier gibt es kein Richtig oder Falsch.', 'There is no right or wrong here.') if ok is None
-                else t('Richtig.', 'Correct.') if ok else t('Nicht ganz.', 'Not quite.'))
-        return mo.Html(theme.info_box(lead, mo.md(explanation).text))
+        return mo.Html(theme.feedback_box(ok, mo.md(explanation).text, t))
     return quiz_feedback, t
 
 
@@ -149,7 +145,7 @@ def _(gen, mo, setup, t):
 def _(cache_ok, gen, mo, rag):
     mo.stop(not cache_ok)
     KZ = gen.load(gen.KISZ_EXAMPLES_FILE)   # KISZ website: examples for judging by hand (sections B to E)
-    EX = gen.load(gen.EXAMPLES_FILE)        # gold set: the check of question 21 (FAQ)
+    EX = gen.load(gen.EXAMPLES_FILE)        # gold set: the check of question 22 (FAQ)
     EXP = gen.load(gen.EXPERIMENT_FILE)     # prompt experiment on the gold set
     OV = gen.load(gen.OVERVIEW_FILE)        # four metrics for all 43 gold questions
     # German corpus text -> English, English version only: gold texts, website texts of notebook 1, new KISZ texts
@@ -678,12 +674,12 @@ def _(Counter, OV, card, cards, data_label, en_of, hint, key, left, md_table, mo
     _metrics = [('context_precision', 'Context Precision'), ('context_recall', 'Context Recall'),
                 ('answer_correctness', 'Answer Correctness'), ('faithfulness', 'Faithfulness')]
     _df = pd.DataFrame(OV)
-    _all_f = float(_df['faithfulness'].mean())  # with the probably misjudged question 21, for the second mean (FAQ)
+    _all_f = float(_df['faithfulness'].mean())  # with the probably misjudged question 22, for the second mean (FAQ)
     _df.loc[_df['not_scorable'], 'faithfulness'] = np.nan
     _cols = {k: f"{n} ({t('Mittel', 'mean')} {t.num(float(_df[k].mean()))})" for k, n in _metrics}
     _cols['faithfulness'] = (f"Faithfulness ({t('Mittel', 'mean')} {t.num(float(_df['faithfulness'].mean()))}, "
-                             f"{t('mit Frage 21', 'with question 21')} {t.num(_all_f)})")
-    _table = pd.DataFrame({'#': _df['index'], t('Frage', 'Question'): _df['question']})
+                             f"{t('mit Frage 22', 'with question 22')} {t.num(_all_f)})")
+    _table = pd.DataFrame({'#': _df['index'] + 1, t('Frage', 'Question'): _df['question']})  # numbered from 1 as in notebooks 1 and 2
     if t.lang == 'en':
         _table['English'] = [en_of(q) or '' for q in _df['question']]
     for _key, _ in _metrics:
@@ -701,7 +697,7 @@ def _(Counter, OV, card, cards, data_label, en_of, hint, key, left, md_table, mo
         wrapped_columns=[c for c in (t('Frage', 'Question'), 'English') if c in _table],
         label=t('Klicken Sie auf eine Spaltenüberschrift, um zu sortieren.', 'Click a column header to sort.'))
 
-    # Figure 1: one point per question in both panels; the raw values incl. question 21 (marked in the cards).
+    # Figure 1: one point per question in both panels; the raw values incl. question 22 (marked in the cards).
     _shown = [3, 32, 5, 21]
     _q = t('Frage', 'Question')
     _offsets = {'search': {5: (7, 7), 3: (-7, -9), 32: (-9, 8)}, 'answer': {3: (-7, -9), 5: (-7, -9), 32: (6, -11), 21: (7, 7)}}
@@ -761,7 +757,7 @@ def _(Counter, OV, card, cards, data_label, en_of, hint, key, left, md_table, mo
         _defs,
         tiles([(t.num(float(_df[k].mean())), n, _mean) for k, n in _metrics[:3]]
               + [(t.num(float(_df['faithfulness'].mean())), 'Faithfulness',
-                  t(f'ohne Frage 21; mit Frage 21: {t.num(_all_f)}', f'without question 21; with question 21: {t.num(_all_f)}'))]),
+                  t(f'ohne Frage 22; mit Frage 22: {t.num(_all_f)}', f'without question 22; with question 22: {t.num(_all_f)}'))]),
         hint(t('Richter gpt-oss-120b, TOP_K 5', 'Judge gpt-oss-120b, TOP_K 5')),
         _fig,
         hint(t('Abbildung 1. Jeder Kreis ist eine der 43 Fragen, links ihre Suche, rechts ihre Antwort; oben rechts ist gut. Größere Kreise stehen für mehrere Fragen am selben Punkt, schwarz sind die vier Fragen darunter.',
@@ -992,7 +988,7 @@ def _(EXP, LLM_DOWN, PROMPT_LABELS, bi, get_live, hint, left, md_table, mo, np, 
     _orig = {k: _median_runs(_res['original'], k) for k in ('ac', 'faithfulness')}
     _band = {k: [(min(r[k] for r in row['runs']), max(r[k] for r in row['runs'])) for row in _res['original']]
              for k in ('ac', 'faithfulness')}
-    _names = [t(f"Frage {q['index']}", f"Question {q['index']}") for q in _qs]
+    _names = [t(f"Frage {q['index'] + 1}", f"Question {q['index'] + 1}") for q in _qs]
 
     _fig, _axes = plt.subplots(1, 2, figsize=(6.5, 2.8), sharey=True)
     for _ax, (_k, _title) in zip(_axes, [('ac', 'Answer Correctness'), ('faithfulness', 'Faithfulness')]):
@@ -1068,7 +1064,7 @@ def _(EXP, frame, mo, np, quiz_feedback, t, ui_outside):
     # Row 14, resolution from the cached runs (medians against the band); short version: one paragraph
     mo.stop(ui_outside.value is None)
     _res, _qs = EXP['results'], EXP['questions']
-    _ids = [q['index'] for q in _qs]
+    _ids = [q['index'] + 1 for q in _qs]  # shown numbers, from 1
 
     def _where(name, key):
         """Questions whose median lies below and above the band of the original prompt."""
@@ -1099,8 +1095,8 @@ def _(EXP, frame, mo, np, quiz_feedback, t, ui_outside):
                    key=lambda p: max(r['faithfulness'] for r in p[1]['runs']) - min(r['faithfulness'] for r in p[1]['runs']))
     _fs = ', '.join(t.num(r['faithfulness']) for r in _row['runs'])
     _top = t.num(max(r['faithfulness'] for r in _row['runs']))
-    _p1.append(t(f"Die offene Antwort zu Frage {_q['index']} bekam in drei Läufen {_fs}; die {_top} ist ein Ausreißer des Richters.",
-                 f"The open answer to question {_q['index']} got {_fs} in three runs; the {_top} is an outlier of the judge."))
+    _p1.append(t(f"Die offene Antwort zu Frage {_q['index'] + 1} bekam in drei Läufen {_fs}; die {_top} ist ein Ausreißer des Richters.",
+                 f"The open answer to question {_q['index'] + 1} got {_fs} in three runs; the {_top} is an outlier of the judge."))
     _c = EXP['claims']
     _tp = {k: sum(x['TP'] for x in _c[k]) for k in ('original', 'kurz')}
     _fp = {k: sum(x['FP'] for x in _c[k]) for k in ('original', 'kurz')}
@@ -1133,7 +1129,7 @@ def _(KZ, MATRIX, OV, bi, kisz_card, mo, t, task, theme, web_view):
     ui_extra_why = mo.ui.text_area(label=t('Wo weichen Sie vom Richter ab, und warum?', 'Where do you differ from the judge, and why?'),
                                    rows=3, full_width=True)
     ui_why_ok = mo.ui.run_button(label=theme.cta_label(t('Begründung übernehmen', 'Use this reasoning')))
-    ui_cause_q = mo.ui.dropdown({f"{r['index']}: {r['question']}": r['index'] for r in LOWER_RIGHT},
+    ui_cause_q = mo.ui.dropdown({f"{r['index'] + 1}: {r['question']}": r['index'] for r in LOWER_RIGHT},
                                 label=t('Frage mit guter Suche und niedriger Answer Correctness', 'Question with good retrieval and low Answer Correctness'),
                                 full_width=True)
     ui_cause = mo.ui.radio({t('Referenz sehr kurz', 'reference very short'): 'short',
@@ -1362,7 +1358,7 @@ def _(card, cards, frame, hint, key, mo, t):
 
 @app.cell(hide_code=True)
 def _(B, EX, mo, re, t):
-    # FAQ F1 to F6; F4 and F6 in both versions because question 21 is probably misjudged (sections 3a and 3b)
+    # FAQ F1 to F6; F4 and F6 in both versions because question 22 is probably misjudged (sections 3a and 3b)
     _c21 = EX['check21']['faithfulness']['claims']
     _n21 = len(_c21)
     # claims that turn a SOLLTE into a MUSS; 'angepasst werden muss' in a subordinate clause is no such case
@@ -1377,7 +1373,7 @@ def _(B, EX, mo, re, t):
         t('Warum sind die Antworten zum Gold-Datensatz so lang?', 'Why are the answers on the gold data set so long?'): mo.md(t(
             'Das Antwortmodell gpt-oss-120b ist ein Reasoning-Modell und antwortet ausführlich, oft mit Tabellen und Quellen. Der Original-Prompt verlangt keine Kürze.',
             'The answer model gpt-oss-120b is a reasoning model and answers at length, often with tables and sources. The original prompt does not ask for brevity.')),
-        t('Warum ist Faithfulness bei Frage 21 vermutlich fehlbewertet?', 'Why is Faithfulness for question 21 probably misjudged?'): mo.md(t(
+        t('Warum ist Faithfulness bei Frage 22 vermutlich fehlbewertet?', 'Why is Faithfulness for question 22 probably misjudged?'): mo.md(t(
             f"Der Richter hat alle {_n21} Aussagen dieser Antwort abgelehnt. Die meisten geben eine Anforderung beschreibend wieder ('werden aktualisiert' statt 'SOLLTEN aktualisiert werden'), und der Richter liest das als Behauptung über den Ist-Zustand. Das ist vermutlich ein Fehlurteil; es trat in zwei getrennten Läufen auf. {_muss21} andere Aussagen dieser Antwort stufen aber SOLLTE zu MUSS hoch, zum Beispiel 'Der Anbieter muss nachweislich bestätigen ...', und die lehnt er zu Recht ab. Die Tabelle in Abschnitt F zeigt den Mittelwert ohne und mit dieser Frage.",
             f"The judge rejected all {_n21} claims of this answer. Most of them restate a requirement descriptively (<span class='hpi-corpus'>'werden aktualisiert'</span>, are updated, instead of <span class='hpi-corpus'>'SOLLTEN aktualisiert werden'</span>, should be updated), and the judge reads that as a statement about the current state. This is probably a misjudgment; it occurred in two separate runs. {_muss21} other claims of this answer, however, raise SOLLTE to MUSS, for example <span class='hpi-corpus'>'Der Anbieter muss nachweislich bestätigen ...'</span> (the provider must verifiably confirm), and those it rejects rightly. The table in section F shows the mean without and with this question.")),
         t('Darf ich Werte selbst als fehlbewertet markieren?', 'May I mark values as misjudged myself?'): mo.md(t(

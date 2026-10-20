@@ -1120,7 +1120,7 @@ def _(CFG, TR, bi, bi_cell, ev, gold, hint, json, left, md_table, mo, pd, plt, r
                        wrapped_columns=[c for c in (t('Frage', 'Question'), 'English') if c in _cols])
 
     # The diagnosed question: tools/precompute_w3_02.py --stage diagnosis (lowest Context Recall, judge run 1)
-    DIAG = json.loads((ev.CACHE / 'diagnosis.json').read_text(encoding='utf-8'))
+    DIAG = json.loads(ev.DIAGNOSIS_FILE.read_text(encoding='utf-8'))
     _g = gold[DIAG['index']]
     _chunks = retrieval[DIAG['index']]['chunks']
 

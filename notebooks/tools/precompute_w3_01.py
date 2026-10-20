@@ -203,8 +203,10 @@ TRANSLATION_FIXES = {
 def stage_rescore(chunks: list[str]) -> None:
     """Rescore the manual questions whose reference in MANUAL differs from the cache.
 
-    Retrieval and answer do not depend on the reference, so chunks and answer stay;
-    only Context Precision and Answer Correctness are judged again.
+    Retrieval and answer do not depend on the reference, so chunks and answer stay.
+    Context Precision and Answer Correctness are judged again here; Context Recall
+    (also judged against the reference) is dropped so that --stage more-metrics
+    computes it afresh.
     """
     results = rag.load_results()
     changed = [(row, item) for row, item in zip(results['manual'], MANUAL)
@@ -213,7 +215,8 @@ def stage_rescore(chunks: list[str]) -> None:
         print('no changed references')
         return
     old_refs = [row['reference'] for row, _ in changed]
-    rows = [{**row, 'reference': item['reference']} for row, item in changed]
+    rows = [{k: v for k, v in row.items() if k not in ('context_recall', 'context_recall_runs')} | {'reference': item['reference']}
+            for row, item in changed]
     scored = asyncio.run(rag.score_many(rows))
     by_q = {r['question']: r for r in scored}
     results['manual'] = [by_q.get(r['question'], r) for r in results['manual']]

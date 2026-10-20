@@ -38,6 +38,7 @@ TRANSLATIONS_FILE = CACHE / 'translations.json'    # {'en': {German: English}, '
 # Module A on the website of the KI-Servicezentrum (C27): lines and vectors come from the w3_01 cache.
 KISZ_FILE = CACHE / 'kisz' / 'kisz_eval.json'      # {'questions': [{question, reference, line_ids, source_ids, runs, second}], 'demos': [...]}
 KISZ_TRANSLATIONS_FILE = CACHE / 'kisz' / 'translations.json'
+DIAGNOSIS_FILE = CACHE / 'diagnosis.json'          # {'index': int, ...}: the question with the lowest Context Recall (w3_02 extra task)
 
 # The four configurations with cached TOP_K experiments (dataset 43_komplex).
 CONFIGS = {
@@ -129,7 +130,7 @@ def load_kisz_translations() -> dict[str, dict[str, str]]:
 
 
 def cache_complete() -> bool:
-    return all(p.exists() for p in (RETRIEVAL_FILE, DEMO_FILE, TRANSLATIONS_FILE, KISZ_FILE, KISZ_TRANSLATIONS_FILE)) and all(
+    return all(p.exists() for p in (RETRIEVAL_FILE, DEMO_FILE, TRANSLATIONS_FILE, KISZ_FILE, KISZ_TRANSLATIONS_FILE, DIAGNOSIS_FILE)) and all(
         (config_dir(n) / f).exists() for n in CONFIGS
         for f in ('retrieval_eval_top5.json', 'retrieval_experiment_topk.json'))
 

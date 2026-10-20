@@ -118,15 +118,14 @@ def _(DATA_DIR, json, mo, t):
     _files = [CACHE / 'pair.json', CACHE / 'verdicts.json']
     cache_ok = all(p.exists() for p in _files)
 
-    def _load(name):
-        _p = CACHE / name
-        return json.loads(_p.read_text(encoding='utf-8')) if _p.exists() else {}
+    def _load(path):
+        return json.loads(path.read_text(encoding='utf-8')) if path.exists() else {}
 
-    PAIR, VERDICTS = _load('pair.json'), _load('verdicts.json')
+    PAIR, VERDICTS = _load(CACHE / 'pair.json'), _load(CACHE / 'verdicts.json')
     # German corpus text -> English, English version only: website and answers of notebooks 1 and 3, judge reasons
-    TR = {**_load('translations_en.json'),
-          **json.loads((DATA_DIR / 'cache' / 'w3_01' / 'translations_en.json').read_text(encoding='utf-8')),
-          **json.loads((DATA_DIR / 'cache' / 'w3_03' / 'kisz' / 'translations_en.json').read_text(encoding='utf-8'))}
+    TR = {**_load(CACHE / 'translations_en.json'),
+          **_load(DATA_DIR / 'cache' / 'w3_01' / 'translations_en.json'),
+          **_load(DATA_DIR / 'cache' / 'w3_03' / 'kisz' / 'translations_en.json')}
     (None if cache_ok else mo.callout(mo.md(t(
         'Der Cache mit den Urteilen des Richters fehlt. Bauen Sie ihn einmal mit `uv run python -m tools.precompute_w3_04` im Ordner `notebooks`.',
         "The cache with the judge's verdicts is missing. Build it once with `uv run python -m tools.precompute_w3_04` in the `notebooks` folder.",
@@ -681,7 +680,7 @@ def _(mo, t):
                      t('im Training des Sprachmodells', 'while the language model is trained'): 'training',
                      t('bei der Bewertung mit RAGAS', 'during the evaluation with RAGAS'): 'ragas'},
          "fb": t('RLHF gehört zum Training, beim Anbieter des Modells. Ihr RAG-System nutzt das fertige Modell. Abschnitt C.',
-                 'RLHF belongs to training, at the model provider. Your RAG system uses the finished model. Section B.')},
+                 'RLHF belongs to training, at the model provider. Your RAG system uses the finished model. Section C.')},
         {"short": True, "right": 'pairs',
          "q": t('Woraus lernt das Bewertungsmodell in Schritt 2?', 'What does the reward model learn from in step 2?'),
          "options": {t('aus Paaren: Antwort A ist besser als B', 'from pairs: answer A is better than B'): 'pairs',
@@ -695,7 +694,7 @@ def _(mo, t):
                      t('RLAIF braucht kein Training.', 'RLAIF needs no training.'): 'notrain',
                      t('RLAIF hat keinen Bias.', 'RLAIF has no bias.'): 'nobias'},
          "fb": t('Bei RLAIF urteilt ein Richter. Er skaliert gut, bringt aber eigene Vorlieben mit, etwa für längere Antworten. Abschnitt E.',
-                 'In RLAIF a judge rates. It scales well but brings leanings of its own, for example toward longer answers. Section D.')},
+                 'In RLAIF a judge rates. It scales well but brings leanings of its own, for example toward longer answers. Section E.')},
     ]
     FINAL = [f for f in _all if f['short'] or not t.short]
     ui_final = mo.ui.array([mo.ui.radio(f['options'], label=f"**{n + 1}.** {f['q']}") for n, f in enumerate(FINAL)])
@@ -758,7 +757,7 @@ def _(VERDICTS, mo, t):
             'During the optimization in step 3, the model should not drift too far from the fine-tuned model of step 1. The KL penalty measures the distance between the two and subtracts it from the reward. This keeps the language natural, and the model does not learn odd answers that only the reward model likes.')),
         t('Was ist Reward Hacking?', 'What is reward hacking?'): mo.md(t(
             'Das Modell findet Wege, eine hohe Belohnung zu bekommen, ohne besser zu werden. Bevorzugt das Bewertungsmodell zum Beispiel lange Antworten, lernt das Modell, lang zu antworten. Abschnitt E zeigt, dass unser Richter genau zu dieser Vorliebe neigt.',
-            'The model finds ways to get a high reward without getting better. If the reward model prefers long answers, for example, the model learns to answer at length. Section D shows that our judge leans exactly this way.')),
+            'The model finds ways to get a high reward without getting better. If the reward model prefers long answers, for example, the model learns to answer at length. Section E shows that our judge leans exactly this way.')),
         **({} if not VERDICTS else {t('Wie sind die Urteile des Richters entstanden?', "How did the judge's verdicts come about?"): mo.vstack([
             mo.md(t(
                 f"Vorab berechnet mit {VERDICTS['model']} über die AISC-API, Temperatur {t.num(VERDICTS['temperature'], 1)}. Ohne Grundsätze fünf Läufe je Reihenfolge, mit den Beispiel-Grundsätzen drei. Der Richter sah, was Sie sehen: Frage, Zeile der Webseite, Antworten A und B. Das Werkzeug dazu ist `tools/precompute_w3_04.py`.",

@@ -31,7 +31,8 @@
 (() => {
   const opened = new Set();  // keys of opened sections, kept while the page is open; all start closed
 
-  const keyOf = (h) => h.id || h.textContent.trim();
+  // Keyed by position, not heading text: the language toggle re-renders every heading.
+  const keyOf = (h) => h.id || h.dataset.hpiKey;
 
   // marimo's mount config sets the mode key to edit only in marimo edit; read once.
   // This script's own text is skipped so the pattern below never matches itself.
@@ -57,11 +58,12 @@
   function apply() {
     if (!document.querySelector('[data-hpi-sections]')) return;
     if (isEdit()) return;  // marimo edit: leave the notebook alone
-    let open = true;
+    let open = true, n = 0;
     for (const cell of document.querySelectorAll('.marimo-cell')) {
       const area = cell.querySelector('.output-area');
       const h = area && area.querySelector('h2');
       if (h) {
+        if (!h.id) h.dataset.hpiKey = 'sec-' + n++;
         const key = keyOf(h);
         open = opened.has(key);
         if (!h.classList.contains('hpi-sec-head')) {

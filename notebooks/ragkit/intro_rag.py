@@ -4,11 +4,10 @@ The pipeline answers questions about the website of the KI-Servicezentrum:
 every non-empty line of the page is a chunk, the TOP_K most similar chunks go
 to the answer model, and RAGAS scores the result with Context Precision and
 Answer Correctness. `tools/precompute_w3_01.py` runs it once for the prepared
-questions and writes the cache; the notebook calls `evaluate_one` live only
+questions and writes the cache; the notebook calls `aevaluate_one` live only
 when a participant presses a button.
 """
 
-import asyncio
 import json
 import os
 
@@ -120,17 +119,8 @@ async def score_many(rows: list[dict]) -> list[dict]:
             for r, c, a in zip(rows, cp_res, ac_res)]
 
 
-def evaluate_one(question: str, reference: str, chunks: list[str], vectors: np.ndarray) -> dict:
-    """Retrieval, answer and both metrics for one question; raises on any API error."""
-    idx = retrieve(question, chunks, vectors)
-    contexts = [chunks[i] for i in idx]
-    row = {'question': question, 'reference': reference, 'chunk_ids': idx, 'contexts': contexts,
-           'answer': generate(question, contexts)}
-    return asyncio.run(score_many([row]))[0]
-
-
 async def aevaluate_one(question: str, reference: str, chunks: list[str], vectors: np.ndarray) -> dict:
-    """`evaluate_one` for callers that already run an event loop (marimo cells)."""
+    """Retrieval, answer and both metrics for one question, from a running event loop (marimo cells); raises on any API error."""
     idx = retrieve(question, chunks, vectors)
     contexts = [chunks[i] for i in idx]
     row = {'question': question, 'reference': reference, 'chunk_ids': idx, 'contexts': contexts,
