@@ -108,7 +108,7 @@ Open `.env` in any editor and replace `your_openai_api_key_here` with the key yo
 
 ## Step 5: start Qdrant
 
-Qdrant is the vector database the notebooks store embeddings in. It runs in Docker, so Docker itself has to be running first. `w2_03`, `w3_02`, `w3_03` and `w3_04` all need it; the earlier notebooks do not. From the **repository root**, one level above `notebooks/`:
+Qdrant is the vector database the notebooks store embeddings in. It runs in Docker, so Docker itself has to be running first. Only `w2_03` needs it; the other notebooks do not. From the **repository root**, one level above `notebooks/`:
 
 ```bash
 docker compose up -d
@@ -151,14 +151,16 @@ Same command, `w3_01` first:
 uv run marimo run w3_01_intro_end_to_end.py
 ```
 
-**Order matters here.** `w3_02` is what fills the Qdrant collection that `w3_03` and `w3_04` then query. Run it before either of them, or they will find nothing to evaluate.
+All four notebooks read precomputed results from `data/cache/`, which ships with the repository, so they need neither Qdrant nor an API key to run. The key only unlocks the live buttons (`w3_01`) and the extra task in `w3_02`. Run them in order: each one builds on the questions and answers of the previous one.
 
 | Notebook | What it teaches | Needs |
 |---|---|---|
-| `w3_01_intro_end_to_end` | A whole RAG pipeline end to end, and what RAGAS measures | key |
-| `w3_02_ingestion` | PDF to Docling to chunks to embeddings to Qdrant. **Run this before w3_03 and w3_04** | key, Qdrant |
-| `w3_03_retrieval_evaluation` | Context precision and recall, and what changing top-k does | key, Qdrant, w3_02 |
-| `w3_04_generation_evaluation` | Answer correctness and faithfulness, and what changing the prompt does | key, Qdrant, w3_02 |
+| `w3_01_intro_end_to_end` | A whole RAG pipeline end to end, and what RAGAS measures | nothing (key for the live run) |
+| `w3_02_retrieval_evaluation` | Context precision and recall, and what changing top-k does | nothing (key for the extra task) |
+| `w3_03_generation_evaluation` | Answer correctness and faithfulness, and what changing the prompt does | nothing |
+| `w3_04_rlhf_rlaif` | RLHF and RLAIF: where preference training sits, and what a judge's leanings do | nothing |
+
+The caches come from `tools/precompute_w3_0*.py`; an instructor rebuilds one with `uv run python -m tools.precompute_w3_01` in `notebooks/` (needs the key and, for `w3_02` and `w3_03`, Qdrant).
 
 ---
 
@@ -174,11 +176,11 @@ uv run marimo run w3_01_intro_end_to_end.py
 docker ps -a --filter name=qdrant
 ```
 
-**`w3_03` or `w3_04` find nothing.** Run `w3_02` first; it creates the collection they read.
+**A `w3` notebook shows a red box saying the cache is missing.** Your clone is incomplete; pull again, or rebuild the cache with the command in the box (needs the key).
 
 **No GitHub account at submission time.** The playground prints your score as plain text at the end. Keep it and submit later, or give it to the instructor.
 
-**RAGAS `InstructorRetryException` or `max_tokens` errors.** Reasoning models such as `gpt-oss-120b` need a higher `max_tokens` in `llm_factory()`; `w3_03` and `w3_04` already raise it from 8192 to 65536.
+**RAGAS `InstructorRetryException` or `max_tokens` errors.** Reasoning models such as `gpt-oss-120b` need a higher `max_tokens` in `llm_factory()`; the `w3` precompute tools already raise it.
 
 **Embedding batch errors (HTTP 413).** `minilm-embedding` takes at most 32 texts per batch. The per-model limits live in the `_EMBED_MODELS` registry in `ragkit/config.py`.
 

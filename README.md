@@ -59,13 +59,13 @@ Run each one from `notebooks/`, in order. `marimo run` gives the app view with t
 | `w2_03_IT_Grundschutz` | A real PDF through Docling: structure-aware chunking, Qdrant, RAG answers |
 | `w2_04_ocr_docling_vlm_comparison` | Docling OCR against a local vision model against an external one, called directly and through Docling |
 | `w3_01_intro_end_to_end` | A whole pipeline end to end, and what RAGAS measures |
-| `w3_02_ingestion` | PDF to Docling to chunks to embeddings to Qdrant |
-| `w3_03_retrieval_evaluation` | Context precision and recall, and the top-k experiment |
-| `w3_04_generation_evaluation` | Answer correctness and faithfulness, and the prompt experiment |
+| `w3_02_retrieval_evaluation` | Context precision and recall, and the top-k experiment |
+| `w3_03_generation_evaluation` | Answer correctness and faithfulness, and the prompt experiment |
+| `w3_04_rlhf_rlaif` | RLHF and RLAIF: where preference training sits, and what a judge's leanings do |
 
 ### Recommendations
 
-Run `w3_02` before `w3_03` and `w3_04`: it fills the collection they query. Start `w2_00` before anyone's setup is finished, since it needs nothing, and run it again at the end so the room can see how much it learned. The slide decks in [`slides/`](slides/) accompany the notebooks in German and English.
+The RAG III notebooks run on precomputed caches that ship with the repository, so they need neither a key nor Qdrant; run them in order, since each builds on the previous one. Start `w2_00` before anyone's setup is finished, since it needs nothing, and run it again at the end so the room can see how much it learned. The slide decks in [`slides/`](slides/) accompany the notebooks in German and English.
 
 ## Limitations
 

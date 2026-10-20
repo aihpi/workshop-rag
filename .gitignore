@@ -77,3 +77,9 @@ chat_history/
 
 # marimo session cache
 __marimo__/
+
+# Local Claude Code skills and agents (internal KISZ material, not for the public repo)
+.claude/
+
+# Qdrant snapshots of the w3 collections (about 150 MB, shared outside git)
+notebooks/data/qdrant_snapshot/

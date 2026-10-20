@@ -1,0 +1,556 @@
+{
+ "judge": "gpt-oss-120b",
+ "second_judge": "llama-3-3-70b",
+ "top_k": 5,
+ "questions": [
+  {
+   "question": "Welche Angebote bietet das KI-Servicezentrum an?",
+   "reference": "Das KI-Servicezentrum bietet kostenlose Beratung, Weiterbildung und Rechenleistung (Infrastruktur) an.",
+   "line_ids": [
+    0,
+    3,
+    17,
+    2,
+    19
+   ],
+   "similarity": [
+    0.7872,
+    0.7202,
+    0.6398,
+    0.6259,
+    0.6182
+   ],
+   "source_ids": [
+    3
+   ],
+   "runs": [
+    {
+     "chunks": [
+      {
+       "verdict": 0,
+       "reason": "The context only contains the heading \"# KI-Servicezentrum\" and does not provide any information about the services offered, so it does not help in deriving the answer about the specific offerings."
+      },
+      {
+       "verdict": 1,
+       "reason": "The context directly lists the services (Beratung, Weiterbildung, Infrastruktur) and states they are free, which matches the answer's description of free consulting, training, and computing resources offered by the KI-Servicezentrum."
+      },
+      {
+       "verdict": 1,
+       "reason": "The context mentions consulting offers and support for building KI competencies, which aligns with the answer's mention of free consulting and training. Although it does not explicitly reference the computing infrastructure, it still provides relevant information about the services offered by the KI-Servicezentrum, making the context useful."
+      },
+      {
+       "verdict": 0,
+       "reason": "The context only mentions that the KI-Servicezentrum is a project promoting AI use, but it does not specify the concrete offerings such as free consulting, training, or computing resources that appear in the answer, so it was not useful for deriving the answer."
+      },
+      {
+       "verdict": 0,
+       "reason": "The context only describes a scene with a KI expert and a rollup in the background, without mentioning any specific services or offers of the KI-Servicezentrum, so it does not help derive the answer about the offered services."
+      }
+     ],
+     "claims": [
+      {
+       "statement": "Das KI-Servicezentrum bietet kostenlose Beratung, Weiterbildung und Rechenleistung (Infrastruktur) an.",
+       "attributed": 1,
+       "reason": "The context explicitly states that the KI-Servicezentrum offers Beratung, Weiterbildung und Infrastruktur and that all offers are kostenlos, which directly matches the statement."
+      }
+     ],
+     "context_precision": 0.5833333333333333,
+     "context_recall": 1.0,
+     "n_claims": 1
+    }
+   ]
+  },
+  {
+   "question": "Sind alle Services kostenlos?",
+   "reference": "Ja, alle Services sind kostenlos, da das KI-Servicezentrum vom Bundesministerium für Forschung, Technologie und Raumfahrt gefördert wird.",
+   "line_ids": [
+    3,
+    0,
+    4,
+    32,
+    41
+   ],
+   "similarity": [
+    0.4155,
+    0.3076,
+    0.3004,
+    0.2857,
+    0.2846
+   ],
+   "source_ids": [
+    3,
+    104
+   ],
+   "runs": [
+    {
+     "chunks": [
+      {
+       "verdict": 1,
+       "reason": "The context explicitly states that all offers are free, which directly supports the answer that all services are free, making the context useful for arriving at the given answer."
+      },
+      {
+       "verdict": 0,
+       "reason": "The context only contains the heading \"# KI-Servicezentrum\" and does not provide any information about whether the services are free, so it does not help in arriving at the answer."
+      },
+      {
+       "verdict": 0,
+       "reason": "The provided context only contains a heading \"### Unsere Angebote:\" and does not include any information about whether the services are free, so it does not help in arriving at the answer."
+      },
+      {
+       "verdict": 0,
+       "reason": "The provided context only contains the phrase \"Das erwartet Sie:\" which does not give any information about whether the services are free, so it is not useful for deriving the answer."
+      },
+      {
+       "verdict": 0,
+       "reason": "The provided context only contains a heading asking if the user is interested in the offers and does not provide any information about whether the services are free, so it is not useful for arriving at the given answer."
+      }
+     ],
+     "claims": [
+      {
+       "statement": "Ja, alle Services sind kostenlos, da das KI-Servicezentrum vom Bundesministerium für Forschung, Technologie und Raumfahrt gefördert wird.",
+       "attributed": 0,
+       "reason": "The context states that all offers are free, which supports the claim that services are free, but it does not mention any funding by the Federal Ministry of Research, Technology and Spaceflight, so the causal part of the statement cannot be attributed to the context."
+      }
+     ],
+     "context_precision": 1.0,
+     "context_recall": 0.0,
+     "n_claims": 1
+    }
+   ]
+  },
+  {
+   "question": "Welche Beratungsangebote bietet das KI-Servicezentrum?",
+   "reference": "Das KI-Servicezentrum bietet Gruppensprechstunden und individuelle Beratung zum Einsatz von KI. Zudem können dreimonatige Pilotprojekte gemeinsam durchgeführt werden.",
+   "line_ids": [
+    0,
+    17,
+    3,
+    27,
+    21
+   ],
+   "similarity": [
+    0.7648,
+    0.7064,
+    0.6794,
+    0.6428,
+    0.639
+   ],
+   "source_ids": [
+    26,
+    36
+   ],
+   "runs": [
+    {
+     "chunks": [
+      {
+       "verdict": 0,
+       "reason": "The context only contains the header \"# KI-Servicezentrum\" and does not provide any information about the consulting services offered, so it was not useful for deriving the answer."
+      },
+      {
+       "verdict": 0,
+       "reason": "The context only provides a generic description of consulting support for building AI competencies and does not mention the specific offers such as group office hours, individual consulting, or three-month pilot projects that are stated in the answer, so it was not useful for deriving the answer."
+      },
+      {
+       "verdict": 1,
+       "reason": "The context states that the KI-Servicezentrum offers Beratung (consulting) along with other services, which aligns with the answer's mention of individual consulting and group office hours, indicating the context was useful for identifying the type of consulting offers."
+      },
+      {
+       "verdict": 0,
+       "reason": "The context only contains a link to schedule a KI-Sprechstunde and does not mention the specific consulting offerings such as group office hours, individual advice, or three-month pilot projects described in the answer, so it is not useful for deriving the answer."
+      },
+      {
+       "verdict": 0,
+       "reason": "The context only mentions a KI-Sprechstunde (AI consultation hour) but does not specify the types of consulting offers such as group sessions, individual advice, or three-month pilot projects that are stated in the answer. Therefore, the context was not useful for arriving at the given answer."
+      }
+     ],
+     "claims": [
+      {
+       "statement": "Das KI-Servicezentrum bietet Gruppensprechstunden und individuelle Beratung zum Einsatz von KI.",
+       "attributed": 0,
+       "reason": "The context mentions that the KI-Servicezentrum offers \"Beratung\" (consultation) and a \"KI-Sprechstunde\", but it does not specify that these are offered as group sessions. Therefore, while the individual consulting aspect is supported, the claim about \"Gruppensprechstunden\" cannot be directly attributed to the given context."
+      },
+      {
+       "statement": "Zudem können dreimonatige Pilotprojekte gemeinsam durchgeführt werden.",
+       "attributed": 0,
+       "reason": "The context does not contain any information about three‑month pilot projects or their joint execution, so this statement cannot be attributed to the provided context."
+      }
+     ],
+     "context_precision": 0.3333333333333333,
+     "context_recall": 0.0,
+     "n_claims": 2
+    }
+   ]
+  },
+  {
+   "question": "Was passiert in einem Pilotprojekt?",
+   "reference": "Unternehmen können sich für Pilotprojekte bewerben und erhalten 2-3 Tage pro Woche aktive Projektbegleitung, um gemeinsam einen Prototypen zu entwickeln. Dabei können sie auch die Recheninfrastruktur nutzen.",
+   "line_ids": [
+    31,
+    37,
+    36,
+    72,
+    30
+   ],
+   "similarity": [
+    0.6486,
+    0.4941,
+    0.4618,
+    0.4299,
+    0.4221
+   ],
+   "source_ids": [
+    31,
+    34,
+    35,
+    36
+   ],
+   "runs": [
+    {
+     "chunks": [
+      {
+       "verdict": 1,
+       "reason": "The context describes that in KI pilot projects a prototype is developed as a first test of concepts and feasibility, which aligns with the answer's statement that a prototype is created together with active project support. Although the answer adds details (application process, 2‑3 days per week, use of computing infrastructure) that are not mentioned in the context, the core information about what happens in a pilot project is provided by the context, making it useful."
+      },
+      {
+       "verdict": 0,
+       "reason": "The context only mentions AI experts and participants at a table with laptops, which does not provide information about the application process, support schedule, prototype development, or use of computing infrastructure described in the answer. Therefore, the context was not useful for arriving at the given answer."
+      },
+      {
+       "verdict": 0,
+       "reason": "The context only mentions the application periods and where to find information about the KI-Pilotprojekt, but it does not describe what actually happens in a pilot project, such as project support, prototype development, or use of computing infrastructure. Therefore it does not provide the information needed for the given answer."
+      },
+      {
+       "verdict": 1,
+       "reason": "The context is useful because it explains that to run a pilot project you submit a description of your AI application and develop/test it using the provider's infrastructure, which aligns with the answer's description of applying for a pilot project, receiving support, and using the compute infrastructure, even though the context does not mention the specific support schedule."
+      },
+      {
+       "verdict": 0,
+       "reason": "The context only asks whether you want to try a KI idea in your organization and does not provide any details about the activities, support, or outcomes of a pilot project, which are described in the answer. Therefore, the context was not useful for arriving at the given answer."
+      }
+     ],
+     "claims": [
+      {
+       "statement": "Unternehmen können sich für Pilotprojekte bewerben und erhalten 2-3 Tage pro Woche aktive Projektbegleitung, um gemeinsam einen Prototypen zu entwickeln.",
+       "attributed": 0,
+       "reason": "The context confirms that companies can apply for a KI-Pilotprojekt and that a prototype is developed together, but it does not mention a specific amount of \"2-3 Tage pro Woche\" of active project support. Because part of the statement is not supported by the given context, it cannot be fully attributed."
+      },
+      {
+       "statement": "Dabei können sie auch die Recheninfrastruktur nutzen.",
+       "attributed": 1,
+       "reason": "The context states that participants can develop and test their KI application with the provided infrastructure, which directly supports the claim that they can use the computing infrastructure."
+      }
+     ],
+     "context_precision": 0.75,
+     "context_recall": 0.5,
+     "n_claims": 2
+    },
+    {
+     "chunks": [
+      {
+       "verdict": 1,
+       "reason": "The context describes that in KI pilot projects a prototype is developed and concepts are tested for feasibility, which directly addresses what happens in a pilot project. Although the answer adds extra details (application process, support days, infrastructure usage) not mentioned in the context, the core information about developing a prototype is provided, making the context useful."
+      },
+      {
+       "verdict": 0,
+       "reason": "The context only describes a scene with AI experts and participants at a table with laptops, which does not provide information about the application process, support schedule, prototype development, or use of computing infrastructure mentioned in the answer. Therefore, it is not useful for arriving at the given answer."
+      },
+      {
+       "verdict": 0,
+       "reason": "The context only mentions that applications for a KI pilot project are possible every three months and where to find start dates, but it does not describe what actually happens in the pilot project, such as the weekly accompaniment, prototype development, or use of computing infrastructure. Therefore it does not provide the information needed for the given answer."
+      },
+      {
+       "verdict": 1,
+       "reason": "The context is relevant because it explains that to develop and test a KI-Anwendung you must submit a description via the portal and that the provider does not offer production operation. This aligns with the answer that companies can apply for pilot projects, receive support, and use the compute infrastructure to develop a prototype, thus the context was useful in arriving at the answer."
+      },
+      {
+       "verdict": 0,
+       "reason": "The context only asks whether you want to test a KI idea in your organization and does not provide any details about what actually happens in a pilot project, whereas the answer describes the support, prototype development, and infrastructure usage. Therefore, the context was not useful for arriving at the given answer."
+      }
+     ],
+     "claims": [
+      {
+       "statement": "Unternehmen können sich für Pilotprojekte bewerben und erhalten 2-3 Tage pro Woche aktive Projektbegleitung, um gemeinsam einen Prototypen zu entwickeln.",
+       "attributed": 0,
+       "reason": "The context confirms that companies can apply for a KI-Pilotprojekt (Bewerbungen ... sind alle drei Monate möglich) and that a prototype is developed, but it does not mention a specific amount of weekly active project support (2-3 Tage pro Woche). Because the statement contains information not present in the context, it cannot be fully attributed."
+      },
+      {
+       "statement": "Dabei können sie auch die Recheninfrastruktur nutzen.",
+       "attributed": 1,
+       "reason": "The context states that participants can develop and test their KI-Anwendung with the provided infrastructure (\"Wenn Sie Ihre KI-Anwendung mit unserer Infrastruktur entwickeln und erproben möchten\"). This directly supports the claim that they can use the computing infrastructure."
+      }
+     ],
+     "context_precision": 0.75,
+     "context_recall": 0.5,
+     "n_claims": 2
+    },
+    {
+     "chunks": [
+      {
+       "verdict": 1,
+       "reason": "The context describes that in KI pilot projects a prototype is developed as a first test of concepts and feasibility, which aligns with the answer stating that a prototype is created with active project support. Although the answer adds details about application procedures and resource usage that are not in the context, the core information about what happens in a pilot project is covered, making the context useful."
+      },
+      {
+       "verdict": 0,
+       "reason": "The context only mentions AI experts and participants sitting at a table with laptops during a pilot project, which does not provide information about application procedures, weekly support, prototype development, or use of computing infrastructure described in the answer. Therefore, the context was not useful for arriving at the given answer."
+      },
+      {
+       "verdict": 0,
+       "reason": "The context only mentions that applications for a guided AI pilot project are possible every three months and where to find information about the start date, but it does not describe what actually happens in the pilot project (e.g., project support, prototype development, use of computing infrastructure). Therefore it does not provide the information needed for the given answer."
+      },
+      {
+       "verdict": 1,
+       "reason": "The context is useful because it explains that to run a pilot project you submit a description of your AI application and use the provider's infrastructure for development and testing, which aligns with the answer's description of companies applying for pilot projects, receiving support, and using the compute infrastructure."
+      },
+      {
+       "verdict": 0,
+       "reason": "The context only asks whether you want to test a KI idea in your organization and does not provide any details about what occurs in a pilot project, whereas the answer describes the support, prototype development, and infrastructure usage. Therefore, the context was not useful for arriving at the answer."
+      }
+     ],
+     "claims": [
+      {
+       "statement": "Unternehmen können sich für Pilotprojekte bewerben und erhalten 2-3 Tage pro Woche aktive Projektbegleitung, um gemeinsam einen Prototypen zu entwickeln.",
+       "attributed": 0,
+       "reason": "The context confirms that companies can apply for a KI-Pilotprojekt and that a prototype is developed together, but it does not mention a specific amount of \"2-3 days per week\" or explicit \"active project guidance\". Because part of the statement is not supported by the given context, it cannot be fully attributed."
+      },
+      {
+       "statement": "Dabei können sie auch die Recheninfrastruktur nutzen.",
+       "attributed": 1,
+       "reason": "The context states that participants can develop and test their KI application with the provided infrastructure, which directly supports the claim that they can use the computing infrastructure."
+      }
+     ],
+     "context_precision": 0.75,
+     "context_recall": 0.5,
+     "n_claims": 2
+    },
+    {
+     "chunks": [
+      {
+       "verdict": 1,
+       "reason": "The context describes that in KI pilot projects a prototype is developed and concepts are tested for feasibility, which directly addresses what happens in a pilot project. Although the answer adds extra details (application process, support days, infrastructure usage) not mentioned in the context, the core information about developing a prototype is provided, making the context useful."
+      },
+      {
+       "verdict": 0,
+       "reason": "The context only describes a scene with AI experts and participants at a table with laptops, which does not provide the specific information about how pilot projects operate, such as application, support days, prototype development, or infrastructure usage mentioned in the answer."
+      },
+      {
+       "verdict": 0,
+       "reason": "The context only mentions that applications for a KI pilot project are possible every three months and where to find start dates, but it does not describe what actually happens in the pilot project (e.g., active project support, prototype development, use of computing infrastructure). Therefore it does not provide the information needed for the given answer."
+      },
+      {
+       "verdict": 1,
+       "reason": "The context provides relevant information about how to initiate a pilot project (submitting a description via the portal) and mentions using the infrastructure for development and testing, which aligns with the answer's description of applying for a pilot project and using the compute infrastructure. Although the context does not include details about the 2-3 days per week support, it still contributes useful background for the answer."
+      },
+      {
+       "verdict": 0,
+       "reason": "The context only asks whether you want to try a KI idea in your organization and does not provide any details about what occurs in a pilot project, whereas the answer describes specific activities and support. Therefore, the context was not useful for arriving at the answer."
+      }
+     ],
+     "claims": [
+      {
+       "statement": "Unternehmen können sich für Pilotprojekte bewerben und erhalten 2-3 Tage pro Woche aktive Projektbegleitung, um gemeinsam einen Prototypen zu entwickeln.",
+       "attributed": 0,
+       "reason": "The context confirms that companies can apply for a KI-Pilotprojekt and that there is active project accompaniment and joint prototype development, but it does not specify the amount of time (2-3 days per week). Because the statement includes a detail not present in the context, it cannot be fully attributed."
+      },
+      {
+       "statement": "Dabei können sie auch die Recheninfrastruktur nutzen.",
+       "attributed": 1,
+       "reason": "The context states that participants can develop and test their KI-Anwendung using the provided infrastructure, which directly supports the claim that they can use the computing infrastructure."
+      }
+     ],
+     "context_precision": 0.75,
+     "context_recall": 0.5,
+     "n_claims": 2
+    },
+    {
+     "chunks": [
+      {
+       "verdict": 1,
+       "reason": "The context describes that in KI pilot projects a prototype is developed as a first test of concepts and feasibility, which aligns with the answer stating that companies work together to develop a prototype. Although the answer adds extra details (application process, support days, compute infrastructure) not mentioned in the context, the core information about what happens in a pilot project is provided by the context, making it useful."
+      },
+      {
+       "verdict": 0,
+       "reason": "The context only mentions AI experts and participants with laptops in a pilot project, which does not provide the detailed information about application, support days, prototype development, or use of computing infrastructure described in the answer. Therefore, the context was not useful for arriving at the given answer."
+      },
+      {
+       "verdict": 0,
+       "reason": "The context only mentions that applications for a guided AI pilot project are possible every three months and where to find start dates, but it does not describe what actually happens in the pilot project (e.g., 2-3 days per week of support, prototype development, use of computing infrastructure). Therefore the context was not useful for arriving at the given answer."
+      },
+      {
+       "verdict": 0,
+       "reason": "The context only mentions submitting a description for a pilot project and that no production operation is offered, but it does not provide details about receiving active project support, the 2-3 days per week involvement, or prototype development that are present in the answer. Therefore the context was not useful for arriving at the given answer."
+      },
+      {
+       "verdict": 0,
+       "reason": "The context only asks whether you want to test a KI idea in your organization and does not provide any details about what actually happens in a pilot project, whereas the answer describes the support, prototype development, and infrastructure usage. Therefore, the context was not useful for arriving at the given answer."
+      }
+     ],
+     "claims": [
+      {
+       "statement": "Unternehmen können sich für Pilotprojekte bewerben und erhalten 2-3 Tage pro Woche aktive Projektbegleitung, um gemeinsam einen Prototypen zu entwickeln.",
+       "attributed": 0,
+       "reason": "The context confirms that companies can apply for a KI-Pilotprojekt and that a prototype is developed together, but it does not mention a specific amount of \"2-3 days per week\" of active project support. Because the statement contains information not present in the context, it cannot be fully attributed."
+      },
+      {
+       "statement": "Dabei können sie auch die Recheninfrastruktur nutzen.",
+       "attributed": 1,
+       "reason": "The context states that participants can develop and test their KI-Anwendung with the provided infrastructure (\"Wenn Sie Ihre KI-Anwendung mit unserer Infrastruktur entwickeln und erproben möchten...\"), which directly supports the claim that they can use the computing infrastructure."
+      }
+     ],
+     "context_precision": 1.0,
+     "context_recall": 0.5,
+     "n_claims": 2
+    }
+   ],
+   "second": [
+    {
+     "claims": [
+      {
+       "statement": "Unternehmen können sich für Pilotprojekte bewerben",
+       "attributed": 1,
+       "reason": "Die Bewerbung für ein Pilotprojekt wird im Kontext erwähnt, insbesondere mit dem Hinweis, dass Bewerbungen alle drei Monate möglich sind."
+      },
+      {
+       "statement": "und erhalten 2-3 Tage pro Woche aktive Projektbegleitung",
+       "attributed": 0,
+       "reason": "Im Kontext wird nicht explizit die Dauer oder Frequenz der Projektbegleitung erwähnt, daher kann diese Aussage nicht direkt dem Kontext zugeordnet werden."
+      },
+      {
+       "statement": "um gemeinsam einen Prototypen zu entwickeln",
+       "attributed": 1,
+       "reason": "Die Entwicklung eines Prototypen im Rahmen eines Pilotprojekts wird im Kontext als Ziel erwähnt, was dieser Aussage entspricht."
+      },
+      {
+       "statement": "Dabei können sie auch die Recheninfrastruktur nutzen",
+       "attributed": 1,
+       "reason": "Im Kontext wird erwähnt, dass Unternehmen die Infrastruktur für die Entwicklung und Erprobung ihrer KI-Anwendung nutzen können, was dieser Aussage entspricht."
+      }
+     ],
+     "context_recall": 0.75,
+     "n_claims": 4
+    },
+    {
+     "claims": [
+      {
+       "statement": "Unternehmen können sich für Pilotprojekte bewerben",
+       "attributed": 1,
+       "reason": "Die Bewerbung für ein Pilotprojekt wird im Kontext erwähnt, insbesondere mit dem Hinweis, dass Bewerbungen alle drei Monate möglich sind."
+      },
+      {
+       "statement": "und erhalten 2-3 Tage pro Woche aktive Projektbegleitung",
+       "attributed": 0,
+       "reason": "Im Kontext wird nicht explizit die Dauer oder Frequenz der Projektbegleitung erwähnt, daher kann diese Aussage nicht direkt dem Kontext zugeordnet werden."
+      },
+      {
+       "statement": "um gemeinsam einen Prototypen zu entwickeln",
+       "attributed": 1,
+       "reason": "Die Entwicklung eines Prototypen im Rahmen eines Pilotprojekts wird im Kontext als Ziel erwähnt, was dieser Aussage entspricht."
+      },
+      {
+       "statement": "Dabei können sie auch die Recheninfrastruktur nutzen",
+       "attributed": 1,
+       "reason": "Im Kontext wird erwähnt, dass Unternehmen die Infrastruktur für die Entwicklung und Erprobung ihrer KI-Anwendung nutzen können, was dieser Aussage entspricht."
+      }
+     ],
+     "context_recall": 0.75,
+     "n_claims": 4
+    },
+    {
+     "claims": [
+      {
+       "statement": "Unternehmen können sich für Pilotprojekte bewerben",
+       "attributed": 1,
+       "reason": "Die Bewerbung für ein Pilotprojekt wird im Kontext erwähnt, insbesondere mit dem Hinweis, dass Bewerbungen alle drei Monate möglich sind."
+      },
+      {
+       "statement": "und erhalten 2-3 Tage pro Woche aktive Projektbegleitung",
+       "attributed": 0,
+       "reason": "Im Kontext wird nicht explizit die Dauer oder Frequenz der Projektbegleitung erwähnt, daher kann diese Aussage nicht direkt dem Kontext zugeordnet werden."
+      },
+      {
+       "statement": "um gemeinsam einen Prototypen zu entwickeln",
+       "attributed": 1,
+       "reason": "Die Entwicklung eines Prototypen im Rahmen eines Pilotprojekts wird im Kontext als Ziel erwähnt, was dieser Aussage zustimmt."
+      },
+      {
+       "statement": "Dabei können sie auch die Recheninfrastruktur nutzen",
+       "attributed": 1,
+       "reason": "Im Kontext wird erwähnt, dass Unternehmen die Infrastruktur für die Entwicklung und Erprobung ihrer KI-Anwendung nutzen können, was dieser Aussage entspricht."
+      }
+     ],
+     "context_recall": 0.75,
+     "n_claims": 4
+    }
+   ]
+  },
+  {
+   "question": "Muss man sich auf ein Pilotprojekt bewerben, um die Recheninfrastruktur nutzen zu können?",
+   "reference": "Nein. Wenn Sie die Recheninfrastruktur nutzen möchten, reichen Sie über das Portal des KI-Servicezentrums eine Beschreibung Ihres Vorhabens ein. Ein Produktivbetrieb wird nicht angeboten.",
+   "line_ids": [
+    72,
+    101,
+    36,
+    35,
+    102
+   ],
+   "similarity": [
+    0.6205,
+    0.5614,
+    0.546,
+    0.5009,
+    0.4882
+   ],
+   "source_ids": [
+    72
+   ],
+   "runs": [
+    {
+     "chunks": [
+      {
+       "verdict": 1,
+       "reason": "The context directly provides the required information that you must submit a description of your project via the portal and that no production operation is offered, which matches the answer stating you do not need to apply for a pilot project but must submit a description. Therefore, the context was useful."
+      },
+      {
+       "verdict": 0,
+       "reason": "The provided context only contains a heading 'Sie möchten unsere Infrastruktur nutzen?' and does not include any details about the application process or the answer that no pilot project application is required, so it was not useful for arriving at the given answer."
+      },
+      {
+       "verdict": 0,
+       "reason": "The context only mentions that applications for a KI pilot project are possible every three months and where to find the application, but it does not provide the information that one can use the computing infrastructure without applying to a pilot project, which is the core of the answer. Therefore the context was not useful for arriving at the given answer."
+      },
+      {
+       "verdict": 0,
+       "reason": "The context only mentions that the infrastructure can be used for training and evaluation, but it does not address whether one must apply for a pilot project, so it does not provide the information needed for the answer."
+      },
+      {
+       "verdict": 1,
+       "reason": "The context provides a link labeled \"Vorhaben einreichen\" which indicates that one should submit a project description via the portal, directly supporting the answer that you do not need to apply for a pilot project but must submit a description to use the compute infrastructure."
+      }
+     ],
+     "claims": [
+      {
+       "statement": "Nein.",
+       "attributed": 1,
+       "reason": "The context explains that using the infrastructure only requires submitting a description via the portal and does not mandate a pilot‑project application, so the answer \"Nein\" (no) is supported by the context."
+      },
+      {
+       "statement": "Wenn Sie die Recheninfrastruktur nutzen möchten, reichen Sie über das Portal des KI-Servicezentrums eine Beschreibung Ihres Vorhabens ein.",
+       "attributed": 1,
+       "reason": "The context explicitly states that to develop and test a KI‑Anwendung with the infrastructure you must submit a description of your project through the portal, matching this statement."
+      },
+      {
+       "statement": "Ein Produktivbetrieb wird nicht angeboten.",
+       "attributed": 1,
+       "reason": "The context contains the sentence \"Bitte beachten Sie, dass wir keinen Produktivbetrieb anbieten,\" directly supporting this statement."
+      }
+     ],
+     "context_precision": 0.7,
+     "context_recall": 1.0,
+     "n_claims": 3
+    }
+   ]
+  }
+ ],
+ "demos": [
+  3
+ ]
+}

@@ -1,0 +1,323 @@
+{
+ "questions": [
+  {
+   "index": 24,
+   "question": "Wie wird mit institutionsfremden Personen organisatorisch umgegangen?",
+   "reference": "Besuchende und Fremdpersonal müssen begleitet und in sensiblen Bereichen beaufsichtigt werden, um unbefugten Zugriff auf Informationen, Unterlagen und IT-Systeme zu verhindern.",
+   "fundstelle": "ORP.1.A3 Beaufsichtigung oder Begleitung von Fremdpersonen (B) [Mitarbeitende] Institutionsfremde Personen MÜSSEN von Mitarbeitenden zu den Räumen begleitet werden. Die Mitarbeitenden der Institution MÜSSEN institutionsfremde Personen in sensiblen Bereichen beaufsichtigen. Die Mitarbeitenden SOLLTEN dazu angehalten werden, institutionsfremde Personen in den Räumen der Institution nicht unbeaufsichtigt zu lassen.\n\n2.4. Gefährdung durch Institutionsfremde Bei Institutionsfremden kann grundsätzlich nicht vorausgesetzt werden, dass sie mit ihnen zugänglichen Informationen und der Informationstechnik entsprechend den Vorgaben der besuchten Institution umgehen. Besuchende, Reinigungs- und Fremdpersonal können interne Informationen, Geschäftsprozesse und IT-Systeme auf verschiedene Arten gefährden, angefangen von der unsachgemäßen Behandlung der technischen Einrichtungen über den Versuch des „Spielens“ an IT-Systemen bis hin zum Diebstahl von Unterlagen oder IT-Komponenten.\nBeispiele:\n\n• Unbegleitete Besuchende können auf Unterlagen und Datenträger zugreifen oder Zugang zu Geräten haben, diese beschädigen oder schützenswerte Informationen ausspähen.\n\n• Reinigungskräfte können versehentlich Steckverbindungen lösen, Wasser in Geräte laufen lassen, Unterlagen verlegen oder mit dem Abfall entsorgen.",
+   "chunks": [
+    {
+     "text": "ORP.1.A3 Beaufsichtigung oder Begleitung von Fremdpersonen (B) [Mitarbeitende]\n\nInstitutionsfremde Personen MÜSSEN von Mitarbeitenden zu den Räumen begleitet werden. Die Mitarbeitenden der Institution MÜSSEN institutionsfremde Personen in sensiblen Bereichen beaufsichtigen. Die Mitarbeitenden SOLLTEN dazu angehalten werden, institutionsfremde Personen in den Räumen der Institution nicht unbeaufsichtigt zu lassen.",
+     "pages": "S. 109",
+     "chunk_id": 257
+    },
+    {
+     "text": "2.4. Gefährdung durch Institutionsfremde\n\nBei Institutionsfremden kann grundsätzlich nicht vorausgesetzt werden, dass sie mit ihnen zugänglichen Informationen und der Informationstechnik entsprechend den Vorgaben der besuchten Institution umgehen. Besuchende, Reinigungs- und Fremdpersonal können interne Informationen, Geschäftsprozesse und IT-Systeme auf verschiedene Arten gefährden, angefangen von der unsachgemäßen Behandlung der technischen Einrichtungen über den Versuch des 'Spielens' an IT-Systemen bis hin zum Diebstahl von Unterlagen oder IT-Komponenten.",
+     "pages": "S. 108",
+     "chunk_id": 251
+    },
+    {
+     "text": "ORP.2.A4 Festlegung von Regelungen für den Einsatz von Fremdpersonal (B)\n\nWird externes Personal beschäftigt, MUSS dieses wie alle eigenen Mitarbeitenden dazu verpflichtet werden, geltende Gesetze, Vorschriften und interne Regelungen einzuhalten. Fremdpersonal, das kurzfristig oder einmalig eingesetzt wird, MUSS in sicherheitsrelevanten Bereichen beaufsichtigt werden. Bei längerfristig beschäftigtem Fremdpersonal MUSS dieses wie die eigenen Mitarbeitenden in seine Aufgaben eingewiesen werden. Auch für diese Mitarbeitende MUSS eine Vertretungsregelung eingeführt werden. Verlässt das Fremdpersonal die Institution, MÜSSEN Arbeitsergebnisse wie bei eigenem Personal geregelt übergeben und eventuell ausgehändigte Zugangsberechtigungen zurückgegeben werden.",
+     "pages": "S. 115",
+     "chunk_id": 288
+    },
+    {
+     "text": "INF.9.A4 Arbeiten mit fremden IT-Systemen (B) [IT-Betrieb, Mitarbeitende]\n\nDie Institution MUSS regeln, wie Mitarbeitende mit institutionsfremden IT-Systemen arbeiten dürfen. Alle mobilen Mitarbeitenden MÜSSEN über die Gefahren fremder IT-Systeme aufgeklärt werden. Die Regelungen MÜSSEN vorgeben, ob und wie schützenswerte Informationen an fremden IT-Systemen bearbeitet werden dürfen. Sie MÜSSEN zudem festlegen, wie verhindert wird, dass nicht autorisierte Personen die Informationen einsehen können. Wenn Mitarbeitende mit fremden IT-Systemen arbeiten, MUSS grundsätzlich sichergestellt sein, dass alle währenddessen entstandenen temporären Daten gelöscht werden.",
+     "pages": "S. 812",
+     "chunk_id": 3846
+    },
+    {
+     "text": "CON.11.1.A6 Beaufsichtigung und Begleitung von Fremdpersonal für VS-IT nach §§ 3, 4 VSA (B)\n\nNicht verpflichtetes Fremdpersonal, das an VS-IT arbeitet, MUSS während der gesamten Zeit begleitet und beaufsichtigt werden. Die begleitenden Personen MÜSSEN über die notwendigen Fachkenntnisse verfügen, um die Tätigkeiten kontrollieren zu können.",
+     "pages": "S. 194",
+     "chunk_id": 649
+    }
+   ]
+  },
+  {
+   "index": 22,
+   "question": "Warum ist ORP.1 Organisation ein eigener Baustein im IT-Grundschutz?",
+   "reference": "Der Baustein stellt übergreifende organisatorische Anforderungen bereit, um Informationsflüsse, Prozesse, Rollen sowie Aufbau- und Ablauforganisation so zu regeln, dass Informationssicherheit systematisch umgesetzt werden kann.",
+   "fundstelle": "1.1. Einleitung Jede Institution benötigt eine hierfür zuständige Dienststelle, um den allgemeinen Betrieb zu steuern und zu regeln sowie um Verwaltungsdienstleistungen zu planen, zu organisieren und durchzuführen. Die meisten Institutionen haben hierfür eine Organisationseinheit, die dieses Zusammenspiel der verschiedenen Rollen und Einheiten mit den entsprechenden Geschäftsprozessen und Ressourcen steuert. Bereits auf dieser übergreifenden Ebene sind Aspekte der Informationssicherheit einzubringen und verbindlich festzulegen.\n\n1.2. Zielsetzung Mit diesem Baustein werden allgemeine und übergreifende Anforderungen im Bereich Organisation aufgeführt, die dazu beitragen, das Niveau der Informationssicherheit zu erhöhen und zu erhalten. In diesem Zusammenhang sind Informationsflüsse, Prozesse, Rollenverteilungen sowie die Aufbau- und Ablauforganisation zu regeln.",
+   "chunks": [
+    {
+     "text": "1.3. Abgrenzung und Modellierung\n\nDer Baustein ORP.1 Organisation ist auf den Informationsverbund mindestens einmal anzuwenden. Wenn Teile des Informationsverbunds einer anderen Organisationseinheit zugeordnet sind und daher anderen Rahmenbedingungen unterliegen, sollte der Baustein auf jede Einheit separat angewandt werden. Der Baustein bildet die übergeordnete Basis, um Informationssicherheit in einer Institution umzusetzen. Er behandelt keine spezifischen Aspekte zu Personal, Schulung von Mitarbeitenden, Verwaltung von Identitäten und Berechtigungen sowie Anforderungsmanagement. Diese Aspekte werden in den Bausteinen ORP.2 Personal, ORP.3 Sensibilisierung und Schulung zur Informationssicherheit, ORP.4 Identitäts- und Berechtigungsmanagement und ORP.5 Compliance Management (Anforderungsmanagement) behandelt.",
+     "pages": "S. 107",
+     "chunk_id": 245
+    },
+    {
+     "text": "2. Gefährdungslage\n\nDa IT-Grundschutz-Bausteine nicht auf individuelle Informationsverbünde eingehen können, werden zur Darstellung der Gefährdungslage typische Szenarien zugrunde gelegt. Die folgenden spezifischen Bedrohungen und Schwachstellen sind für den Baustein ORP .1 Organisation von besonderer Bedeutung.",
+     "pages": "S. 107",
+     "chunk_id": 246
+    },
+    {
+     "text": "4.1. Wissenswertes\n\nFür den Baustein ORP.1 Organisation sind keine weiterführenden Informationen vorhanden.",
+     "pages": "S. 111",
+     "chunk_id": 274
+    },
+    {
+     "text": "3. Anforderungen\n\nIm Folgenden sind die spezifischen Anforderungen des Bausteins ORP .1 Organisation aufgeführt. Der oder die Informationssicherheitsbeauftragte (ISB) ist dafür zuständig, dass alle Anforderungen gemäß dem festgelegten Sicherheitskonzept erfüllt und überprüft werden. Bei strategischen Entscheidungen ist der oder die ISB stets einzubeziehen. Im IT-Grundschutz-Kompendium sind darüber hinaus weitere Rollen definiert. Sie sollten besetzt werden, insofern dies sinnvoll und angemessen ist. Genau eine Rolle sollte Grundsätzlich zuständig sein. Darüber hinaus kann es noch Weitere Zuständigkeiten geben. Falls eine dieser weiteren Rollen für die Erfüllung einer Anforderung vorrangig zuständig ist, dann wird diese Rolle hinter der Überschrift der Anforderung in eckigen Klammern aufgeführt. Die Verwendung des Singulars oder Plurals sagt nichts darüber aus, wie viele Personen diese Rollen ausfüllen sollen.",
+     "pages": "S. 108-109",
+     "chunk_id": 253
+    },
+    {
+     "text": "1.3. Abgrenzung und Modellierung\n\nDer Baustein ORP.3 Sensibilisierung und Schulung zur Informationssicherheit ist für den Informationsverbund einmal anzuwenden. Dieser Baustein formuliert Anforderungen an die Sensibilisierung und Schulung zur Informationssicherheit, die das Arbeitsumfeld in der Institution, den Telearbeitsplatz und die mobile Arbeit betreffen. Der Baustein ORP.3 Sensibilisierung und Schulung zur Informationssicherheit beschreibt die prozessualen, technischen, methodischen und organisatorischen Anforderungen an die Sensibilisierung und Schulung von Informationssicherheit. Weitere Schulungsthemen werden durch die Personalabteilung oder das Weiterbildungsmanagement geplant, gestaltet und durchgeführt. In vielen der anderen IT-Grundschutz-Bausteine werden konkrete Schulungsinhalte zu den dort betrachteten Themen beschrieben. Der vorliegende Baustein beschäftigt sich damit, wie in den Bereichen Sensibilisierung und Schulung zur Informationssicherheit ein planvolles Vorgehen effizient gestaltet werden kann.",
+     "pages": "S. 117",
+     "chunk_id": 305
+    }
+   ]
+  },
+  {
+   "index": 26,
+   "question": "Wann müssen Berechtigungen entzogen werden?",
+   "reference": "Bei personellen Veränderungen müssen nicht mehr benötigte Benutzendenkennungen und Berechtigungen unverzüglich entfernt werden, um unberechtigte Zugriffe ehemaliger oder versetzter Mitarbeitender zu vermeiden. Es dürfen Berechtigungen nur hinsichtlich des tatsächlichen Bedarfs zur Aufgabenerfüllung vergeben werden.",
+   "fundstelle": "ORP.4.A2 Einrichtung, Änderung und Entzug von Berechtigungen (B) [ITBetrieb] Benutzendenkennungen und Berechtigungen DÜRFEN NUR aufgrund des tatsächlichen Bedarfs und der Notwendigkeit zur Aufgabenerfüllung vergeben werden (Prinzip der geringsten Berechtigungen, englisch Least Privileges und Erforderlichkeitsprinzip, englisch Need-to-know). Bei personellen Veränderungen MÜSSEN die nicht mehr benötigten Benutzendenkennungen und Berechtigungen entfernt werden. Beantragen Mitarbeitende Berechtigungen, die über den Standard hinausgehen, DÜRFEN diese NUR nach zusätzlicher Begründung und Prüfung vergeben werden. Zugriffsberechtigungen auf Systemverzeichnisse und -dateien SOLLTEN restriktiv eingeschränkt werden. Alle Berechtigungen MÜSSEN über separate administrative Rollen eingerichtet werden.",
+   "chunks": [
+    {
+     "text": "OPS.1.1.2.A4 Beendigung der Tätigkeit in der IT-Administration (B)\n\nFalls eine Person von Administrationsaufgaben entbunden wird, MÜSSEN ihr alle damit zusammenhängenden privilegierten Berechtigungen auf organisatorischer und technischer Ebene entzogen werden. Insbesondere MÜSSEN persönliche administrative Konten gesperrt und Passwörter aller administrativer Konten geändert werden, die der Person bekannt sind. Weiterhin MÜSSEN alle betroffenen Parteien darauf hingewiesen werden, dass diese Person von den entsprechenden Aufgaben entbunden ist und daher keine administrativen Berechtigungen mehr haben darf. Es MUSS geregelt werden unter welchen Rahmenbedingungen geprüft wird, ob sich zusätzliche nicht dokumentierte administrative Rechte verschafft wurden. Diese Prüfung SOLLTE insbesondere erfolgen, falls die Entscheidung eine Person von Administrationsaufgaben zu entbinden nicht im Einvernehmen mit der entsprechenden Person getroffen wurde. Falls solche administrativen Rechte gefunden wurden, MÜSSEN diese wieder entzogen werden.",
+     "pages": "S. 215",
+     "chunk_id": 731
+    },
+    {
+     "text": "ORP.4.A2 Einrichtung, Änderung und Entzug von Berechtigungen (B) [IT-Betrieb]\n\nBenutzendenkennungen und Berechtigungen DÜRFEN NUR aufgrund des tatsächlichen Bedarfs und der Notwendigkeit zur Aufgabenerfüllung vergeben werden (Prinzip der geringsten Berechtigungen, englisch Least Privileges und Erforderlichkeitsprinzip, englisch Need-to-know). Bei personellen Veränderungen MÜSSEN die nicht mehr benötigten Benutzendenkennungen und Berechtigungen entfernt werden. Beantragen Mitarbeitende Berechtigungen, die über den Standard hinausgehen, DÜRFEN diese NUR nach zusätzlicher Begründung und Prüfung vergeben werden. Zugriffsberechtigungen auf Systemverzeichnisse und -dateien SOLLTEN restriktiv eingeschränkt werden. Alle Berechtigungen MÜSSEN über separate administrative Rollen eingerichtet werden.",
+     "pages": "S. 125",
+     "chunk_id": 340
+    },
+    {
+     "text": "G 0.32 Missbrauch von Berechtigungen\n\nAbhängig von ihren Rollen und Aufgaben erhalten Personen entsprechende Zutritts-, Zugangs- und Zugriffsberechtigungen. Auf diese Weise soll einerseits der Zugang zu Informationen gesteuert und kontrolliert werden, und andererseits soll es den Personen ermöglicht werden, bestimmte Aufgaben zu erledigen. Beispielsweise benötigen Personen oder Gruppen bestimmte Berechtigungen, um Anwendungen ausführen zu können oder Informationen bearbeiten zu können. Eine missbräuchliche Nutzung von Berechtigungen liegt vor, wenn vorsätzlich recht- oder unrechtmäßig erworbene Möglichkeiten außerhalb des vorgesehenen Rahmens genutzt werden. Ziel dabei ist häufig, sich persönliche Vorteile zu verschaffen oder einer Institution oder bestimmten Personen zu schaden. In nicht wenigen Fällen verfügen Personen aus historischen, systemtechnischen oder anderen Gründen über höhere oder umfangreichere Zutritts-, Zugangs- oder Zugriffsrechte, als sie für ihre Tätigkeit benötigen. Diese Rechte können unter Umständen für Angriffe missbraucht werden. Beispiele: Je feingranularer die Zugriffsrechte auf Informationen gestaltet werden, desto größer ist oft auch der Pflegeaufwand, um diese Berechtigungen auf dem aktuellen Stand zu halten. Es besteht deshalb die Gefahr, dass bei der Vergabe der Zugriffsrechte zu wenig zwischen den unterschiedlichen Rollen differenziert wird und dadurch der Missbrauch der Berechtigungen erleichtert wird. Bei verschiedenen Anwendungen werden Zugriffsberechtigungen oder Passwörter in Systembereichen gespeichert, auf die auch andere Benutzende zugreifen können. Dadurch könnten Angreifende die Berechtigungen ändern oder Passwörter auslesen. Personen mit zu großzügig vergebenen Berechtigungen könnten versucht sein, auf fremde Dateien zuzugreifen, beispielsweise eine fremde E-Mail einzusehen, weil bestimmte Informationen dringend benötigt werden.",
+     "pages": "S. 78",
+     "chunk_id": 192
+    },
+    {
+     "text": "ORP.4.A7 Vergabe von Zugriffsrechten (B) [IT-Betrieb]\n\nEs MUSS festgelegt werden, welche Zugriffsrechte an welche Personen im Rahmen ihrer Funktion vergeben bzw. ihnen entzogen werden. Werden im Rahmen der Zugriffskontrolle Chipkarten oder Token verwendet, so MUSS die Ausgabe bzw. der Entzug dokumentiert werden. Die Anwendenden SOLLTEN für den korrekten Umgang mit Chipkarten oder Token geschult werden. Bei längeren Abwesenheiten SOLLTEN berechtigte Personen vorübergehend gesperrt werden.",
+     "pages": "S. 125",
+     "chunk_id": 345
+    },
+    {
+     "text": "2.1. Fehlende oder unzureichende Prozesse beim Identitäts- und Berechtigungsmanagement\n\nSind Prozesse beim Identitäts- und Berechtigungsmanagement unzureichend definiert oder implementiert, ist nicht gewährleistet, dass Zugriffe auf das erforderliche Maß eingeschränkt sind und so gegen die Prinzipien Need-to- Know bzw. Least-Privilege verstoßen wird. Der IT-Betrieb erhält möglicherweise keine Informationen über personelle Veränderungen, so dass beispielsweise Konten von ausgeschiedenen Mitarbeitenden nicht gelöscht werden. Diese können somit weiterhin auf schützenswerte Informationen zugreifen. Auch ist es möglich, dass Mitarbeitende, die in eine neue Abteilung versetzt wurden, ihre alten Berechtigungen behalten und dadurch mit der Zeit umfangreiche Gesamtberechtigungen ansammeln.",
+     "pages": "S. 123-124",
+     "chunk_id": 334
+    }
+   ]
+  }
+ ],
+ "prompts": {
+  "original": "Du bist ein RAG-Assistent für IT-Grundschutz. Beantworte die Frage nur auf Basis des bereitgestellten Kontexts. Wenn die Information im Kontext nicht enthalten ist, sage das klar.",
+  "kurz": "Du bist ein RAG-Assistent für IT-Grundschutz. Beantworte die Frage nur auf Basis des bereitgestellten Kontexts. Wenn die Information im Kontext nicht enthalten ist, sage das klar. Beantworte die Frage in kurzen Sätzen. Wenn möglich, beantworte die Frage in maximal 1 bis 5 Sätzen. Je kürzer und klarer deine Antwort ist, desto besser. Gib nur Informationen an, die relevant für die Frage sind.",
+  "offen": "Du bist ein Experte für IT-Sicherheit und IT-Grundschutz. Beantworte die Frage ausführlich und umfassend. Nutze den bereitgestellten Kontext als Ausgangspunkt, aber ergänze dein Expertenwissen, um eine möglichst vollständige Antwort zu geben. Nenne auch Best Practices und Empfehlungen, die über den Kontext hinausgehen."
+ },
+ "results": {
+  "original": [
+   {
+    "answer": "**Organisatorischer Umgang mit institutionsfremden Personen**\n\n1. **Begleitung und Beaufsichtigung**  \n   * Institutionsfremde Personen dürfen die Räumlichkeiten der Institution nicht unbeaufsichtigt betreten. Sie **müssen von Mitarbeitenden zu den jeweiligen Räumen begleitet** und in sensiblen Bereichen **aktiv beaufsichtigt** werden (Quelle 1).  \n   * Nicht verpflichtetes Fremdpersonal, das an VS‑IT arbeitet, muss **während der gesamten Arbeitszeit begleitet und beaufsichtigt** werden; die begleitenden Personen benötigen die erforderlichen Fachkenntnisse, um die Tätigkeiten kontrollieren zu können (Quelle 5).\n\n2. **Einweisung und Regelungen**  \n   * Bei **langfristig eingesetztem Fremdpersonal** ist eine **Einweisung in die Aufgaben** und in die geltenden Sicherheitsvorgaben erforderlich, analog zu eigenen Mitarbeitenden (Quelle 3).  \n   * Für **kurzfristig oder einmalig eingesetztes Fremdpersonal** ist ebenfalls eine **Beaufsichtigung in sicherheitsrelevanten Bereichen** vorgeschrieben (Quelle 3).  \n   * Es müssen **regelungen** festgelegt werden, wie mit **institutionsfremden IT‑Systemen** umgegangen wird: Aufklärung über Gefahren, Vorgaben zur Bearbeitung schützenswerter Informationen und Sicherstellung der Löschung temporärer Daten (Quelle 4).\n\n3. **Verpflichtung zu Gesetzen und internen Vorgaben**  \n   * Externes Personal muss, wie alle eigenen Mitarbeitenden, **verpflichtet werden, geltende Gesetze, Vorschriften und interne Regelungen** einzuhalten (Quelle 3).  \n\n4. **Rückgabe von Arbeitsergebnissen und Zugangsberechtigungen**  \n   * Beim Verlassen der Institution **müssen Arbeitsergebnisse geregelt übergeben** und eventuell ausgehändigte Zugangsberechtigungen **zurückgegeben** werden (Quelle 3).\n\n5. **Gefährdungsbewertung**  \n   * Es wird anerkannt, dass institutionsfremde Personen **nicht automatisch vertrauenswürdig** sind und potenziell Informationen, Geschäftsprozesse und IT‑Systeme gefährden können (Quelle 2). Deshalb sind die genannten Begleit‑ und Kontrollmaßnahmen zwingend erforderlich.\n\n**Zusammengefasst:** Institutionsfremde Personen werden organisatorisch durch verpflichtende Begleitung, kontinuierliche Beaufsichtigung, verpflichtende Einweisung in Sicherheitsvorgaben, klare Regelungen zum Umgang mit IT‑Systemen sowie durch Rückgabe von Arbeitsergebnissen und Zugangsrechten gesteuert. Diese Maßnahmen sollen sicherstellen, dass sie keinen unautorisierten Zugriff auf sensible Bereiche oder Informationen erhalten.",
+    "runs": [
+     {
+      "ac": 0.4840974288545042,
+      "faithfulness": 0.9333333333333333
+     },
+     {
+      "ac": 0.6681695337113167,
+      "faithfulness": 0.9230769230769231
+     },
+     {
+      "ac": 0.4974378263942436,
+      "faithfulness": 1.0
+     }
+    ]
+   },
+   {
+    "answer": "**ORP.1 Organisation ist ein eigenständiger Baustein, weil er die übergeordnete organisatorische Basis für die gesamte Informationssicherheit einer Institution bildet und damit Themen behandelt, die in keinem der fachlich‑spezifischeren Bausteine abgedeckt werden.**  \n\n* Der Baustein muss **mindestens einmal pro Informationsverbund** angewendet werden (und bei mehreren Organisationseinheiten jeweils separat), weil er die **Grundstruktur** definiert, nach der alle weiteren Sicherheitsmaßnahmen organisiert und gesteuert werden [Quelle 1].  \n* Er **behandelt keine konkreten Teilaspekte** wie Personal, Schulungen, Identitäts‑ und Berechtigungsmanagement oder Anforderungs‑/Compliance‑Management. Diese werden in den eigenen Bausteinen ORP.2 Personal, ORP.3 Sensibilisierung und Schulung, ORP.4 Identitäts‑ und Berechtigungsmanagement sowie ORP.5 Compliance Management behandelt [Quelle 1].  \n* Damit stellt ORP.1 die **gemeinsame, übergeordnete Basis** dar, auf der die spezialisierten Bausteine aufbauen können. Ohne einen klar definierten organisatorischen Rahmen (z. B. Rollen, Verantwortlichkeiten des Informationssicherheitsbeauftragten, Governance‑Strukturen) könnten die nachfolgenden, themenspezifischen Maßnahmen nicht wirksam koordiniert werden [Quelle 5].\n\nKurz gesagt: ORP.1 Organisation ist ein eigenständiger Baustein, weil er die **strategische, organisatorische Grundlage** für das gesamte Informationssicherheitsmanagement liefert, während die anderen Bausteine die **operativen Detailbereiche** (Personal, Schulung, Berechtigungen, Compliance) konkretisieren. Ohne diesen separaten Baustein gäbe es keinen klaren Rahmen, in dem die spezialisierten Maßnahmen sinnvoll eingebettet werden können.",
+    "runs": [
+     {
+      "ac": 0.2621317381815411,
+      "faithfulness": 0.8666666666666667
+     },
+     {
+      "ac": 0.5850151415086161,
+      "faithfulness": 0.6153846153846154
+     },
+     {
+      "ac": 0.5433484748419495,
+      "faithfulness": 0.6666666666666666
+     }
+    ]
+   },
+   {
+    "answer": "**Berechtigungen müssen entzogen werden, sobald sie nicht mehr „tatsächlichen Bedarf und Notwendigkeit zur Aufgabenerfüllung“ (Least‑Privilege/Need‑to‑know) entsprechen.**  \n\nAus dem bereitgestellten Kontext ergeben sich folgende konkrete Auslöser:\n\n| Situation | Was muss geschehen | Quelle |\n|-----------|-------------------|--------|\n| **Beendigung einer administrativen Tätigkeit** (z. B. Ausscheiden, Versetzung, Entbindung von Admin‑Aufgaben) | • Alle privilegierten Berechtigungen (organisatorisch + technisch) entziehen<br>• Persönliche Administrations‑Konten sperren<br>• Passwörter aller bekannten Administrations‑Konten ändern<br>• Betroffene Parteien informieren<br>• Prüfen, ob nicht dokumentierte Admin‑Rechte vorhanden sind und ggf. entfernen | OPS.1.1.2.A4 |\n| **Allgemeine personelle Veränderungen** (Austritt, Versetzung, Rollenwechsel) | • Nicht mehr benötigte Benutzer‑IDs und Berechtigungen entfernen | ORP.4.A2 |\n| **Längere Abwesenheiten** (z. B. Elternzeit, Sabbatical) | • Berechtigte Personen vorübergehend sperren (bei Nutzung von Chipkarten/Token dokumentiert) | ORP.4.A7 |\n| **Feststellung von überhöhten oder historischen Rechten** (z. B. Rechte, die über die aktuelle Aufgabe hinausgehen) | • Rechte sofort zurückziehen, um Missbrauch zu verhindern | G 0.32 (Hinweis auf Missbrauchsgefahr) |\n| **Bei Änderungen von Zugriffsrechten** (z. B. neue Rollen, neue Aufgaben) | • Entzug von Rechten, die nicht mehr zur Funktion passen, muss dokumentiert werden | ORP.4.A7 |\n| **Fehlende oder unzureichende Prozesse im Identitäts‑ und Berechtigungsmanagement** (z. B. keine Information über personelle Veränderungen) | • Ohne korrekte Prozesse würden Berechtigungen nicht entzogen – daher muss ein Prozess etabliert sein, der den Entzug bei jeder personellen Veränderung sicherstellt | 2.1. Fehlende oder unzureichende Prozesse |\n\n**Kurzfassung:**  \n- **Sofort**, wenn jemand aus einer administrativen Rolle entlassen oder entbunden wird (OPS.1.1.2.A4).  \n- **Bei jeder personellen Veränderung** (Austritt, Versetzung, Rollenwechsel) (ORP.4.A2).  \n- **Bei längerer Abwesenheit** von berechtigten Personen (ORP.4.A7).  \n- **Wenn im Zuge einer Prüfung** überhöhte oder nicht dokumentierte Rechte entdeckt werden (OPS.1.1.2.A4, G 0.32).  \n\nNur durch das konsequente und dokumentierte Entziehen nicht mehr benötigter Rechte wird das Prinzip der geringsten Berechtigung (Least‑Privilege) und das Need‑to‑Know‑Prinzip eingehalten.",
+    "runs": [
+     {
+      "ac": 0.5876085770396731,
+      "faithfulness": 0.5294117647058824
+     },
+     {
+      "ac": 0.3326343311375354,
+      "faithfulness": 0.7647058823529411
+     },
+     {
+      "ac": 0.49627069477389907,
+      "faithfulness": 0.7058823529411765
+     }
+    ]
+   }
+  ],
+  "kurz": [
+   {
+    "answer": "Institutionsfremde Personen werden organisatorisch streng begleitet und beaufsichtigt. Mitarbeitende müssen sie zu allen Räumen begleiten und in sensiblen Bereichen stets beaufsichtigen; sie dürfen nicht unbeaufsichtigt bleiben. Für externes (Fremd‑)Personal gelten dieselben Regelungen wie für eigene Mitarbeitende: verpflichtende Einweisung, Einhaltung aller Gesetze und internen Vorgaben sowie eine Vertretungs‑ und Übergaberegelung. Kurzfristig oder einmalig eingesetztes Fremdpersonal muss in sicherheitsrelevanten Bereichen ständig beaufsichtigt werden; langfristig Beschäftigte erhalten eine umfassende Einarbeitung. Zudem müssen Regelungen für den Umgang mit fremden IT‑Systemen bestehen und Mitarbeitende über die damit verbundenen Gefahren informiert werden.",
+    "runs": [
+     {
+      "ac": 0.45044356924992873,
+      "faithfulness": 0.7777777777777778
+     },
+     {
+      "ac": 0.6190375767006421,
+      "faithfulness": 0.6153846153846154
+     },
+     {
+      "ac": 0.6305760382391036,
+      "faithfulness": 0.6923076923076923
+     }
+    ]
+   },
+   {
+    "answer": "ORP.1 Organisation ist ein eigener Baustein, weil er die übergeordnete Basis für die Umsetzung der Informationssicherheit in einer Institution bildet und damit das organisatorische Fundament liefert. Er behandelt nicht die spezifischen Teilbereiche Personal, Schulung, Identitäts‑ und Berechtigungsmanagement oder Compliance – diese werden in den separaten Bausteinen ORP.2 bis ORP.5 abgehandelt. Deshalb muss ORP.1 einmal (bzw. pro Organisationseinheit) eigenständig angewendet werden, um die Rahmenbedingungen für alle nachfolgenden Bausteine zu definieren.",
+    "runs": [
+     {
+      "ac": 0.4804444633330781,
+      "faithfulness": 0.7142857142857143
+     },
+     {
+      "ac": 0.43055815858676905,
+      "faithfulness": 0.8571428571428571
+     },
+     {
+      "ac": 0.34711112999974475,
+      "faithfulness": 0.8
+     }
+    ]
+   },
+   {
+    "answer": "Berechtigungen müssen entzogen werden, sobald sie nicht mehr benötigt werden – also bei Beendigung einer Tätigkeit, bei personellen Veränderungen (Versetzung, Kündigung, längere Abwesenheit) oder wenn eine Person von administrativen Aufgaben entbunden wird. Der Entzug erfolgt sofort auf organisatorischer und technischer Ebene (Sperrung persönlicher Konten, Passwortänderungen, Dokumentation). Zusätzlich ist bei administrativen Entbindungen eine Prüfung auf nicht dokumentierte Rechte erforderlich, die ebenfalls wieder entzogen werden müssen.",
+    "runs": [
+     {
+      "ac": 0.5573481349311084,
+      "faithfulness": 0.8181818181818182
+     },
+     {
+      "ac": 0.3808775466958143,
+      "faithfulness": 0.6666666666666666
+     },
+     {
+      "ac": 0.5044220055824691,
+      "faithfulness": 0.8181818181818182
+     }
+    ]
+   }
+  ],
+  "offen": [
+   {
+    "answer": "## 1. Überblick – Warum ein gesondertes Organisations‑Management für institutionsfremde Personen nötig ist  \n\nInstitutionsfremde Personen (Besucher, externe Dienstleister, Reinigungspersonal, temporäre / Leiharbeitskräfte, Lieferanten, Prüf‑ und Zertifizierer etc.) haben in der Regel **keine oder nur eingeschränkte Kenntnis** über die internen Sicherheits‑ und Datenschutz‑Vorgaben. Sie können – bewusst oder unbewusst – **Gefahren für Vertraulichkeit, Integrität und Verfügbarkeit** von Informationen und IT‑Systemen darstellen (vgl. Quelle 2).  \n\nDer BSI‑Standard IT‑Grundschutz definiert dafür mehrere **Organisations‑Kontrollen** (ORP, CON, INF), die in einem ganzheitlichen **Visitor‑ und Contractor‑Management‑Prozess** zusammengefasst werden sollten.  \n\n---\n\n## 2. Grundsätzliche Prinzipien (nach IT‑Grundschutz)\n\n| Prinzip | Beschreibung | Relevante Bausteine |\n|---------|--------------|---------------------|\n| **Least‑Privilege / Need‑to‑Know** | Fremde Personen erhalten nur die Berechtigungen, die für die jeweilige Aufgabe zwingend nötig sind. | ORP.1.A3, ORP.2.A4, INF.9.A4 |\n| **Supervision (Beaufsichtigung)** | Personen ohne eigene Zugangsberechtigung dürfen **nicht unbeaufsichtigt** in sensiblen Bereichen sein. | ORP.1.A3, CON.11.1.A6 |\n| **Vertragliche Bindung** | Externes Personal wird vertraglich verpflichtet, alle geltenden Gesetze, Vorschriften und internen Regelungen einzuhalten (z. B. Vertraulichkeits‑ und Datenschutzklauseln). | ORP.2.A4 |\n| **Einweisung / Awareness** | Vor dem ersten Arbeitseinsatz erfolgt eine **Sicherheits‑Einweisung** (z. B. zu Umgang mit fremden IT‑Systemen, Notfall‑Verfahren). | INF.9.A4, ORP.2.A4 |\n| **Kontinuierliche Kontrolle** | Zugangsrechte, Tätigkeitsnachweise und das Verhalten werden während des Einsatzes überwacht und nach Beendigung des Einsatzes zurückgenommen. | CON.11.1.A6, ORP.2.A4 |\n| **Dokumentation & Audits** | Alle Schritte (Antrag, Genehmigung, Einweisung, Begleitung, Rückgabe von Berechtigungen) werden nachvollziehbar dokumentiert und regelmäßig geprüft. | ORP.1, ORP.2, CON.11 |\n\n---\n\n## 3. Organisatorischer Ablauf – Schritt‑für‑Schritt‑Prozess  \n\n### 3.1. Anforderung & Genehmigung  \n\n| Schritt | Verantwortlich | Inhalt |\n|--------|----------------|--------|\n| **Bedarfsermittlung** | Fachabteilung / Projektleiter | Welche Tätigkeit, welcher Zeitraum, welche Ressourcen (Räume, Systeme) werden benötigt? |\n| **Risikobewertung** | Sicherheitsbeauftragter (ISO‑27001‑Koordinator) | Bewertung von Vertraulichkeit, Integrität, Verfügbarkeit der betroffenen Informationen. |\n| **Genehmigungs‑Workflow** | Linien‑Manager → IT‑Security‑Management → Facility‑Management | Freigabe nur, wenn Risiko akzeptabel bzw. durch Gegenmaßnahmen (z. B. getrennte Netzwerkzone) reduziert ist. |\n| **Vertragliche Regelung** | Rechtsabteilung | NDA, Auftragsverarbeitungsvertrag (AVV) bei Datenverarbeitung, Service‑Level‑Agreement (SLA) mit Sicherheitsklauseln. |\n\n> **Best‑Practice:** Nutzen Sie ein zentrales **Visitor‑Management‑System (VMS)**, das Anträge, Genehmigungen und Audits digital abbildet und Workflows automatisiert.\n\n---\n\n### 3.2. Vorbereitung & Einweisung  \n\n| Maßnahme | Verantwortlich | Details |\n|----------|----------------|---------|\n| **Sicherheits‑Briefing** | Sicherheitsbeauftragter / IT‑Security | Inhalte: Umgang mit sensiblen Daten, Verbot von USB‑Sticks, Nutzung von Gast‑WLAN, Meldepflicht bei Vorfällen. |\n| **Technische Einweisung** | IT‑Betrieb | Nutzung von **fremden IT‑Systemen** (z. B. eigene Laptops) – Aufklärung über Risiken, Vorgaben zur Datenlöschung (INF.9.A4). |\n| **Zugangsberechtigung** | Facility‑Management / IT‑Identity‑Management | Ausstellung von **temporären Zutrittskarten** (z. B. farblich gekennzeichnet) mit Ablaufdatum; ggf. separate Netzwerk‑VLANs für externe Geräte. |\n| **Begleitperson bestimmen** | Fachabteilung | Auswahl einer fachlich qualifizierten, vertrauenswürdigen Person, die die Tätigkeit überwacht (CON.11.1.A6). |\n\n> **Best‑Practice:** Erstellen Sie ein **Einweisungs‑Checklisten‑Template** (z. B. 10 Punkte) und lassen Sie die Unterschrift des Fremdpersonals dokumentieren.\n\n---\n\n### 3.3. Durchführung (Einsatz)  \n\n| Kontrollpunkt | Was wird geprüft? | Verantwortlich |\n|---------------|-------------------|----------------|\n| **Physische Begleitung** | Fremdperson darf **nicht unbeaufsichtigt** in sensiblen Bereichen sein (ORP.1.A3). | Begleitperson |\n| **Zugriff auf IT‑Systeme** | Nur autorisierte Konten, keine Administrator‑Rechte, Nutzung von **isolierten Arbeitsstationen** oder **virtuellen Desktops** (VDI). | IT‑Support |\n| **Verwendung von externen Geräten** | USB‑Ports gesperrt, keine privaten Geräte erlaubt, ggf. **Network Access Control (NAC)**. | IT‑Security |\n| **Protokollierung** | Log‑Aufzeichnungen (Zutritt, System‑Login, Datei‑Zugriffe) werden zentral gesammelt. | SIEM‑Team |\n| **Umgang mit Dokumenten** | Keine Kopien von vertraulichen Unterlagen ohne Genehmigung; ggf. **Shred‑Station** für Entsorgung. | Facility‑Management |\n\n> **Best‑Practice:** Für besonders kritische Bereiche (z. B. Rechenzentrum, Labore) wird ein **Zwei‑Personen‑Prinzip** (zwei Begleitpersonen) eingesetzt.\n\n---\n\n### 3.4. Beendigung & Nachbereitung  \n\n| Maßnahme | Verantwortlich | Details |\n|----------|----------------|---------|\n| **Rückgabe von Zugangsmedien** | Facility‑Management | Zutrittskarte, Schlüssel, ggf. RFID‑Tag sofort deaktivieren. |\n| **Entzug von IT‑Rechten** | IT‑Identity‑Management | Deaktivierung von temporären Benutzerkonten, Löschung von temporären Daten (INF.9.A4). |\n| **Übergabe von Arbeitsergebnissen** | Fachabteilung | Dokumente, Protokolle, Code‑Artefakte werden nach internen Vorgaben übergeben. |\n| **Abschluss‑Audit** | Sicherheitsbeauftragter | Prüfung, ob alle Vorgaben eingehalten wurden; ggf. Lessons‑Learned‑Workshop. |\n| **Archivierung** | Compliance‑Team | Aufbewahrung aller Nachweise (Einweisungsprotokoll, Zugangslogs) für den gesetzlich geforderten Zeitraum (z. B. 3 Jahre). |\n\n> **Best‑Practice:** Führen Sie **Exit‑Interviews** mit dem externen Personal durch, um mögliche Sicherheitslücken zu identifizieren.\n\n---\n\n## 4. Ergänzende Maßnahmen – Technische und rechtliche Unterstützung  \n\n| Bereich | Maßnahme | Nutzen |\n|---------|----------|--------|\n| **Physische Sicherheit** | Besucher‑Registrierung am Empfang, Foto‑Ausweis, **Zonenkarten** (öffentliche, kontrollierte, hochsensible Zonen). | Verhindert unbefugtes Betreten. |\n| **Netzwerk‑Segregation** | Separate **Gast‑VLANs**, Firewall‑Regeln, **VPN‑Zugang** nur für autorisierte Dienste. | Reduziert Risiko von lateral movement. |\n| **Endpoint‑Security** | **NAC**, **Endpoint‑Detection‑and‑Response (EDR)** auf temporären Arbeitsgeräten. | Erkennung von Malware/Unautorisierten Aktivitäten. |\n| **Daten‑Loss‑Prevention (DLP)** | Kontrolle von Kopier‑/Druck‑ und USB‑Nutzung. | Verhindert Datenexfiltration. |\n| **Logging & Monitoring** | Zentralisiertes **SIEM**, Echtzeit‑Alarme bei ungewöhnlichen Zugriffen. | Früherkennung von Missbrauch. |\n| **Vertrags‑ und Rechtslage** | DSGVO‑Konformität (Auftragsverarbeitung, Datenminimierung), BDSG‑Anforderungen, ggf. **Betriebsverfassungsgesetz** (Betriebsrat‑Einbindung). | Vermeidet rechtliche Konsequenzen. |\n| **Versicherungen** | **Cyber‑Versicherung** für Schäden, die durch Fremdpersonal verursacht werden können. | Finanzielle Absicherung. |\n\n---\n\n## 5. Rollen & Verantwortlichkeiten – Wer ist wofür zuständig?  \n\n| Rolle | Kernaufgaben im Kontext von Fremdpersonal |\n|-------|-------------------------------------------|\n| **Geschäftsführung / Vorstand** | Festlegung der Grundsätze, Bereitstellung von Ressourcen, Genehmigung von Ausnahmen. |\n| **Informationssicherheitsbeauftragter (ISB)** | Erstellung und Pflege der Richtlinien (ORP, INF, CON), Durchführung von Risikoanalysen, Audits. |\n| **Facility‑Management / Empfang** | Besucher‑Registrierung, Ausgabe von Zutrittskarten, physische Begleitung in öffentlichen Bereichen. |\n| **IT‑Security / Netzwerk‑Team** | Technische Zugangskontrolle, Netzwerk‑Segregation, Monitoring, Datenlöschung. |\n| **Fachabteilung / Projektleiter** | Anforderung, Auswahl geeigneter Begleitperson, Kontrolle der Arbeitsausführung. |\n| **HR / Rechtsabteilung** | Vertragsgestaltung, NDA, AVV, ggf. Hintergrund‑Checks (Security‑Clearance). |\n| **Externe Dienstleister** | Einhaltung der vertraglich festgelegten Sicherheitsvorgaben, Meldung von Vorfällen. |\n| **Mitarbeitende (Allgemein)** | Wachsamkeit, Meldung von ungewöhnlichem Verhalten, Einhaltung der Begleit‑ und Aufsichtspflicht. |\n\n> **Best‑Practice:** Etablieren Sie ein **RACI‑Matrix** (Responsible, Accountable, Consulted, Informed) für alle Schritte des Visitor‑Management‑Prozesses, um Überschneidungen und Lücken zu vermeiden.\n\n---\n\n## 6. Checkliste – Was muss bei jeder Institution beachtet werden?  \n\n1. **Kategorisierung** der fremden Person (Besucher, Lieferant, externer Dienstleister, temporäres Personal).  \n2. **Risiko‑Analyse** für die geplante Tätigkeit (sensibler Bereich, IT‑Systeme).  \n3. **Genehmigungs‑Workflow** (Mehrstufig, inkl. Sicherheits‑Freigabe).  \n4. **Vertragliche Bindung** (NDA, AVV, Sicherheitsklauseln).  \n5. **Einweisung** (Sicherheits‑ und IT‑Briefing, Unterschrift).  \n6. **Zugangsregelung** (physisch & logisch, zeitlich begrenzt).  \n7. **Begleitperson** bestimmen (fachlich qualifiziert, befugt).  \n8. **Durchführung** (Beaufsichtigung, Protokollierung, technische Kontrollen).  \n9. **Beendigung** (Rückgabe von Medien, Deaktivierung von Konten, Abschluss‑Audit).  \n10. **Dokumentation & Archivierung** (nachweisbare Aufzeichnungen für Audits).  \n\n---\n\n## 7. Weiterführende Empfehlungen (über den reinen IT‑Grundschutz hinaus)\n\n| Empfehlung | Warum wichtig? | Umsetzung |\n|------------|----------------|-----------|\n| **Zero‑Trust‑Prinzip** für externe Zugriffe** | Vertrauenswürdigkeit wird nie vorausgesetzt, sondern immer verifiziert. | Mikro‑Segmente, kontinuierliche Authentisierung, Least‑Privilege. |\n| **Security‑Awareness‑Gamification** für Begleitpersonen | Erhöht die Motivation, Aufsichtspflichten ernst zu nehmen. | Simulierte Phishing‑ oder Social‑Engineering‑Szenarien, Punkte‑System. |\n| **Automatisierte Provisionierung/De‑Provisionierung** | Reduziert menschliche Fehler bei der Rechteverwaltung. | Identity‑Governance‑Tool (z. B. SailPoint, Azure AD Entitlement Management). |\n| **Incident‑Response‑Plan für Fremdpersonal** | Schnelle Reaktion bei Fehlverhalten oder Sicherheitsvorfällen. | Playbooks mit klaren Eskalationsstufen, Benachrichtigung des ISB. |\n| **Regelmäßige Pen‑Tests / Red‑Team‑Übungen** mit Fokus auf externe Personen | Aufdecken von Schwachstellen im Begleit‑ und Zugangskonzept. | Simulierte Angriffe durch „fremde“ Akteure, Auswertung und Verbesserungsmaßnahmen. |\n| **Integration von Physical‑Security‑Information‑Management (PSIM)** | Zentralisierte Sicht auf physische und logische Sicherheitsereignisse. | Dashboard, das Zutrittskontrollen, Video‑Analytics und IT‑Logs zusammenführt. |\n| **Supply‑Chain‑Security‑Programm** | Externe Dienstleister können über ihre Lieferkette Angriffsvektoren einbringen. | Lieferanten‑Risk‑Assessment, Audits, Zertifizierungen (ISO 27001, SOC 2). |\n| **Datenschutz‑Impact‑Assessment (DPIA)** bei Verarbeitung personenbezogener Daten durch Fremdpersonal | Erfüllung DSGVO‑Anforderungen, frühzeitige Identifikation von Risiken. | DPIA‑Template, Review durch Datenschutzbeauftragten. |\n\n---\n\n## 8. Fazit  \n\nDer organisatorische Umgang mit institutionsfremden Personen ist ein **multidisziplinäres Zusammenspiel** aus:\n\n* **Risikobasierter Genehmigung** (ORP.2, CON.11)  \n* **Klare vertragliche Bindung** und **Einweisung** (INF.9, ORP.2)  \n* **Strikter physischer und logischer Zugangskontrolle** (ORP.1, CON.11)  \n* **Kontinuierlicher Beaufsichtigung** durch fachlich qualifizierte Begleitpersonen (ORP.1, CON.11)  \n* **Umfassender Dokumentation und Audits** (alle Bausteine)  \n\nDurch die konsequente Anwendung dieser Prinzipien, unterstützt von modernen **Technologien** (VMS, NAC, SIEM, Zero‑Trust) und **Best‑Practices** (Checklisten, RACI‑Matrix, automatisierte Provisionierung) lässt sich das Risiko, das von institutionsfremden Personen ausgeht, signifikant reduzieren und gleichzeitig die gesetzlichen Vorgaben (DSGVO, BDSG, BSI‑Grundschutz) erfüllen.  \n\nEin gut strukturiertes **Visitor‑ und Contractor‑Management** wird damit zu einem zentralen Baustein des **Informationssicherheits‑Managementsystems (ISMS)** und trägt maßgeblich zur Gesamtsicherheit der Institution bei.",
+    "runs": [
+     {
+      "ac": 0.3294806246948452,
+      "faithfulness": 0.1
+     },
+     {
+      "ac": 0.23844914167910364,
+      "faithfulness": 0.15942028985507245
+     },
+     {
+      "ac": 0.27356947996283043,
+      "faithfulness": 0.208955223880597
+     }
+    ]
+   },
+   {
+    "answer": "## Warum ist **ORP.1 Organisation** ein eigenständiger Baustein im IT‑Grundschutz?\n\nDer Baustein **ORP.1 Organisation** bildet das **Fundament** für sämtliche weiteren Sicherheitsmaßnahmen einer Institution. Er ist deshalb nicht einfach nur ein weiteres Kapitel, sondern ein **eigener, übergeordneter Baustein**, weil er die **organisatorischen Rahmenbedingungen** definiert, auf denen alle technischen, personellen und prozessualen Maßnahmen (ORP.2 – ORP.5) aufbauen.  \n\nIm Folgenden werden die wichtigsten Gründe erläutert und anschließend Best‑Practices sowie weiterführende Empfehlungen gegeben.\n\n---\n\n## 1.  Grundlegende Gründe für die Eigenständigkeit\n\n| Grund | Erklärung |\n|------|-----------|\n| **1.1 Governance‑Ebene** | ORP.1 definiert die **Sicherheits‑Governance** – also die Struktur, Rollen, Verantwortlichkeiten und Entscheidungswege, die für die gesamte Informationssicherheit gelten. Governance ist die *erste* Schicht, bevor überhaupt technische Kontrollen implementiert werden können. |\n| **1.2 Universelle Gültigkeit** | Der Baustein gilt **für den gesamten Informationsverbund** einer Organisation (und – falls nötig – für jede Teil‑Organisation separat). Er ist damit nicht an ein konkretes technisches System gebunden, sondern an die **Organisation als Ganzes**. |\n| **1.3 Abgrenzung zu Fach‑Bausteinen** | Themen wie Personal, Schulungen, Identitäts‑ und Berechtigungsmanagement oder Compliance werden in den Bausteinen ORP.2‑ORP.5 behandelt. Diese Fach‑Bausteine benötigen jedoch **eine übergeordnete Organisations‑Basis**, sonst fehlt die klare Zuordnung von Zuständigkeiten und die Abstimmung mit der Unternehmensstrategie. |\n| **1.4 Strategische Ausrichtung** | Sicherheitsziele müssen mit den **Geschäftszielen** und der **Risikostrategie** der Institution verknüpft sein. ORP.1 legt fest, wie diese Verknüpfung erfolgt (z. B. durch das Sicherheitskonzept, das Risikomanagement‑Verfahren und die Einbindung des Managements). |\n| **1.5 Einmalige Anwendung pro Verbund** | Wie in Quelle 1 beschrieben, wird ORP.1 mindestens einmal pro Informationsverbund angewendet. Das bedeutet, dass er die **Basis‑Architektur** des Sicherheitsmanagements definiert, während die nachfolgenden Bausteine jeweils **spezifische Teilbereiche** ausbauen. |\n| **1.6 Flexibilität bei dezentralen Strukturen** | In großen Unternehmen oder Behörden gibt es häufig mehrere rechtlich oder organisatorisch getrennte Einheiten. ORP.1 kann für jede Einheit separat angewendet werden, sodass **unterschiedliche Rahmenbedingungen** (z. B. unterschiedliche Rechtsgrundlagen) berücksichtigt werden können, ohne die Gesamtsicherheit zu gefährden. |\n| **1.7 Erfüllung von Standards** | Viele internationale Standards (ISO 27001, NIST CSF, BSI‑IT‑Grundschutz‑Kompendium) verlangen eine **organisatorische Basis** (z. B. „Leadership“, „Context of the organization“, „Risk assessment“). ORP.1 ist die konkrete Umsetzung dieses Grundprinzips im BSI‑Framework. |\n\n---\n\n## 2.  Kernelemente von ORP.1 Organisation\n\n1. **Sicherheitsleitlinie & -konzept**  \n   - Formulierung einer übergeordneten Sicherheitsstrategie, die mit der Unternehmens‑ bzw. Behörden‑Mission abgestimmt ist.  \n   - Dokumentation von Schutzzielen (Vertraulichkeit, Integrität, Verfügbarkeit, Authentizität, Nachvollziehbarkeit).\n\n2. **Rollen‑ und Verantwortlichkeitsmatrix**  \n   - Definition von **ISB (Informationssicherheitsbeauftragter)**, **Sicherheitsbeauftragten**, **Risiko‑Owner**, **Compliance‑Beauftragten** usw.  \n   - Klarer **Zuständigkeits‑ und Eskalationspfad** (z. B. wer entscheidet über Risiko‑Akzeptanz).\n\n3. **Sicherheitsorganisation**  \n   - Aufbau einer **Sicherheitsorganisation** (z. B. Security Operations Center, Incident‑Response‑Team).  \n   - Festlegung von **Kommunikationswegen** (intern und extern, z. B. an Aufsichtsbehörden).\n\n4. **Risikomanagement‑Prozess**  \n   - Verfahren zur **Identifikation, Bewertung und Behandlung von Risiken**.  \n   - Integration in das **strategische Management** (z. B. Risiko‑Reporting an den Vorstand).\n\n5. **Kontinuierliche Verbesserung (PDCA‑Zyklus)**  \n   - Regelmäßige **Überprüfung, Audits und Management‑Reviews**.  \n   - Anpassung des Sicherheitskonzepts an neue Bedrohungen, Technologien und gesetzliche Vorgaben.\n\n6. **Dokumentations‑ und Berichtspflichten**  \n   - Festlegung, welche Sicherheitsdokumente (z. B. Richtlinien, Verfahren, Protokolle) zu erstellen, zu pflegen und zu archivieren sind.  \n   - Vorgaben für **Reporting** an interne Stakeholder und externe Aufsichtsbehörden.\n\n---\n\n## 3.  Best‑Practices für die Umsetzung von ORP.1 Organisation\n\n| Praxisbereich | Konkrete Maßnahmen | Warum wichtig |\n|---------------|-------------------|---------------|\n| **Leadership & Commitment** | - Der Vorstand/ die Geschäftsführung unterschreibt das Sicherheitskonzept.<br>- Regelmäßige **Management‑Reviews** (mind. halbjährlich). | Schafft das notwendige **Top‑Down‑Commitment** und Ressourcen. |\n| **Rollen‑ und Verantwortlichkeitsmatrix** | - Einsatz eines **RACI‑Modells** (Responsible, Accountable, Consulted, Informed).<br>- Dokumentation in einem **Organigramm** mit Sicherheits‑Verantwortlichkeiten. | Vermeidet Doppelarbeit und **Unklarheiten** bei Incident‑Response. |\n| **Risikomanagement** | - Nutzung eines **standardisierten Risiko‑Scoring‑Modells** (z. B. BSI‑Standard 100‑2).<br>- Integration von **Business‑Impact‑Analysen (BIA)**. | Stellt sicher, dass Risiken **quantitativ** und **geschäftsrelevant** bewertet werden. |\n| **Kommunikation** | - Etablierung eines **Security‑Newsletter** oder Intranetseite.<br>- Definition von **Escalation‑Procedures** für Sicherheitsvorfälle. | Erhöht das **Bewusstsein** und sorgt für schnelle Reaktion. |\n| **Kontinuierliche Verbesserung** | - Durchführung von **internen Audits** (mind. jährlich) und **externen Audits** (z. B. ISO 27001).<br>- Nutzung von **KPIs** (z. B. Mean Time to Detect, Mean Time to Respond). | Messbare Kennzahlen ermöglichen **Steuerung** und **Optimierung**. |\n| **Dokumentationsmanagement** | - Einsatz eines **Version‑Control‑Systems** (z. B. Git) für Richtlinien.<br>- Zentraler **Policy‑Repository** mit Zugriffskontrolle. | Gewährleistet **Nachvollziehbarkeit** und **Integrität** der Dokumente. |\n| **Integration mit anderen Bausteinen** | - Verknüpfung von ORP.1‑Anforderungen mit ORP.2‑ORP.5 über **Traceability‑Matrizen**.<br>- Nutzung von **Tool‑unterstützten GRC‑Plattformen** (Governance, Risk & Compliance). | Sorgt dafür, dass **organisatorische Vorgaben** in allen Fach‑Bausteinen wirksam werden. |\n| **Dezentrale Einheiten** | - Erstellung von **lokalen Sicherheitsleitlinien**, die auf die zentrale ORP.1‑Leitlinie zurückführen.<br>- Regelmäßiger **Abgleich** (z. B. quartalsweise) zwischen Zentral‑ und Länderebene. | Erlaubt **Flexibilität** bei unterschiedlichen rechtlichen Rahmenbedingungen. |\n\n---\n\n## 4.  Weiterführende Empfehlungen (über den reinen Baustein‑Inhalt hinaus)\n\n1. **Einbindung von Datenschutz**  \n   - Kombinieren Sie ORP.1 mit den Anforderungen des **DSGVO‑Artikels 32** (Datensicherheit).  \n   - Definieren Sie im Sicherheitskonzept explizit, wie **personenbezogene Daten** geschützt werden (z. B. Data‑Protection‑Impact‑Assessment – DPIA).\n\n2. **Supply‑Chain‑Sicherheit**  \n   - Ergänzen Sie das Organisations‑Framework um **Lieferanten‑ und Dienstleister‑Management** (z. B. vertragliche Sicherheitsanforderungen, Audits von Drittanbietern).  \n   - Nutzen Sie das **BSI‑Standard 200‑2** (IT‑Grundschutz‑Kompendium – Lieferanten‑Management) als Ergänzung.\n\n3. **Cyber‑Resilience & Business Continuity**  \n   - Verknüpfen Sie ORP.1 mit einem **Business‑Continuity‑Management‑System (BCMS)** nach ISO 22301.  \n   - Definieren Sie klare **Recovery‑Time‑Objectives (RTO)** und **Recovery‑Point‑Objectives (RPO)** im Sicherheitskonzept.\n\n4. **Automatisierung & Tool‑Support**  \n   - Setzen Sie **GRC‑Tools** (z. B. RSA Archer, ServiceNow GRC, MetricStream) ein, um Rollen, Prozesse und Nachweise automatisiert zu verwalten.  \n   - Nutzen Sie **Security‑Information‑and‑Event‑Management (SIEM)**‑Lösungen, um die organisatorischen Vorgaben (z. B. Incident‑Reporting) technisch zu unterstützen.\n\n5. **Maturity‑Modelle**  \n   - Ergänzen Sie ORP.1 durch ein **Reifegrad‑Modell** (z. B. BSI‑Reifegradmodell, CMMI‑Security).  \n   - Ziel: **Stufenweise Verbesserung** von „ad‑hoc“ über „definiert“ bis „optimiert“.\n\n6. **Kultur & Change Management**  \n   - Implementieren Sie ein **Security‑Culture‑Programm** (z. B. regelmäßige „Security‑Days“, Gamification‑Ansätze).  \n   - Messbare **Kultur‑KPIs** (z. B. % der Mitarbeitenden, die Phishing‑Tests bestehen) geben Aufschluss über den Erfolg der organisatorischen Maßnahmen.\n\n7. **Regelmäßige Benchmarking‑Analysen**  \n   - Vergleichen Sie Ihre ORP.1‑Umsetzung mit **Branch‑Benchmarks** (z. B. BSI‑Cyber‑Security‑Index, ISO 27001‑Self‑Assessment).  \n   - Nutzen Sie die Ergebnisse, um **Lücken** gezielt zu schließen.\n\n---\n\n## 5.  Fazit – Warum ORP.1 Organisation ein eigenständiger Baustein ist\n\n- **Grundlage für alles**: Ohne ein klar definiertes organisatorisches Gerüst können weder technische Kontrollen noch personelle Maßnahmen wirksam sein.  \n- **Strategische Verankerung**: Der Baustein verknüpft Informationssicherheit mit der Unternehmensstrategie, dem Risikomanagement und der Compliance.  \n- **Einheitliche Governance**: Er schafft einheitliche Rollen, Prozesse und Entscheidungswege, die in allen nachfolgenden Bausteinen wiederverwendet werden.  \n- **Flexibilität & Skalierbarkeit**: Durch die Möglichkeit, den Baustein pro Organisationseinheit anzuwenden, lässt er sich an dezentrale Strukturen und unterschiedliche rechtliche Rahmenbedingungen anpassen.  \n- **Erfüllung von Standards**: ORP.1 ist die konkrete Umsetzung der Governance‑Anforderungen, die in internationalen Standards (ISO 27001, NIST CSF) gefordert werden.\n\nDamit bildet ORP.1 Organisation das **Rückgrat** des IT‑Grundschutz‑Programms – ohne dieses Rückgrat würde jede weitere Sicherheitsmaßnahme auf einem wackeligen Fundament stehen. Die konsequente Umsetzung dieses Bausteins ist daher die Voraussetzung für ein wirksames, ganzheitliches und nachhaltiges Informationssicherheits‑Management.",
+    "runs": [
+     {
+      "ac": 0.2402187123163898,
+      "faithfulness": 0.09090909090909091
+     },
+     {
+      "ac": 0.21612683430406013,
+      "faithfulness": 0.10344827586206896
+     },
+     {
+      "ac": 0.21245036371582482,
+      "faithfulness": 0.10666666666666667
+     }
+    ]
+   },
+   {
+    "answer": "## Wann müssen Berechtigungen entzogen werden?  \n\n### 1. Grundsatz – „Entzug = sofort, sobald kein Bedarf mehr besteht“\n\nIm IT‑Grundschutz (BSI‑Standard 100‑1, 100‑2) und in den zugehörigen Bausteinen (z. B. OPS.1.1.2.A4, ORP.4.A2, ORP.4.A7) ist klar definiert:\n\n* **„MUSS“** – Der Entzug ist verpflichtend, sobald die Berechtigung nicht mehr erforderlich ist.  \n* **„SOFORT“** – Der Zeitpunkt ist nicht als „nachher“ zu verstehen, sondern **unmittelbar nach Eintritt des Ereignisses** (z. B. Personalwechsel, Rollenwechsel, Beendigung des Projekts, festgestellter Missbrauch).\n\nDamit lautet die Antwort in einem Wort: **Immer dann, wenn der berechtigte Bedarf erlischt – und das unverzüglich.**  \n\n---\n\n## 2. Ereignisse, die einen sofortigen Entzug auslösen\n\n| Ereignis | Warum ein Entzug nötig ist | Praktische Umsetzung (Best‑Practice) |\n|----------|---------------------------|---------------------------------------|\n| **A. Austritt aus dem Unternehmen** (Kündigung, Ruhestand, Vertragsende) | Keine Berechtigung mehr, Gefahr von Insider‑Angriffen | Automatisierte De‑Provisionierung über das Identity‑Management (IdM) – Konto sperren, Passwörter zurücksetzen, Tokens zurückfordern, Audit‑Log‑Eintrag. |\n| **B. Versetzung / Rollenwechsel** | Alte Rollenrechte passen nicht mehr zur neuen Aufgabe → „Permission Creep“ | Rollen‑basiertes Access‑Control (RBAC) prüfen, alte Rollen entfernen, neue Rollen zuweisen. Idealerweise ein **Just‑In‑Time (JIT)**‑Modell, das Rechte nur für die aktuelle Aufgabe ausgibt. |\n| **C. Längere Abwesenheit** (Elternzeit, Sabbatical, Krankheitsstand) | Risiko, dass das Konto von Dritten missbraucht wird | Konto temporär sperren, Token/Smart‑Card deaktivieren, Wieder‑aktivieren nach Rückkehr mit erneuter Authentisierung. |\n| **D. Beendigung einer Projekt‑ oder Service‑Aufgabe** | Projekt‑bezogene Zugriffe (z. B. Test‑Umgebung) sind nicht mehr nötig | Projekt‑bezogene Rollen nach Projektende automatisch entfernen (z. B. über Service‑Now‑Workflows). |\n| **E. Entdeckung von nicht‑dokumentierten / missbräuchlichen Rechten** | Gefahr von Insider‑Missbrauch, Compliance‑Verstoß | Sofortige Sperrung, forensische Analyse, Rücksetzung aller Passwörter, ggf. Disziplinarmaßnahmen. |\n| **F. Verstoß gegen Sicherheitsrichtlinien** (z. B. Weitergabe von Tokens, Nutzung von Shared‑Accounts) | Missbrauchsgefahr, Verlust von Accountability | Rechte sofort entziehen, Incident‑Response‑Prozess starten, Schulung/Unterweisung. |\n| **G. Regelmäßige Review‑Zyklen** (z. B. quartalsweise) | Aufdeckung von „Permission Creep“ | Nicht‑benötigte Rechte entfernen, Dokumentation aktualisieren. |\n| **H. Technische Änderungen** (Systemstilllegung, Migration) | Alte Konten könnten ungenutzt bleiben und als Angriffsvektor dienen | Konten in stillgelegten Systemen deaktivieren, ggf. archivieren. |\n\n> **Kurz gesagt:** Der Entzug erfolgt **immer dann, wenn** (a) das Arbeitsverhältnis endet, (b) die Aufgabe/ Rolle wechselt, (c) die Person abwesend ist, (d) ein Missbrauch entdeckt wird oder (e) ein planmäßiger Review ergibt, dass die Berechtigung nicht mehr nötig ist.\n\n---\n\n## 3. Prozess‑Framework für den Berechtigungs‑Entzug  \n\n### 3.1. Trigger‑Erfassung (Ereigniserkennung)\n\n| Quelle | Wie wird das Ereignis erfasst? |\n|--------|--------------------------------|\n| Personal‑HR‑System | Kündigung, Versetzung, Abwesenheit → automatischer Trigger an IdM |\n| Projekt‑Management‑Tool | Projektende → API‑Call an Berechtigungs‑Engine |\n| Ticket‑System (z. B. ServiceNow) | Incident‑ oder Change‑Ticket mit „Entzug“ als Status |\n| Monitoring / SIEM | Anomalie‑Erkennung (z. B. ungewöhnliche Admin‑Logins) → Alert → Review‑Workflow |\n\n### 3.2. Automatisierte De‑Provisionierung (Idealerweise)\n\n1. **Identitäts‑Management (IdM) / IAM** empfängt das Ereignis.  \n2. **Rollen‑Mapping** wird ausgewertet → welche Rollen/ Rechte fallen weg?  \n3. **Entzug‑Workflow** startet:  \n   * Konto sperren / deaktivieren  \n   * Alle zugehörigen Tokens/ Smart‑Cards zurückziehen (physisch oder per Remote‑Deactivation)  \n   * Passwörter aller bekannten administrativen Konten zurücksetzen (PAM‑Lösung)  \n   * Session‑Tokens invalidieren (z. B. Kerberos‑Tickets, OAuth‑Tokens)  \n4. **Benachrichtigung** an betroffene Fachbereiche, Sicherheits‑Team und ggf. den betroffenen Mitarbeitenden (zur Bestätigung, falls nötig).  \n5. **Audit‑Log**: Jeder Schritt wird unveränderlich protokolliert (Zeit, Ausführender, betroffene Konten).  \n\n> **Best‑Practice:** Der gesamte Prozess muss **nachweislich** innerhalb eines definierten Zeitfensters (z. B. 4 Stunden nach Personal‑Trigger) abgeschlossen sein.  \n\n### 3.3. Manuelle Kontrolle (Fallback)\n\n* Für besonders sensible Admin‑Konten kann ein **Dual‑Control**‑Verfahren (zwei autorisierte Personen) verlangt werden.  \n* Bei **nicht‑automatisierbaren Legacy‑Systemen** wird ein **Check‑List‑Ticket** erstellt, das von einem Administrator manuell abgearbeitet wird – aber mit klaren Fristen und Eskalationsstufen.  \n\n### 3.4. Dokumentation & Nachweisführung\n\n* **Entzug‑Protokoll** (Datum, Uhrzeit, Grund, betroffene Konten, verantwortliche Person).  \n* **Change‑Management‑Eintrag** (z. B. ITIL Change Request).  \n* **Compliance‑Report** (z. B. ISO 27001, BSI‑Grundschutz, DSGVO Art. 32).  \n\n---\n\n## 4. Ergänzende Best Practices (über den Kontext hinaus)\n\n| Thema | Empfehlung | Warum wichtig |\n|-------|------------|---------------|\n| **Least‑Privilege / Need‑to‑Know** | Rollen so klein wie möglich, Rechte nur für aktuelle Aufgabe. | Reduziert Angriffsfläche, erleichtert Review. |\n| **Just‑In‑Time (JIT) Access** | Rechte werden nur für einen definierten Zeitraum (z. B. 2 h) erteilt und danach automatisch entzogen. | Verhindert dauerhafte, ungenutzte Admin‑Konten. |\n| **Privileged Access Management (PAM)** | Nutzung von Passwort‑Vaults, Session‑Recording, MFA für alle privilegierten Konten. | Verhindert Credential‑Theft, ermöglicht forensische Analyse. |\n| **Multi‑Factor Authentication (MFA)** | Für alle administrativen und sensiblen Konten. | Erhöht Sicherheit bei gestohlenen Passwörtern. |\n| **Separation of Duties (SoD)** | Keine Person hat gleichzeitig Rechte, die zu einem Konflikt führen (z. B. „Erstellen“ + „Freigeben“). | Verhindert internen Missbrauch. |\n| **Periodische Berechtigungs‑Reviews** | Quartalsweise (oder häufiger bei Hochrisiko‑Umgebungen) automatisierte Reports, die Abweichungen zu Rollen‑Definitionen aufzeigen. | Frühzeitige Erkennung von „Permission Creep“. |\n| **Self‑Service‑Entzug** | Mitarbeitende können über ein Portal eigene nicht mehr benötigte Rechte abbestellen (nach Genehmigung). | Entlastet das IT‑Security‑Team, erhöht Transparenz. |\n| **Audit‑ und Pen‑Testing** | Regelmäßige Kontrollen, ob entnommene Konten wirklich deaktiviert sind (z. B. durch „Account‑Discovery“‑Scans). | Schließt Lücken, die automatisierte Prozesse übersehen könnten. |\n| **Schulung & Awareness** | Alle Mitarbeitenden, insbesondere Administratoren, werden regelmäßig zu Prozessen für Entzug und zu den Risiken von „Permission Creep“ geschult. | Reduziert menschliche Fehler, erhöht Akzeptanz. |\n| **Rechtliche Vorgaben** | DSGVO (Art. 32, Art. 5), BDSG, branchenspezifische Vorgaben (z. B. § 9 BSI‑Gesetz). | Vermeidet Bußgelder, schützt Reputation. |\n\n---\n\n## 5. Beispiel‑Workflow (End‑to‑End)\n\n1. **HR meldet Kündigung** → HR‑System sendet Event an IAM.  \n2. **IAM** identifiziert alle zugehörigen Konten (User‑Account, Service‑Accounts, Tokens).  \n3. **Automatischer Playbook‑Run** (z. B. Ansible, PowerShell):  \n   * `Disable-ADUser -Identity \"j.doe\"`  \n   * `Revoke-ADFSRefreshToken -User \"j.doe\"`  \n   * `PAM-ResetPassword -Account \"AdminSQL01\"`  \n   * `RevokeSmartCard -User \"j.doe\"`  \n4. **Ticket‑System** erstellt ein Review‑Ticket, das vom Security‑Team bestätigt wird (z. B. 2‑Stunden‑Frist).  \n5. **Benachrichtigung** an den Vorgesetzten und den Datenschutzbeauftragten.  \n6. **Audit‑Log** wird in SIEM ingestiert, Compliance‑Report wird generiert.  \n7. **Abschluss**: Ticket wird geschlossen, Nachweis wird archiviert (10 Jahre nach BSI‑Anforderung).  \n\n---\n\n## 6. Zusammenfassung – Wann muss entzogen werden?\n\n| Situation | Zeitpunkt des Entzugs |\n|-----------|-----------------------|\n| **Kündigung / Austritt** | **sofort** (innerhalb von Stunden) nach Personal‑Trigger |\n| **Rollen‑/ Abteilungswechsel** | **sofort** nach offizieller Zuordnung (nach Genehmigung) |\n| **Längere Abwesenheit** | **vor Beginn** der Abwesenheit (oder bei Beginn) |\n| **Projektende** | **nach Abschluss** des Projekts |\n| **Missbrauch / Anomalie** | **unverzüglich** nach Erkennung |\n| **Regelmäßige Review** | **nach jedem Review‑Zyklus** (z. B. quartalsweise) |\n| **Technische Stilllegung** | **bei De‑Commissioning** des Systems |\n| **Verstoß gegen Richtlinien** | **nach Incident‑Analyse** (sofort) |\n\nDer Kern ist: **Der Entzug erfolgt immer dann, wenn der berechtigte Bedarf erlischt – und das ohne Verzögerung.** Ein gut definiertes, automatisiertes und auditiertes Identity‑ und Access‑Management (IAM) ist die technische Basis, ein klarer organisatorischer Prozess (HR‑IT‑Schnittstelle, Change‑Management, Rollen‑Katalog) die Voraussetzung für die Einhaltung dieser Anforderung.\n\n---\n\n### Weiterführende Literatur & Standards\n\n* **BSI‑Standard 100‑1, 100‑2** – IT‑Grundschutz‑Kataloge (Abschnitte OPS.1.1.2, ORP.4)  \n* **ISO/IEC 27001 & 27002** – Access Control (A.9)  \n* **NIST SP 800‑53 Rev. 5** – AC‑2 (Account Management), AC‑5 (Separation of Duties)  \n* **CIS Controls V8** – Control 4 (Controlled Use of Administrative Privileges)  \n* **GDPR Art. 32** – Sicherheit der Verarbeitung (Zugriffskontrolle)  \n\nDurch die konsequente Umsetzung dieser Vorgaben und Best Practices stellen Sie sicher, dass Berechtigungen **immer dann** entzogen werden, wenn sie nicht mehr benötigt werden – und damit das Risiko von Insider‑Bedrohungen, Datenverlust und regulatorischen Verstößen signifikant reduzieren.",
+    "runs": [
+     {
+      "ac": 0.5929515889595278,
+      "faithfulness": 0.9770114942528736
+     },
+     {
+      "ac": 0.3879434606472776,
+      "faithfulness": 0.11363636363636363
+     },
+     {
+      "ac": 0.6020343697381867,
+      "faithfulness": 0.05172413793103448
+     }
+    ]
+   }
+  ]
+ },
+ "claims": {
+  "original": [
+   {
+    "TP": 5,
+    "FP": 10,
+    "FN": 0,
+    "f1": 0.5,
+    "similarity": 0.6732318206811749,
+    "score": 0.5433079551702937
+   },
+   {
+    "TP": 6,
+    "FP": 3,
+    "FN": 0,
+    "f1": 0.8,
+    "similarity": 0.6735269527261645,
+    "score": 0.7683817381815412
+   },
+   {
+    "TP": 2,
+    "FP": 14,
+    "FN": 2,
+    "f1": 0.2,
+    "similarity": 0.7852169168543448,
+    "score": 0.3463042292135862
+   }
+  ],
+  "kurz": [
+   {
+    "TP": 5,
+    "FP": 9,
+    "FN": 2,
+    "f1": 0.4761904761904762,
+    "similarity": 0.6767742769997149,
+    "score": 0.5263364263927859
+   },
+   {
+    "TP": 3,
+    "FP": 3,
+    "FN": 1,
+    "f1": 0.6,
+    "similarity": 0.7222326343470762,
+    "score": 0.630558158586769
+   },
+   {
+    "TP": 2,
+    "FP": 9,
+    "FN": 2,
+    "f1": 0.26666666666666666,
+    "similarity": 0.8176880223298761,
+    "score": 0.40442200558246905
+   }
+  ]
+ }
+}

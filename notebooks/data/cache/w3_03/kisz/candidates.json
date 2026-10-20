@@ -1,0 +1,2694 @@
+{
+ "manual/0/pipeline": {
+  "kind": "manual",
+  "i": 0,
+  "prompt": "pipeline",
+  "answer": "Das KI‑Servicezentrum bietet **Beratung, Weiterbildung und Infrastruktur** an – alle Angebote sind kostenlos.",
+  "ac": {
+   "answer_claims": [
+    "Das KI‑Servicezentrum bietet Beratung an.",
+    "Das KI‑Servicezentrum bietet Weiterbildung an.",
+    "Das KI‑Servicezentrum bietet Infrastruktur an.",
+    "Alle Angebote des KI‑Servicezentrums sind kostenlos."
+   ],
+   "reference_claims": [
+    "Das KI-Servicezentrum bietet kostenlose Beratung an.",
+    "Das KI-Servicezentrum bietet kostenlose Weiterbildung an.",
+    "Das KI-Servicezentrum bietet kostenlose Rechenleistung (Infrastruktur) an."
+   ],
+   "TP": [
+    {
+     "statement": "Das KI‑Servicezentrum bietet Beratung an.",
+     "reason": "The ground truth states that the KI-Servicezentrum offers kostenlose Beratung (free consulting). This directly confirms that the centre offers consulting, so the answer statement is supported."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet Weiterbildung an.",
+     "reason": "The ground truth includes the statement that the centre offers kostenlose Weiterbildung (free training). This confirms that the centre provides Weiterbildung, making the answer statement true and supported."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet Infrastruktur an.",
+     "reason": "The ground truth mentions kostenlose Rechenleistung (Infrastruktur), which indicates that the centre provides infrastructure services. Therefore the answer statement is directly supported."
+    },
+    {
+     "statement": "Alle Angebote des KI‑Servicezentrums sind kostenlos.",
+     "reason": "Each ground‑truth statement specifies that the three listed offers (Beratung, Weiterbildung, Rechenleistung/Infrastruktur) are kostenlos. Consequently, the claim that all offers are free is fully supported by the ground truth."
+    }
+   ],
+   "FP": [],
+   "FN": [],
+   "f1": 1.0,
+   "similarity": 0.947488830091068,
+   "score": 0.9868722075227669
+  },
+  "faithfulness": {
+   "claims": [
+    {
+     "statement": "Das KI‑Servicezentrum bietet Beratung an.",
+     "verdict": 1,
+     "reason": "The context explicitly states \"Wir bieten Beratung\" indicating that the KI‑Servicezentrum offers consulting."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet Weiterbildung an.",
+     "verdict": 1,
+     "reason": "The context explicitly mentions \"Weiterbildung\" as one of the services provided."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet Infrastruktur an.",
+     "verdict": 1,
+     "reason": "The context explicitly mentions \"Infrastruktur\" as one of the services offered."
+    },
+    {
+     "statement": "Alle Angebote des KI‑Servicezentrums sind kostenlos.",
+     "verdict": 1,
+     "reason": "The context states \"Alle unsere Angebote sind kostenlos\", confirming that all offers are free."
+    }
+   ],
+   "score": 1.0
+  }
+ },
+ "manual/0/original": {
+  "kind": "manual",
+  "i": 0,
+  "prompt": "original",
+  "answer": "Das KI‑Servicezentrum bietet folgende kostenfreie Angebote an:\n\n* **Beratung** – Hilfe zur Selbsthilfe, um KI‑Kompetenzen gezielt auszubauen und fundierte Entscheidungen zu treffen.  \n* **Weiterbildung** – Schulungen und Trainings, damit Sie KI‑Anwendungen eigenständig entwickeln und betreiben können.  \n* **Infrastruktur** – Bereitstellung technischer Grundlagen, die für die eigenständige Entwicklung, den Betrieb und den erfolgreichen Einsatz von KI‑Lösungen nötig sind.",
+  "ac": {
+   "answer_claims": [
+    "Das KI‑Servicezentrum bietet das kostenfreie Angebot Beratung an.",
+    "Das Angebot Beratung unterstützt Hilfe zur Selbsthilfe und ermöglicht den gezielten Ausbau von KI‑Kompetenzen sowie das Treffen fundierter Entscheidungen.",
+    "Das KI‑Servicezentrum bietet das kostenfreie Angebot Weiterbildung an.",
+    "Das Angebot Weiterbildung umfasst Schulungen und Trainings.",
+    "Schulungen und Trainings ermöglichen die eigenständige Entwicklung und den Betrieb von KI‑Anwendungen.",
+    "Das KI‑Servicezentrum bietet das kostenfreie Angebot Infrastruktur an.",
+    "Das Angebot Infrastruktur stellt technische Grundlagen bereit.",
+    "Technische Grundlagen sind notwendig für die eigenständige Entwicklung, den Betrieb und den erfolgreichen Einsatz von KI‑Lösungen."
+   ],
+   "reference_claims": [
+    "Das KI-Servicezentrum bietet kostenlose Beratung an.",
+    "Das KI-Servicezentrum bietet Weiterbildung an.",
+    "Das KI-Servicezentrum bietet Rechenleistung (Infrastruktur) an."
+   ],
+   "TP": [
+    {
+     "statement": "Das KI‑Servicezentrum bietet das kostenfreie Angebot Beratung an.",
+     "reason": "This statement directly corresponds to the ground truth sentence \"Das KI-Servicezentrum bietet kostenlose Beratung an.\" Both convey that the centre offers free consulting."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet das kostenfreie Angebot Weiterbildung an.",
+     "reason": "This statement directly matches the ground truth sentence \"Das KI-Servicezentrum bietet Weiterbildung an.\" The addition of \"kostenfreie Angebot\" does not change the core offering."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet das kostenfreie Angebot Infrastruktur an.",
+     "reason": "This statement aligns with the ground truth sentence \"Das KI-Servicezentrum bietet Rechenleistung (Infrastruktur) an.\" Both indicate that the centre provides infrastructure/rechenleistung."
+    }
+   ],
+   "FP": [
+    {
+     "statement": "Das Angebot Beratung unterstützt Hilfe zur Selbsthilfe und ermöglicht den gezielten Ausbau von KI‑Kompetenzen sowie das Treffen fundierter Entscheidungen.",
+     "reason": "The ground truth only states that Beratung is offered; it does not describe these specific benefits, so this statement is not directly supported."
+    },
+    {
+     "statement": "Das Angebot Weiterbildung umfasst Schulungen und Trainings.",
+     "reason": "The ground truth mentions Weiterbildung as an offering but does not specify that it includes Schulungen und Trainings."
+    },
+    {
+     "statement": "Schulungen und Trainings ermöglichen die eigenständige Entwicklung und den Betrieb von KI‑Anwendungen.",
+     "reason": "This explanatory detail about Schulungen und Trainings is not present in the ground truth."
+    },
+    {
+     "statement": "Das Angebot Infrastruktur stellt technische Grundlagen bereit.",
+     "reason": "While the ground truth says Infrastruktur is offered, it does not state that it provides technical foundations."
+    },
+    {
+     "statement": "Technische Grundlagen sind notwendig für die eigenständige Entwicklung, den Betrieb und den erfolgreichen Einsatz von KI‑Lösungen.",
+     "reason": "This statement provides additional rationale not mentioned in the ground truth, thus it is not directly supported."
+    }
+   ],
+   "FN": [],
+   "f1": 0.5454545454545454,
+   "similarity": 0.9053614988872399,
+   "score": 0.6354312838127191
+  },
+  "faithfulness": {
+   "claims": [
+    {
+     "statement": "Das KI‑Servicezentrum bietet kostenfreie Beratung, inklusive Hilfe zur Selbsthilfe, um KI‑Kompetenzen gezielt auszubauen und fundierte Entscheidungen zu treffen.",
+     "verdict": 1,
+     "reason": "Der Kontext erwähnt ausdrücklich, dass das KI‑Servicezentrum Beratung kostenlos anbietet, dass diese Beratung Hilfe zur Selbsthilfe beinhaltet und dass damit KI‑Kompetenzen gezielt ausgebaut sowie fundierte Entscheidungen ermöglicht werden."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet kostenfreie Weiterbildung, bestehend aus Schulungen und Trainings, um KI‑Anwendungen eigenständig zu entwickeln und zu betreiben.",
+     "verdict": 0,
+     "reason": "Der Kontext bestätigt, dass das KI‑Servicezentrum kostenlose Weiterbildung anbietet, jedoch wird nicht konkret angegeben, dass diese Weiterbildung aus Schulungen und Trainings besteht; diese Detailangabe ist nicht im Kontext enthalten."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet kostenfreie Infrastruktur, bestehend aus technischen Grundlagen für die eigenständige Entwicklung, den Betrieb und den erfolgreichen Einsatz von KI‑Lösungen.",
+     "verdict": 0,
+     "reason": "Der Kontext sagt, dass das KI‑Servicezentrum kostenlose Infrastruktur bereitstellt, aber er liefert keine spezifischen Informationen darüber, dass diese Infrastruktur aus technischen Grundlagen besteht; diese Spezifizierung fehlt im Kontext."
+    }
+   ],
+   "score": 0.3333333333333333
+  }
+ },
+ "manual/0/offen": {
+  "kind": "manual",
+  "i": 0,
+  "prompt": "offen",
+  "answer": "**Das KI‑Servicezentrum – Überblick über das Leistungsportfolio**\n\nDas KI‑Servicezentrum versteht sich als zentrale Anlaufstelle für Unternehmen, Behörden und Forschungseinrichtungen, die Künstliche Intelligenz (KI) eigenständig entwickeln, betreiben und nutzen wollen. Alle Angebote sind kostenfrei und darauf ausgelegt, **„Hilfe zur Selbsthilfe“** zu leisten – also die nötigen Kompetenzen, Werkzeuge und Rahmenbedingungen zu vermitteln, damit die Nutzer*innen ihre KI‑Projekte selbstständig und nachhaltig umsetzen können.\n\n---\n\n## 1. Beratungsangebote  \n\n| Teilbereich | Inhalt | Nutzen für die Nutzer*innen |\n|-------------|--------|-----------------------------|\n| **Strategieberatung** | Analyse des aktuellen Stands, Definition von KI‑Zielen, Erstellung einer KI‑Roadmap, Bewertung von Use‑Cases hinsichtlich Nutzen und Machbarkeit. | Klarer Fahrplan, Priorisierung von Projekten, Vermeidung von Fehlinvestitionen. |\n| **Technologie‑ und Architekturberatung** | Auswahl geeigneter Algorithmen, Modelle und Plattformen (z. B. TensorFlow, PyTorch, ONNX), Entwurf von skalierbaren Systemarchitekturen, Integration in bestehende IT‑Landschaften. | Technisch fundierte Entscheidungen, Reduktion von Integrationsrisiken. |\n| **Datenschutz‑ und IT‑Sicherheitsberatung** (nach BSI‑IT‑Grundschutz) | Risikoanalyse, Umsetzung von Datenschutz‑by‑Design, Verschlüsselungs‑ und Zugriffskontrollkonzepte, Erstellung von Sicherheitskonzepten für KI‑Modelle. | Rechtssichere und sichere KI‑Anwendungen, Erfüllung von DSGVO‑ und BSI‑Anforderungen. |\n| **Projekt‑ und Change‑Management** | Unterstützung bei Projektplanung, Ressourcen‑ und Zeitmanagement, Begleitung von Organisations‑ und Kulturwandel (z. B. Akzeptanz von KI). | Erfolgreiche Projektumsetzung, höhere Akzeptanz im Unternehmen. |\n| **Ethik‑ und Governance‑Beratung** | Entwicklung von Leitlinien für verantwortungsvolle KI, Bias‑Analyse, Transparenz‑ und Erklärbarkeitsstrategien. | Vertrauenswürdige KI, Vermeidung von Reputationsrisiken. |\n\n> **Best‑Practice‑Hinweis:** Nutzen Sie die Beratung bereits in der frühen Projektphase – das spart später oft erhebliche Kosten für Nachbesserungen und Compliance‑Nachbesserungen.\n\n---\n\n## 2. Weiterbildungsangebote  \n\n| Format | Themen | Besonderheiten |\n|--------|--------|----------------|\n| **Workshops & Seminare (vor Ort & virtuell)** | Grundlagen KI, Machine Learning, Deep Learning, Natural Language Processing, Computer Vision, MLOps, Explainable AI, KI‑Risiko‑Management. | Interaktive Praxisübungen, sofortige Anwendung auf eigene Daten. |\n| **Zertifizierungsprogramme** | „KI‑Fundament“, „MLOps‑Professional“, „Datenschutz & KI“, „KI‑Governance“. | Offizielle Zertifikate, die intern und extern anerkannt werden. |\n| **E‑Learning‑Plattform** | Selbstgesteuerte Lernpfade, Video‑Tutorials, Quizze, Lab‑Umgebungen mit Jupyter‑Notebooks. | Flexible Zeiteinteilung, Zugriff rund um die Uhr. |\n| **Mentoring & Coaching** | 1‑zu‑1‑Sessions mit erfahrenen KI‑Architekten, Code‑Reviews, Modell‑Optimierung. | Individuelle Unterstützung, schnelle Lernkurve. |\n| **Community‑Events & Hackathons** | Netzwerk‑Aufbau, Erfahrungsaustausch, gemeinsame Lösung von Praxisproblemen. | Förderung von Innovation und Zusammenarbeit. |\n\n> **Best‑Practice‑Hinweis:** Kombinieren Sie theoretische Schulungen mit **Hands‑On‑Labs**, um das Gelernte sofort in einer kontrollierten Umgebung zu testen. Dokumentieren Sie die Ergebnisse in einem internen Wissens‑Repository.\n\n---\n\n## 3. Infrastruktur‑ und Plattform‑Angebote  \n\n| Service | Beschreibung | Vorteile |\n|---------|--------------|----------|\n| **KI‑Test‑ und Entwicklungsumgebung (Sandbox)** | Cloud‑basierte, vorkonfigurierte Umgebung mit GPU‑Instanzen, Jupyter‑Hub, Datenbank‑ und Storage‑Anbindung. | Keine Anschaffungskosten für Hardware, sofortiger Zugriff auf leistungsfähige Ressourcen. |\n| **MLOps‑Pipeline‑Toolkit** | CI/CD‑Tools für Modell‑Training, -Validierung, -Deployment (z. B. GitLab CI, Kubeflow, MLflow). | Automatisierte, reproduzierbare Prozesse, schnellere Time‑to‑Market. |\n| **Daten‑Marketplace** | Zugriff auf anonymisierte, qualitativ geprüfte Datensätze (z. B. Bild‑, Text‑, Zeitreihendaten) für Modell‑Training. | Reduziert Aufwand für Datenbeschaffung, erhöht Datenqualität. |\n| **Modell‑Hub & Registry** | Zentraler Katalog für trainierte Modelle, Versionierung, Metadaten, Lizenzinformationen. | Wiederverwendbarkeit, Governance, einfache Integration in Produktionssysteme. |\n| **Security‑Hardening‑Pakete** | Vordefinierte Sicherheitskonfigurationen (z. B. Netzwerk‑Segmente, IAM‑Rollen, Verschlüsselung) nach BSI‑IT‑Grundschutz. | Schnelle, geprüfte Sicherheitsimplementierung. |\n| **Monitoring‑ und Observability‑Tools** | Echtzeit‑Metriken zu Modell‑Performance, Daten‑Drift, Ressourcen‑Auslastung, Alert‑Management. | Proaktive Fehlererkennung, kontinuierliche Qualitätskontrolle. |\n\n> **Best‑Practice‑Hinweis:** Nutzen Sie die **Sandbox** zunächst für Proof‑of‑Concepts (PoCs). Sobald das Modell stabil ist, migrieren Sie es in die **MLOps‑Pipeline** und setzen Sie Monitoring‑Tools ein, um Produktions‑Risiken frühzeitig zu erkennen.\n\n---\n\n## 4. Zusatzleistungen (oft über die Kernangebote hinaus)\n\n1. **Finanzierungs‑ und Fördermittelberatung**  \n   - Unterstützung bei Anträgen für EU‑Programme (z. B. Horizon Europe), nationale Förderungen (z. B. BMWi‑KI‑Innovationsprojekte) und regionale Innovationsfonds.\n\n2. **Partner‑ und Netzwerkvermittlung**  \n   - Vermittlung von Kooperationspartnern aus Forschung, Industrie und Start‑ups, um Synergien zu schaffen.\n\n3. **Compliance‑Audits**  \n   - Prüfung von KI‑Systemen auf DSGVO‑Konformität, BSI‑IT‑Grundschutz‑Erfüllung und branchenspezifische Vorgaben (z. B. Medizinprodukte‑Verordnung).\n\n4. **Open‑Source‑Support**  \n   - Beratung zu Lizenzfragen, Beitrag zu Open‑Source‑Projekten, Bereitstellung von Referenz‑Implementierungen.\n\n---\n\n## 5. Wie greifen Sie auf die Angebote zu?\n\n1. **Registrierung** – Über das Online‑Portal des KI‑Servicezentrums anmelden (einfacher Verifizierungsprozess).  \n2. **Bedarfsanalyse** – Ein erstes kostenloses Gespräch (ca. 30 Min.) zur Ermittlung des konkreten Bedarfs.  \n3. **Angebots‑Katalog** – Auswahl der gewünschten Services (Beratung, Schulung, Infrastruktur).  \n4. **Projekt‑Kick‑off** – Gemeinsame Planung, Festlegung von Meilensteinen und Ressourcen.  \n5. **Durchführung & Monitoring** – Regelmäßige Status‑Updates, Erfolgskontrolle und ggf. Anpassungen.  \n\n> **Tipp:** Dokumentieren Sie jede Phase im **Projekt‑Dashboard** des Servicezentrums, um Transparenz für alle Stakeholder zu gewährleisten.\n\n---\n\n## 6. Zusammenfassung – Was Sie vom KI‑Servicezentrum erhalten\n\n| Kategorie | Was Sie bekommen | Warum das wichtig ist |\n|-----------|------------------|-----------------------|\n| **Beratung** | Strategische, technische, sicherheits‑ und ethische Expertise | Fundierte Entscheidungen, Risikominimierung |\n| **Weiterbildung** | Praxisnahe Schulungen, Zertifikate, Community‑Support | Kompetente Mitarbeitende, schnelle Umsetzung |\n| **Infrastruktur** | Cloud‑Sandbox, MLOps‑Tools, Daten‑Marketplace, Sicherheits‑Pakete | Skalierbare, sichere und kosteneffiziente Entwicklungsumgebung |\n| **Zusatzleistungen** | Fördermittel‑Coaching, Netzwerk‑Vermittlung, Audits | Finanzielle Entlastung, Innovationspotenzial, Compliance‑Sicherheit |\n\nAlle diese Leistungen sind **kostenfrei** und darauf ausgerichtet, Sie befähigen, KI‑Projekte **autonom**, **sicher** und **nachhaltig** zu realisieren.\n\n---\n\n### Weiterführende Empfehlungen (über das Angebot hinaus)\n\n1. **Implementieren Sie ein KI‑Governance‑Framework** nach ISO/IEC 38507 und BSI‑IT‑Grundschutz, um langfristig Verantwortlichkeiten und Prozesse zu sichern.  \n2. **Setzen Sie auf Explainable AI (XAI)** – nutzen Sie Tools wie SHAP, LIME oder IBM‑AI‑Explainability‑360, um Modelle nachvollziehbar zu machen.  \n3. **Planen Sie Data‑Ops** parallel zu MLOps, um Datenqualität, -herkunft und -governance von Anfang an zu sichern.  \n4. **Führen Sie regelmäßige Red‑Team‑Tests** (Adversarial Attacks, Model‑Poisoning) durch, um die Robustheit Ihrer KI‑Modelle zu prüfen.  \n5. **Erstellen Sie ein internes KI‑Center of Excellence (CoE)**, das das erworbene Wissen aus den Servicezentrum‑Angeboten bündelt und weiterverbreitet.\n\n---\n\n**Fazit:**  \nDas KI‑Servicezentrum bietet ein umfassendes, kostenfreies Portfolio aus Beratung, Weiterbildung und technischer Infrastruktur, das Unternehmen und Institutionen befähigt, KI eigenständig, sicher und verantwortungsbewusst zu entwickeln und zu betreiben. Durch die Kombination dieser Angebote mit bewährten Best Practices und einer klaren Governance‑Strategie können Sie Ihre KI‑Initiativen erfolgreich und nachhaltig umsetzen.",
+  "ac": {
+   "answer_claims": [
+    "Das KI‑Servicezentrum versteht sich als zentrale Anlaufstelle für Unternehmen, Behörden und Forschungseinrichtungen, die Künstliche Intelligenz eigenständig entwickeln, betreiben und nutzen wollen.",
+    "Alle Angebote des KI‑Servicezentrums sind kostenfrei.",
+    "Alle Angebote des KI‑Servicezentrums sind darauf ausgelegt, Hilfe zur Selbsthilfe zu leisten.",
+    "Die Angebote vermitteln die nötigen Kompetenzen, Werkzeuge und Rahmenbedingungen, damit Nutzer*innen KI‑Projekte selbstständig und nachhaltig umsetzen können.",
+    "Das KI‑Servicezentrum bietet Strategieberatung an, die den aktuellen Stand analysiert.",
+    "Die Strategieberatung definiert KI‑Ziele.",
+    "Die Strategieberatung erstellt eine KI‑Roadmap.",
+    "Die Strategieberatung bewertet Use‑Cases hinsichtlich Nutzen und Machbarkeit.",
+    "Die Strategieberatung liefert einen klaren Fahrplan.",
+    "Die Strategieberatung ermöglicht die Priorisierung von Projekten.",
+    "Die Strategieberatung hilft, Fehlinvestitionen zu vermeiden.",
+    "Das KI‑Servicezentrum bietet Technologie‑ und Architekturberatung an, die geeignete Algorithmen, Modelle und Plattformen auswählt, z. B. TensorFlow, PyTorch, ONNX.",
+    "Die Technologie‑ und Architekturberatung entwirft skalierbare Systemarchitekturen.",
+    "Die Technologie‑ und Architekturberatung integriert Lösungen in bestehende IT‑Landschaften.",
+    "Die Technologie‑ und Architekturberatung ermöglicht technisch fundierte Entscheidungen.",
+    "Die Technologie‑ und Architekturberatung reduziert Integrationsrisiken.",
+    "Das KI‑Servicezentrum bietet Datenschutz‑ und IT‑Sicherheitsberatung nach BSI‑IT‑Grundschutz an.",
+    "Die Beratung führt Risikoanalysen durch.",
+    "Die Beratung setzt Datenschutz‑by‑Design um.",
+    "Die Beratung entwickelt Verschlüsselungs‑ und Zugriffskontrollkonzepte.",
+    "Die Beratung erstellt Sicherheitskonzepte für KI‑Modelle.",
+    "Die Beratung sorgt für rechtssichere und sichere KI‑Anwendungen.",
+    "Die Beratung erfüllt DSGVO‑ und BSI‑Anforderungen.",
+    "Das KI‑Servicezentrum bietet Projekt‑ und Change‑Management an, das Unterstützung bei Projektplanung, Ressourcen‑ und Zeitmanagement liefert.",
+    "Das Projekt‑ und Change‑Management begleitet Organisations‑ und Kulturwandel, z. B. Akzeptanz von KI.",
+    "Das Projekt‑ und Change‑Management ermöglicht erfolgreiche Projektumsetzung.",
+    "Das Projekt‑ und Change‑Management erhöht die Akzeptanz im Unternehmen.",
+    "Das KI‑Servicezentrum bietet Ethik‑ und Governance‑Beratung an, die Leitlinien für verantwortungsvolle KI entwickelt.",
+    "Die Beratung führt Bias‑Analysen durch.",
+    "Die Beratung erstellt Transparenz‑ und Erklärbarkeitsstrategien.",
+    "Die Beratung schafft vertrauenswürdige KI.",
+    "Die Beratung vermeidet Reputationsrisiken.",
+    "Das KI‑Servicezentrum empfiehlt, Beratung bereits in der frühen Projektphase zu nutzen, um spätere Kosten für Nachbesserungen und Compliance‑Nachbesserungen zu sparen.",
+    "Das KI‑Servicezentrum bietet Workshops und Seminare vor Ort und virtuell zu Grundlagen KI, Machine Learning, Deep Learning, Natural Language Processing, Computer Vision, MLOps, Explainable AI und KI‑Risiko‑Management an.",
+    "Die Workshops und Seminare enthalten interaktive Praxisübungen.",
+    "Die Workshops und Seminare ermöglichen sofortige Anwendung auf eigene Daten.",
+    "Das KI‑Servicezentrum bietet Zertifizierungsprogramme „KI‑Fundament“, „MLOps‑Professional“, „Datenschutz & KI“, „KI‑Governance“ an.",
+    "Die Zertifizierungsprogramme verleihen offizielle Zertifikate, die intern und extern anerkannt werden.",
+    "Das KI‑Servicezentrum stellt eine E‑Learning‑Plattform mit selbstgesteuerten Lernpfaden, Video‑Tutorials, Quizzen und Lab‑Umgebungen mit Jupyter‑Notebooks bereit.",
+    "Die E‑Learning‑Plattform ermöglicht flexible Zeiteinteilung und Zugriff rund um die Uhr.",
+    "Das KI‑Servicezentrum bietet Mentoring und Coaching mit 1‑zu‑1‑Sessions durch erfahrene KI‑Architekten, Code‑Reviews und Modell‑Optimierung an.",
+    "Das Mentoring und Coaching liefert individuelle Unterstützung und schnelle Lernkurve.",
+    "Das KI‑Servicezentrum organisiert Community‑Events und Hackathons zum Netzwerk‑Aufbau, Erfahrungsaustausch und gemeinsamer Lösung von Praxisproblemen.",
+    "Die Community‑Events und Hackathons fördern Innovation und Zusammenarbeit.",
+    "Das KI‑Servicezentrum empfiehlt, theoretische Schulungen mit Hands‑On‑Labs zu kombinieren, um das Gelernte sofort in einer kontrollierten Umgebung zu testen.",
+    "Das KI‑Servicezentrum empfiehlt, Ergebnisse in einem internen Wissens‑Repository zu dokumentieren.",
+    "Das KI‑Servicezentrum stellt eine cloud‑basierte, vorkonfigurierte KI‑Test‑ und Entwicklungsumgebung (Sandbox) mit GPU‑Instanzen, Jupyter‑Hub, Datenbank‑ und Storage‑Anbindung bereit.",
+    "Die Sandbox erfordert keine Anschaffungskosten für Hardware.",
+    "Die Sandbox ermöglicht sofortigen Zugriff auf leistungsfähige Ressourcen.",
+    "Das KI‑Servicezentrum bietet ein MLOps‑Pipeline‑Toolkit mit CI/CD‑Tools für Modell‑Training, -Validierung und -Deployment, z. B. GitLab CI, Kubeflow, MLflow, an.",
+    "Das Toolkit automatisiert reproduzierbare Prozesse.",
+    "Das Toolkit verkürzt Time‑to‑Market.",
+    "Das KI‑Servicezentrum betreibt einen Daten‑Marketplace, der Zugriff auf anonymisierte, qualitativ geprüfte Datensätze (Bild‑, Text‑, Zeitreihendaten) für Modell‑Training ermöglicht.",
+    "Der Daten‑Marketplace reduziert Aufwand für Datenbeschaffung.",
+    "Der Daten‑Marketplace erhöht Datenqualität.",
+    "Das KI‑Servicezentrum bietet einen Modell‑Hub & Registry als zentralen Katalog für trainierte Modelle, Versionierung, Metadaten und Lizenzinformationen an.",
+    "Der Modell‑Hub & Registry ermöglicht Wiederverwendbarkeit, Governance und einfache Integration in Produktionssysteme.",
+    "Das KI‑Servicezentrum stellt Security‑Hardening‑Pakete mit vordefinierten Sicherheitskonfigurationen (Netzwerk‑Segmente, IAM‑Rollen, Verschlüsselung) nach BSI‑IT‑Grundschutz bereit.",
+    "Die Pakete ermöglichen schnelle, geprüfte Sicherheitsimplementierung.",
+    "Das KI‑Servicezentrum bietet Monitoring‑ und Observability‑Tools, die Echtzeit‑Metriken zu Modell‑Performance, Daten‑Drift, Ressourcen‑Auslastung und Alert‑Management liefern.",
+    "Die Tools ermöglichen proaktive Fehlererkennung und kontinuierliche Qualitätskontrolle.",
+    "Das KI‑Servicezentrum empfiehlt, die Sandbox zunächst für Proof‑of‑Concepts zu nutzen.",
+    "Das KI‑Servicezentrum empfiehlt, stabile Modelle nach Proof‑of‑Concept in die MLOps‑Pipeline zu migrieren.",
+    "Das KI‑Servicezentrum empfiehlt, Monitoring‑Tools einzusetzen, um Produktions‑Risiken frühzeitig zu erkennen.",
+    "Das KI‑Servicezentrum unterstützt bei Anträgen für EU‑Programme wie Horizon Europe, nationale Förderungen wie BMWi‑KI‑Innovationsprojekte und regionale Innovationsfonds.",
+    "Das KI‑Servicezentrum vermittelt Kooperationspartner aus Forschung, Industrie und Start‑ups, um Synergien zu schaffen.",
+    "Das KI‑Servicezentrum führt Compliance‑Audits von KI‑Systemen auf DSGVO‑Konformität, BSI‑IT‑Grundschutz‑Erfüllung und branchenspezifische Vorgaben wie Medizinprodukte‑Verordnung durch.",
+    "Das KI‑Servicezentrum berät zu Lizenzfragen, leistet Beitrag zu Open‑Source‑Projekten und stellt Referenz‑Implementierungen bereit.",
+    "Das KI‑Servicezentrum ermöglicht Registrierung über das Online‑Portal mit einfachem Verifizierungsprozess.",
+    "Das KI‑Servicezentrum führt ein erstes kostenloses Gespräch von ca. 30 Minuten zur Ermittlung des konkreten Bedarfs durch.",
+    "Das KI‑Servicezentrum stellt einen Angebots‑Katalog zur Auswahl der gewünschten Services (Beratung, Schulung, Infrastruktur) bereit.",
+    "Das KI‑Servicezentrum organisiert einen Projekt‑Kick‑off mit gemeinsamer Planung, Festlegung von Meilensteinen und Ressourcen.",
+    "Das KI‑Servicezentrum führt Durchführung & Monitoring mit regelmäßigen Status‑Updates, Erfolgskontrolle und ggf. Anpassungen durch.",
+    "Das KI‑Servicezentrum empfiehlt, jede Phase im Projekt‑Dashboard zu dokumentieren, um Transparenz für alle Stakeholder zu gewährleisten.",
+    "Das KI‑Servicezentrum liefert strategische, technische, sicherheits‑ und ethische Expertise.",
+    "Die Expertise ermöglicht fundierte Entscheidungen und Risikominimierung.",
+    "Das KI‑Servicezentrum bietet praxisnahe Schulungen, Zertifikate und Community‑Support.",
+    "Die Weiterbildung schafft kompetente Mitarbeitende und schnelle Umsetzung.",
+    "Das KI‑Servicezentrum stellt Cloud‑Sandbox, MLOps‑Tools, Daten‑Marketplace und Sicherheits‑Pakete bereit.",
+    "Die Infrastruktur ist skalierbar, sicher und kosteneffizient.",
+    "Das KI‑Servicezentrum bietet Fördermittel‑Coaching, Netzwerk‑Vermittlung und Audits.",
+    "Diese Zusatzleistungen entlasten finanziell, erhöhen Innovationspotenzial und sichern Compliance.",
+    "Alle Leistungen des KI‑Servicezentrums sind kostenfrei.",
+    "Alle Leistungen des KI‑Servicezentrums sind darauf ausgerichtet, Nutzer*innen zu befähigen, KI‑Projekte autonom, sicher und nachhaltig zu realisieren.",
+    "Das KI‑Servicezentrum empfiehlt die Implementierung eines KI‑Governance‑Frameworks nach ISO/IEC 38507 und BSI‑IT‑Grundschutz, um langfristig Verantwortlichkeiten und Prozesse zu sichern.",
+    "Das KI‑Servicezentrum empfiehlt den Einsatz von Explainable AI‑Tools wie SHAP, LIME oder IBM‑AI‑Explainability‑360, um Modelle nachvollziehbar zu machen.",
+    "Das KI‑Servicezentrum empfiehlt die parallele Planung von Data‑Ops zu MLOps, um Datenqualität, -herkunft und -governance von Anfang an zu sichern.",
+    "Das KI‑Servicezentrum empfiehlt regelmäßige Red‑Team‑Tests (Adversarial Attacks, Model‑Poisoning), um die Robustheit von KI‑Modellen zu prüfen.",
+    "Das KI‑Servicezentrum empfiehlt die Erstellung eines internen KI‑Center of Excellence, das erworbenes Wissen aus den Servicezentrum‑Angeboten bündelt und weiterverbreitet.",
+    "Das KI‑Servicezentrum bietet ein umfassendes, kostenfreies Portfolio aus Beratung, Weiterbildung und technischer Infrastruktur, das Unternehmen und Institutionen befähigt, KI eigenständig, sicher und verantwortungsbewusst zu entwickeln und zu betreiben.",
+    "Die Kombination dieser Angebote mit bewährten Best Practices und einer klaren Governance‑Strategie ermöglicht erfolgreiche und nachhaltige KI‑Initiativen."
+   ],
+   "reference_claims": [
+    "Das KI-Servicezentrum bietet kostenlose Beratung an.",
+    "Das KI-Servicezentrum bietet Weiterbildung an.",
+    "Das KI-Servicezentrum bietet Rechenleistung (Infrastruktur) an."
+   ],
+   "TP": [
+    {
+     "statement": "Das KI‑Servicezentrum bietet Strategieberatung an, die den aktuellen Stand analysiert.",
+     "reason": "The ground truth states that the centre offers free consulting; this specific consulting service is directly covered."
+    },
+    {
+     "statement": "Die Strategieberatung definiert KI‑Ziele.",
+     "reason": "Specific activity of the consulting service mentioned in the ground truth."
+    },
+    {
+     "statement": "Die Strategieberatung erstellt eine KI‑Roadmap.",
+     "reason": "A concrete consulting deliverable, supported by the ground truth’s claim of free advice."
+    },
+    {
+     "statement": "Die Strategieberatung bewertet Use‑Cases hinsichtlich Nutzen und Machbarkeit.",
+     "reason": "Consulting activity that falls under the “Beratung” category of the ground truth."
+    },
+    {
+     "statement": "Die Strategieberatung liefert einen klaren Fahrplan.",
+     "reason": "Another concrete consulting output, directly supported by the ground truth."
+    },
+    {
+     "statement": "Die Strategieberatung ermöglicht die Priorisierung von Projekten.",
+     "reason": "Consulting service that is covered by the ground truth’s statement about free advice."
+    },
+    {
+     "statement": "Die Strategieberatung hilft, Fehlinvestitionen zu vermeiden.",
+     "reason": "Consulting benefit that aligns with the ground truth’s “Beratung” claim."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet Technologie‑ und Architekturberatung an, die geeignete Algorithmen, Modelle und Plattformen auswählt, z. B. TensorFlow, PyTorch, ONNX.",
+     "reason": "A specific form of consulting, directly supported by the ground truth’s “kostenlose Beratung”."
+    },
+    {
+     "statement": "Die Technologie‑ und Architekturberatung entwirft skalierbare Systemarchitekturen.",
+     "reason": "Consulting activity covered by the ground truth."
+    },
+    {
+     "statement": "Die Technologie‑ und Architekturberatung integriert Lösungen in bestehende IT‑Landschaften.",
+     "reason": "Consulting service that falls under the free‑advice category."
+    },
+    {
+     "statement": "Die Technologie‑ und Architekturberatung ermöglicht technisch fundierte Entscheidungen.",
+     "reason": "Consulting output, directly supported by the ground truth."
+    },
+    {
+     "statement": "Die Technologie‑und Architekturberatung reduziert Integrationsrisiken.",
+     "reason": "Consulting benefit covered by the ground truth’s statement about free consulting."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet Datenschutz‑ und IT‑Sicherheitsberatung nach BSI‑IT‑Grundschutz an.",
+     "reason": "A specific consulting service, directly covered by the ground truth’s “Beratung”."
+    },
+    {
+     "statement": "Die Beratung führt Risikoanalysen durch.",
+     "reason": "Consulting activity that aligns with the ground truth’s claim of free advice."
+    },
+    {
+     "statement": "Die Beratung setzt Datenschutz‑by‑Design um.",
+     "reason": "Consulting deliverable, supported by the ground truth."
+    },
+    {
+     "statement": "Die Beratung entwickelt Verschlüsselungs‑ und Zugriffskontrollkonzepte.",
+     "reason": "Specific consulting work, covered by the ground truth."
+    },
+    {
+     "statement": "Die Beratung erstellt Sicherheitskonzepte für KI‑Modelle.",
+     "reason": "Consulting activity that falls under the free‑consulting category."
+    },
+    {
+     "statement": "Die Beratung sorgt für rechtssichere und sichere KI‑Anwendungen.",
+     "reason": "Consulting outcome, directly supported by the ground truth."
+    },
+    {
+     "statement": "Die Beratung erfüllt DSGVO‑ und BSI‑Anforderungen.",
+     "reason": "Consulting service that aligns with the ground truth’s “Beratung”."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet Projekt‑ und Change‑Management an, das Unterstützung bei Projektplanung, Ressourcen‑ und Zeitmanagement liefert.",
+     "reason": "Project‑management consulting is a form of the free consulting mentioned in the ground truth."
+    },
+    {
+     "statement": "Das Projekt‑ und Change‑Management begleitet Organisations‑ und Kulturwandel, z. B. Akzeptanz von KI.",
+     "reason": "Consulting activity covered by the ground truth’s statement about free advice."
+    },
+    {
+     "statement": "Das Projekt‑ und Change‑Management ermöglicht erfolgreiche Projektumsetzung.",
+     "reason": "Consulting benefit that aligns with the ground truth."
+    },
+    {
+     "statement": "Das Projekt‑ und Change‑Management erhöht die Akzeptanz im Unternehmen.",
+     "reason": "Consulting outcome directly supported by the ground truth."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet Ethik‑ und Governance‑Beratung an, die Leitlinien für verantwortungsvolle KI entwickelt.",
+     "reason": "A specific consulting service, covered by the ground truth’s “Beratung”."
+    },
+    {
+     "statement": "Die Beratung führt Bias‑Analysen durch.",
+     "reason": "Consulting activity that falls under the free‑consulting category."
+    },
+    {
+     "statement": "Die Beratung erstellt Transparenz‑ und Erklärbarkeitsstrategien.",
+     "reason": "Consulting deliverable, directly supported by the ground truth."
+    },
+    {
+     "statement": "Die Beratung schafft vertrauenswürdige KI.",
+     "reason": "Consulting outcome aligned with the ground truth’s claim of free advice."
+    },
+    {
+     "statement": "Die Beratung vermeidet Reputationsrisiken.",
+     "reason": "Consulting benefit covered by the ground truth."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet Workshops und Seminare vor Ort und virtuell zu Grundlagen KI, Machine Learning, Deep Learning, Natural Language Processing, Computer Vision, MLOps, Explainable AI und KI‑Risiko‑Management an.",
+     "reason": "Workshops and seminars are forms of Weiterbildung mentioned in the ground truth."
+    },
+    {
+     "statement": "Die Workshops und Seminare enthalten interaktive Praxisübungen.",
+     "reason": "Specific characteristic of the training offering, directly supported by the ground truth’s “Weiterbildung”."
+    },
+    {
+     "statement": "Die Workshops und Seminare ermöglichen sofortige Anwendung auf eigene Daten.",
+     "reason": "Training feature that aligns with the ground truth’s statement about free education."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet Zertifizierungsprogramme „KI‑Fundament“, „MLOps‑Professional“, „Datenschutz & KI“, „KI‑Governance“ an.",
+     "reason": "Certification programmes are a concrete form of Weiterbildung covered by the ground truth."
+    },
+    {
+     "statement": "Die Zertifizierungsprogramme verleihen offizielle Zertifikate, die intern und extern anerkannt werden.",
+     "reason": "Further detail of the Weiterbildung offering, directly supported."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum stellt eine E‑Learning‑Plattform mit selbstgesteuerten Lernpfaden, Video‑Tutorials, Quizzen und Lab‑Umgebungen mit Jupyter‑Notebooks bereit.",
+     "reason": "E‑Learning is a type of Weiterbildung mentioned in the ground truth."
+    },
+    {
+     "statement": "Die E‑Learning‑Plattform ermöglicht flexible Zeiteinteilung und Zugriff rund um die Uhr.",
+     "reason": "Specific feature of the Weiterbildung service, directly supported."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet Mentoring und Coaching mit 1‑zu‑1‑Sessions durch erfahrene KI‑Architekten, Code‑Reviews und Modell‑Optimierung an.",
+     "reason": "Mentoring and coaching are forms of Weiterbildung covered by the ground truth."
+    },
+    {
+     "statement": "Das Mentoring und Coaching liefert individuelle Unterstützung und schnelle Lernkurve.",
+     "reason": "Further detail of the Weiterbildung offering, directly supported."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum organisiert Community‑Events und Hackathons zum Netzwerk‑Aufbau, Erfahrungsaustausch und gemeinsamer Lösung von Praxisproblemen.",
+     "reason": "Community events and hackathons are educational activities, thus part of the free Weiterbildung."
+    },
+    {
+     "statement": "Die Community‑Events und Hackathons fördern Innovation und Zusammenarbeit.",
+     "reason": "Specific benefit of the Weiterbildung service, directly supported."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum stellt eine cloud‑basierte, vorkonfigurierte KI‑Test‑ und Entwicklungsumgebung (Sandbox) mit GPU‑Instanzen, Jupyter‑Hub, Datenbank‑ und Storage‑Anbindung bereit.",
+     "reason": "The sandbox provides computing resources, matching the ground truth’s claim of free infrastructure."
+    },
+    {
+     "statement": "Die Sandbox erfordert keine Anschaffungskosten für Hardware.",
+     "reason": "Clarifies that the infrastructure is provided free of charge, directly supporting the “Rechenleistung (Infrastruktur)” statement."
+    },
+    {
+     "statement": "Die Sandbox ermöglicht sofortigen Zugriff auf leistungsfähige Ressourcen.",
+     "reason": "Describes the provided computing capability, aligned with the ground truth’s infrastructure offering."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet ein MLOps‑Pipeline‑Toolkit mit CI/CD‑Tools für Modell‑Training, -Validierung und -Deployment, z. B. GitLab CI, Kubeflow, MLflow, an.",
+     "reason": "The toolkit is a concrete piece of infrastructure, covered by the ground truth’s “Rechenleistung (Infrastruktur)”."
+    },
+    {
+     "statement": "Das Toolkit automatisiert reproduzierbare Prozesse.",
+     "reason": "Specific feature of the infrastructure service, directly supported."
+    },
+    {
+     "statement": "Das Toolkit verkürzt Time‑to‑Market.",
+     "reason": "Benefit of the provided infrastructure, aligned with the ground truth."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum betreibt einen Daten‑Marketplace, der Zugriff auf anonymisierte, qualitativ geprüfte Datensätze (Bild‑, Text‑, Zeitreihendaten) für Modell‑Training ermöglicht.",
+     "reason": "Data‑Marketplace supplies computing‑related resources, fitting the “Rechenleistung (Infrastruktur)” category."
+    },
+    {
+     "statement": "Der Daten‑Marketplace reduziert Aufwand für Datenbeschaffung.",
+     "reason": "Benefit of the infrastructure offering, directly supported."
+    },
+    {
+     "statement": "Der Daten‑Marketplace erhöht Datenqualität.",
+     "reason": "Further benefit of the infrastructure service, aligned with the ground truth."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet einen Modell‑Hub & Registry als zentralen Katalog für trainierte Modelle, Versionierung, Metadaten und Lizenzinformationen an.",
+     "reason": "Model‑Hub is part of the technical infrastructure mentioned in the ground truth."
+    },
+    {
+     "statement": "Der Modell‑Hub & Registry ermöglicht Wiederverwendbarkeit, Governance und einfache Integration in Produktionssysteme.",
+     "reason": "Describes the infrastructure benefit, directly supported."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum stellt Security‑Hardening‑Pakete mit vordefinierten Sicherheitskonfigurationen (Netzwerk‑Segmente, IAM‑Rollen, Verschlüsselung) nach BSI‑IT‑Grundschutz bereit.",
+     "reason": "Security packages are part of the free infrastructure offering."
+    },
+    {
+     "statement": "Die Pakete ermöglichen schnelle, geprüfte Sicherheitsimplementierung.",
+     "reason": "Benefit of the infrastructure service, directly supported."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet Monitoring‑ und Observability‑Tools, die Echtzeit‑Metriken zu Modell‑Performance, Daten‑Drift, Ressourcen‑Auslastung und Alert‑Management liefern.",
+     "reason": "Monitoring tools are technical infrastructure, covered by the ground truth."
+    },
+    {
+     "statement": "Die Tools ermöglichen proaktive Fehlererkennung und kontinuierliche Qualitätskontrolle.",
+     "reason": "Benefit of the infrastructure offering, directly supported."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum stellt einen Angebots‑Katalog zur Auswahl der gewünschten Services (Beratung, Schulung, Infrastruktur) bereit.",
+     "reason": "The catalogue lists the three categories (Beratung, Weiterbildung, Infrastruktur) mentioned in the ground truth."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet praxisnahe Schulungen, Zertifikate und Community‑Support.",
+     "reason": "Explicit mention of training (Weiterbildung) that matches the ground truth."
+    },
+    {
+     "statement": "Die Weiterbildung schafft kompetente Mitarbeitende und schnelle Umsetzung.",
+     "reason": "Benefit of the Weiterbildung service, directly supported."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum stellt Cloud‑Sandbox, MLOps‑Tools, Daten‑Marketplace und Sicherheits‑Pakete bereit.",
+     "reason": "Summarises the infrastructure services, aligning with the ground truth’s “Rechenleistung (Infrastruktur)”."
+    },
+    {
+     "statement": "Die Infrastruktur ist skalierbar, sicher und kosteneffizient.",
+     "reason": "Describes the provided infrastructure, directly supported."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet Fördermittel‑Coaching, Netzwerk‑Vermittlung und Audits.",
+     "reason": "Coaching and audits are consulting services, covered by the free Beratung claim."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet ein umfassendes, kostenfreies Portfolio aus Beratung, Weiterbildung und technischer Infrastruktur, das Unternehmen und Institutionen befähigt, KI eigenständig, sicher und verantwortungsbewusst zu entwickeln und zu betreiben.",
+     "reason": "Explicitly restates the three ground‑truth categories, confirming they are offered free of charge."
+    }
+   ],
+   "FP": [
+    {
+     "statement": "Das KI‑Servicezentrum versteht sich als zentrale Anlaufstelle für Unternehmen, Behörden und Forschungseinrichtungen, die Künstliche Intelligenz eigenständig entwickeln, betreiben und nutzen wollen.",
+     "reason": "General description of the centre’s mission, not a specific offering listed in the ground truth."
+    },
+    {
+     "statement": "Alle Angebote des KI‑Servicezentrums sind kostenfrei.",
+     "reason": "The ground truth mentions free consulting only; it does not state that all services are free."
+    },
+    {
+     "statement": "Alle Angebote des KI‑Servicezentrums sind darauf ausgelegt, Hilfe zur Selbsthilfe zu leisten.",
+     "reason": "A strategic intent, not a concrete service covered by the ground truth."
+    },
+    {
+     "statement": "Die Angebote vermitteln die nötigen Kompetenzen, Werkzeuge und Rahmenbedingungen, damit Nutzer*innen KI‑Projekte selbstständig und nachhaltig umsetzen können.",
+     "reason": "General benefit statement, not a specific offering mentioned in the ground truth."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum empfiehlt, Beratung bereits in der frühen Projektphase zu nutzen, um spätere Kosten für Nachbesserungen und Compliance‑Nachbesserungen zu sparen.",
+     "reason": "Recommendation, not a directly supported service."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum empfiehlt, theoretische Schulungen mit Hands‑On‑Labs zu kombinieren, um das Gelernte sofort in einer kontrollierten Umgebung zu testen.",
+     "reason": "Recommendation about training methodology, not a ground‑truth statement."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum empfiehlt, Ergebnisse in einem internen Wissens‑Repository zu dokumentieren.",
+     "reason": "Process recommendation, not covered by the ground truth."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum empfiehlt, die Sandbox zunächst für Proof‑of‑Concepts zu nutzen.",
+     "reason": "Specific usage recommendation, not a direct service claim."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum empfiehlt, stabile Modelle nach Proof‑of‑Concept in die MLOps‑Pipeline zu migrieren.",
+     "reason": "Recommendation, not a ground‑truth offering."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum empfiehlt, Monitoring‑Tools einzusetzen, um Produktions‑Risiken frühzeitig zu erkennen.",
+     "reason": "Recommendation, not a direct statement of service provision."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum unterstützt bei Anträgen für EU‑Programme wie Horizon Europe, nationale Förderungen wie BMWi‑KI‑Innovationsprojekte und regionale Innovationsfonds.",
+     "reason": "Funding assistance is not mentioned in the ground truth."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum vermittelt Kooperationspartner aus Forschung, Industrie und Start‑ups, um Synergien zu schaffen.",
+     "reason": "Partner‑matching is a service not listed in the ground truth."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum führt Compliance‑Audits von KI‑Systemen auf DSGVO‑Konformität, BSI‑IT‑Grundschutz‑Erfüllung und branchenspezifische Vorgaben wie Medizinprodukte‑Verordnung durch.",
+     "reason": "Specific audit service, not covered by the ground truth."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum berät zu Lizenzfragen, leistet Beitrag zu Open‑Source‑Projekten und stellt Referenz‑Implementierungen bereit.",
+     "reason": "Licensing and open‑source advice are not mentioned in the ground truth."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum ermöglicht Registrierung über das Online‑Portal mit einfachem Verifizierungsprozess.",
+     "reason": "Portal registration is an operational detail, not a ground‑truth offering."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum führt ein erstes kostenloses Gespräch von ca. 30 Minuten zur Ermittlung des konkreten Bedarfs durch.",
+     "reason": "Specific onboarding step, not listed in the ground truth."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum organisiert einen Projekt‑Kick‑off mit gemeinsamer Planung, Festlegung von Meilensteinen und Ressourcen.",
+     "reason": "Project kickoff is a process detail, not a ground‑truth service."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum führt Durchführung & Monitoring mit regelmäßigen Status‑Updates, Erfolgskontrolle und ggf. Anpassungen durch.",
+     "reason": "Operational execution detail, not covered by the ground truth."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum empfiehlt, jede Phase im Projekt‑Dashboard zu dokumentieren, um Transparenz für alle Stakeholder zu gewährleisten.",
+     "reason": "Recommendation about documentation, not a direct service claim."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum liefert strategische, technische, sicherheits‑ und ethische Expertise.",
+     "reason": "General expertise statement, not a concrete offering listed in the ground truth."
+    },
+    {
+     "statement": "Die Expertise ermöglicht fundierte Entscheidungen und Risikominimierung.",
+     "reason": "Benefit of expertise, not a specific service."
+    },
+    {
+     "statement": "Alle Leistungen des KI‑Servicezentrums sind kostenfrei.",
+     "reason": "Ground truth only mentions free consulting, not that every service is free."
+    },
+    {
+     "statement": "Alle Leistungen des KI‑Servicezentrums sind darauf ausgerichtet, Nutzer*innen zu befähigen, KI‑Projekte autonom, sicher und nachhaltig zu realisieren.",
+     "reason": "Strategic intent, not a concrete offering."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum empfiehlt die Implementierung eines KI‑Governance‑Frameworks nach ISO/IEC 38507 und BSI‑IT‑Grundschutz, um langfristig Verantwortlichkeiten und Prozesse zu sichern.",
+     "reason": "Recommendation, not a ground‑truth service."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum empfiehlt den Einsatz von Explainable AI‑Tools wie SHAP, LIME oder IBM‑AI‑Explainability‑360, um Modelle nachvollziehbar zu machen.",
+     "reason": "Tool recommendation, not a direct service."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum empfiehlt die parallele Planung von Data‑Ops zu MLOps, um Datenqualität, -herkunft und -governance von Anfang an zu sichern.",
+     "reason": "Process recommendation, not covered by the ground truth."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum empfiehlt regelmäßige Red‑Team‑Tests (Adversarial Attacks, Model‑Poisoning), um die Robustheit von KI‑Modellen zu prüfen.",
+     "reason": "Recommendation, not a listed service."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum empfiehlt die Erstellung eines internen KI‑Center of Excellence, das erworbenes Wissen aus den Servicezentrum‑Angeboten bündelt und weiterverbreitet.",
+     "reason": "Strategic recommendation, not a ground‑truth offering."
+    },
+    {
+     "statement": "Die Kombination dieser Angebote mit bewährten Best Practices und einer klaren Governance‑Strategie ermöglicht erfolgreiche und nachhaltige KI‑Initiativen.",
+     "reason": "Summarising statement, not a specific service mentioned in the ground truth."
+    }
+   ],
+   "FN": [
+    {
+     "statement": "Das KI-Servicezentrum bietet kostenlose Beratung an.",
+     "reason": "The answer does not contain this exact statement; it only lists many specific consulting services but not the exact phrasing."
+    },
+    {
+     "statement": "Das KI-Servicezentrum bietet Weiterbildung an.",
+     "reason": "The answer mentions many training activities but does not include this exact sentence."
+    },
+    {
+     "statement": "Das KI-Servicezentrum bietet Rechenleistung (Infrastruktur) an.",
+     "reason": "The answer describes infrastructure components but does not contain this exact wording."
+    }
+   ],
+   "f1": 0.7922077922077922,
+   "similarity": 0.852396461677584,
+   "score": 0.8072549595752402
+  },
+  "faithfulness": {
+   "claims": [
+    {
+     "statement": "Das KI‑Servicezentrum ist eine zentrale Anlaufstelle für Unternehmen.",
+     "verdict": 0,
+     "reason": "The context does not mention that the KI‑Servicezentrum is a central contact point for companies."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum ist eine zentrale Anlaufstelle für Behörden.",
+     "verdict": 0,
+     "reason": "The context does not mention that the KI‑Servicezentrum is a central contact point for authorities."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum ist eine zentrale Anlaufstelle für Forschungseinrichtungen, die Künstliche Intelligenz eigenständig entwickeln, betreiben und nutzen wollen.",
+     "verdict": 0,
+     "reason": "The context does not state that the KI‑Servicezentrum serves as a central contact point for research institutions."
+    },
+    {
+     "statement": "Alle Angebote des KI‑Servicezentrums sind kostenfrei und darauf ausgelegt, Hilfe zur Selbsthilfe zu leisten, also die nötigen Kompetenzen, Werkzeuge und Rahmenbedingungen zu vermitteln, damit die Nutzer*innen des KI‑Servicezentrums KI‑Projekte selbstständig und nachhaltig umsetzen können.",
+     "verdict": 1,
+     "reason": "The context explicitly says that all offers are free and are intended as help‑to‑self‑help, providing the necessary competencies, tools and framework for users to implement KI projects autonomously and sustainably."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet Strategieberatung, die eine Analyse des aktuellen Stands umfasst.",
+     "verdict": 0,
+     "reason": "The context does not mention strategic consulting or any analysis of the current state."
+    },
+    {
+     "statement": "Die Strategieberatung beinhaltet die Definition von KI‑Zielen.",
+     "verdict": 0,
+     "reason": "The context does not describe the contents of any strategic consulting, such as defining KI goals."
+    },
+    {
+     "statement": "Die Strategieberatung beinhaltet die Erstellung einer KI‑Roadmap.",
+     "verdict": 0,
+     "reason": "The context does not mention the creation of a KI roadmap."
+    },
+    {
+     "statement": "Die Strategieberatung beinhaltet die Bewertung von Use‑Cases hinsichtlich Nutzen und Machbarkeit.",
+     "verdict": 0,
+     "reason": "The context does not provide information about evaluating use‑cases."
+    },
+    {
+     "statement": "Die Strategieberatung liefert einen klaren Fahrplan.",
+     "verdict": 0,
+     "reason": "The context does not state that a clear roadmap is delivered by strategic consulting."
+    },
+    {
+     "statement": "Die Strategieberatung ermöglicht die Priorisierung von Projekten.",
+     "verdict": 0,
+     "reason": "The context does not mention project prioritisation as part of any consulting service."
+    },
+    {
+     "statement": "Die Strategieberatung hilft, Fehlinvestitionen zu vermeiden.",
+     "verdict": 0,
+     "reason": "The context does not contain any claim that strategic consulting helps avoid mis‑investments."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet Technologie‑ und Architekturberatung, die die Auswahl geeigneter Algorithmen, Modelle und Plattformen wie TensorFlow, PyTorch und ONNX unterstützt.",
+     "verdict": 0,
+     "reason": "The context does not specify technology or architecture consulting nor mention TensorFlow, PyTorch or ONNX."
+    },
+    {
+     "statement": "Die Technologie‑ und Architekturberatung umfasst den Entwurf skalierbarer Systemarchitekturen.",
+     "verdict": 0,
+     "reason": "The context does not describe any technology‑architecture advice or scalable system design."
+    },
+    {
+     "statement": "Die Technologie‑ und Architekturberatung unterstützt die Integration in bestehende IT‑Landschaften.",
+     "verdict": 0,
+     "reason": "The context does not mention integration support for existing IT landscapes."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet Datenschutz‑ und IT‑Sicherheitsberatung nach BSI‑IT‑Grundschutz, die Risikoanalysen durchführt.",
+     "verdict": 0,
+     "reason": "The context does not refer to data‑protection or IT‑security consulting or BSI‑IT‑Grundschutz."
+    },
+    {
+     "statement": "Die Datenschutz‑ und IT‑Sicherheitsberatung implementiert Datenschutz‑by‑Design.",
+     "verdict": 0,
+     "reason": "The context does not contain any statement about implementing privacy‑by‑design."
+    },
+    {
+     "statement": "Die Datenschutz‑ und IT‑Sicherheitsberatung erstellt Verschlüsselungs‑ und Zugriffskontrollkonzepte.",
+     "verdict": 0,
+     "reason": "The context does not mention creation of encryption or access‑control concepts."
+    },
+    {
+     "statement": "Die Datenschutz‑ und IT‑Sicherheitsberatung erstellt Sicherheitskonzepte für KI‑Modelle.",
+     "verdict": 0,
+     "reason": "The context does not provide information about security concepts for KI models."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet Projekt‑ und Change‑Management, das Unterstützung bei Projektplanung, Ressourcen‑ und Zeitmanagement liefert.",
+     "verdict": 0,
+     "reason": "The context does not mention project or change management services."
+    },
+    {
+     "statement": "Das Projekt‑ und Change‑Management begleitet Organisations‑ und Kulturwandel, zum Beispiel die Akzeptanz von KI.",
+     "verdict": 0,
+     "reason": "The context does not describe any organisational or cultural change support."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet Ethik‑ und Governance‑Beratung, die Leitlinien für verantwortungsvolle KI entwickelt.",
+     "verdict": 0,
+     "reason": "The context does not refer to ethical or governance consulting."
+    },
+    {
+     "statement": "Die Ethik‑ und Governance‑Beratung führt Bias‑Analysen durch.",
+     "verdict": 0,
+     "reason": "The context does not mention bias analyses."
+    },
+    {
+     "statement": "Die Ethik‑ und Governance‑Beratung erstellt Transparenz‑ und Erklärbarkeitsstrategien.",
+     "verdict": 0,
+     "reason": "The context does not contain any claim about transparency or explainability strategies."
+    },
+    {
+     "statement": "Die Nutzung der Beratung bereits in der frühen Projektphase spart später erhebliche Kosten für Nachbesserungen und Compliance‑Nachbesserungen.",
+     "verdict": 0,
+     "reason": "The context does not discuss cost savings from early‑stage consulting."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet Workshops und Seminare vor Ort und virtuell zu Grundlagen KI, Machine Learning, Deep Learning, Natural Language Processing, Computer Vision, MLOps, Explainable AI und KI‑Risiko‑Management.",
+     "verdict": 0,
+     "reason": "The context does not list specific workshop topics or formats."
+    },
+    {
+     "statement": "Die Workshops und Seminare enthalten interaktive Praxisübungen und sofortige Anwendung auf eigene Daten.",
+     "verdict": 0,
+     "reason": "The context does not describe the content or format of workshops."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet Zertifizierungsprogramme KI‑Fundament, MLOps‑Professional, Datenschutz & KI und KI‑Governance, die offizielle Zertifikate bereitstellen, die intern und extern anerkannt werden.",
+     "verdict": 0,
+     "reason": "The context does not mention certification programmes."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum stellt eine E‑Learning‑Plattform mit selbstgesteuerten Lernpfaden, Video‑Tutorials, Quizzen und Lab‑Umgebungen mit Jupyter‑Notebooks bereit, die flexible Zeiteinteilung und Zugriff rund um die Uhr ermöglicht.",
+     "verdict": 0,
+     "reason": "The context does not refer to an e‑learning platform or its features."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet Mentoring und Coaching mit 1‑zu‑1‑Sessions mit erfahrenen KI‑Architekten, Code‑Reviews und Modell‑Optimierung, die individuelle Unterstützung und schnelle Lernkurve ermöglichen.",
+     "verdict": 0,
+     "reason": "The context does not mention mentoring or coaching services."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum organisiert Community‑Events und Hackathons zum Netzwerk‑Aufbau, Erfahrungsaustausch und gemeinsamer Lösung von Praxisproblemen, die Innovation und Zusammenarbeit fördern.",
+     "verdict": 0,
+     "reason": "The context does not describe community events or hackathons."
+    },
+    {
+     "statement": "Die Kombination theoretischer Schulungen mit Hands‑On‑Labs ermöglicht das sofortige Testen des Gelernten in einer kontrollierten Umgebung, und die Dokumentation der Ergebnisse erfolgt in einem internen Wissens‑Repository.",
+     "verdict": 0,
+     "reason": "The context does not provide details about hands‑on labs or internal knowledge repositories."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum stellt eine cloud‑basierte, vorkonfigurierte Sandbox mit GPU‑Instanzen, Jupyter‑Hub, Datenbank‑ und Storage‑Anbindung bereit, die keine Anschaffungskosten für Hardware erfordert und sofortigen Zugriff auf leistungsfähige Ressourcen ermöglicht.",
+     "verdict": 0,
+     "reason": "The context does not mention a cloud sandbox or related technical details."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet ein MLOps‑Pipeline‑Toolkit mit CI/CD‑Tools für Modell‑Training, -Validierung und -Deployment, zum Beispiel GitLab CI, Kubeflow und MLflow, das automatisierte, reproduzierbare Prozesse und schnellere Time‑to‑Market ermöglicht.",
+     "verdict": 0,
+     "reason": "The context does not describe an MLOps pipeline toolkit."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum stellt einen Daten‑Marketplace mit Zugriff auf anonymisierte, qualitativ geprüfte Datensätze wie Bild‑, Text‑ und Zeitreihendaten für Modell‑Training bereit, der den Aufwand für Datenbeschaffung reduziert und die Datenqualität erhöht.",
+     "verdict": 0,
+     "reason": "The context does not mention a data‑marketplace."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet einen Modell‑Hub und eine Registry als zentralen Katalog für trainierte Modelle, Versionierung, Metadaten und Lizenzinformationen, die Wiederverwendbarkeit, Governance und einfache Integration in Produktionssysteme ermöglichen.",
+     "verdict": 0,
+     "reason": "The context does not refer to a model hub or registry."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum liefert Security‑Hardening‑Pakete mit vordefinierten Sicherheitskonfigurationen wie Netzwerk‑Segmente, IAM‑Rollen und Verschlüsselung nach BSI‑IT‑Grundschutz, die schnelle, geprüfte Sicherheitsimplementierung ermöglichen.",
+     "verdict": 0,
+     "reason": "The context does not mention security‑hardening packages."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum stellt Monitoring‑ und Observability‑Tools bereit, die Echtzeit‑Metriken zu Modell‑Performance, Daten‑Drift, Ressourcen‑Auslastung und Alert‑Management liefern, um proaktive Fehlererkennung und kontinuierliche Qualitätskontrolle zu ermöglichen.",
+     "verdict": 0,
+     "reason": "The context does not describe monitoring or observability tools."
+    },
+    {
+     "statement": "Die Nutzung der Sandbox zunächst für Proof‑of‑Concepts ermöglicht frühe Tests.",
+     "verdict": 0,
+     "reason": "The context does not mention a sandbox or proof‑of‑concept usage."
+    },
+    {
+     "statement": "Die Migration eines stabilen Modells in die MLOps‑Pipeline und der Einsatz von Monitoring‑Tools ermöglichen das frühzeitige Erkennen von Produktions‑Risiken.",
+     "verdict": 0,
+     "reason": "The context does not discuss model migration or monitoring in production."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum unterstützt bei Anträgen für EU‑Programme wie Horizon Europe, nationale Förderungen wie BMWi‑KI‑Innovationsprojekte und regionale Innovationsfonds.",
+     "verdict": 0,
+     "reason": "The context does not mention support for EU programmes or national funding applications."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum vermittelt Kooperationspartner aus Forschung, Industrie und Start‑ups, um Synergien zu schaffen.",
+     "verdict": 0,
+     "reason": "The context does not state that the centre mediates cooperation partners."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum führt Compliance‑Audits von KI‑Systemen auf DSGVO‑Konformität, BSI‑IT‑Grundschutz‑Erfüllung und branchenspezifische Vorgaben wie die Medizinprodukte‑Verordnung durch.",
+     "verdict": 0,
+     "reason": "The context does not mention compliance audits."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum berät zu Lizenzfragen, leistet Beiträge zu Open‑Source‑Projekten und stellt Referenz‑Implementierungen bereit.",
+     "verdict": 0,
+     "reason": "The context does not contain information about licensing advice or open‑source contributions."
+    },
+    {
+     "statement": "Die Registrierung erfolgt über das Online‑Portal des KI‑Servicezentrums mit einfachem Verifizierungsprozess.",
+     "verdict": 0,
+     "reason": "The context does not describe a registration process."
+    },
+    {
+     "statement": "Die Bedarfsanalyse besteht aus einem ersten kostenlosen Gespräch von etwa 30 Minuten zur Ermittlung des konkreten Bedarfs.",
+     "verdict": 0,
+     "reason": "The context does not mention a free initial consultation of 30 minutes."
+    },
+    {
+     "statement": "Der Angebots‑Katalog ermöglicht die Auswahl der gewünschten Services wie Beratung, Schulung und Infrastruktur.",
+     "verdict": 0,
+     "reason": "The context does not refer to an offer catalog."
+    },
+    {
+     "statement": "Der Projekt‑Kick‑off beinhaltet gemeinsame Planung, Festlegung von Meilensteinen und Ressourcen.",
+     "verdict": 0,
+     "reason": "The context does not describe a project kick‑off process."
+    },
+    {
+     "statement": "Die Durchführung und das Monitoring umfassen regelmäßige Status‑Updates, Erfolgskontrolle und ggf. Anpassungen.",
+     "verdict": 0,
+     "reason": "The context does not mention ongoing monitoring or status updates."
+    },
+    {
+     "statement": "Die Dokumentation jeder Phase im Projekt‑Dashboard des Servicezentrums gewährleistet Transparenz für alle Stakeholder.",
+     "verdict": 0,
+     "reason": "The context does not talk about a project dashboard or documentation."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum liefert strategische, technische, sicherheits‑ und ethische Expertise, die fundierte Entscheidungen und Risikominimierung ermöglicht.",
+     "verdict": 0,
+     "reason": "While the context says the centre supports informed decisions, it does not specify strategic, technical, security or ethical expertise."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet praxisnahe Schulungen, Zertifikate und Community‑Support, die kompetente Mitarbeitende und schnelle Umsetzung ermöglichen.",
+     "verdict": 0,
+     "reason": "The context mentions training but does not detail practical trainings, certificates or community support."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum stellt Cloud‑Sandbox, MLOps‑Tools, Daten‑Marketplace und Sicherheits‑Pakete bereit, die skalierbare, sichere und kosteneffiziente Entwicklungsumgebung ermöglichen.",
+     "verdict": 0,
+     "reason": "The context does not list these specific technical resources."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet Fördermittel‑Coaching, Netzwerk‑Vermittlung und Audits, die finanzielle Entlastung, Innovationspotenzial und Compliance‑Sicherheit gewährleisten.",
+     "verdict": 0,
+     "reason": "The context does not mention funding coaching, network mediation or audits."
+    },
+    {
+     "statement": "Alle Leistungen des KI‑Servicezentrums sind kostenfrei und darauf ausgerichtet, die Nutzer*innen des KI‑Servicezentrums zu befähigen, KI‑Projekte autonom, sicher und nachhaltig zu realisieren.",
+     "verdict": 1,
+     "reason": "The context explicitly states that all offers are free and aim to enable users to carry out KI projects autonomously, securely and sustainably."
+    },
+    {
+     "statement": "Implementieren Sie ein KI‑Governance‑Framework nach ISO/IEC 38507 und BSI‑IT‑Grundschutz, um langfristig Verantwortlichkeiten und Prozesse zu sichern.",
+     "verdict": 0,
+     "reason": "The context does not give a recommendation to implement a specific governance framework."
+    },
+    {
+     "statement": "Setzen Sie auf Explainable AI (XAI) und nutzen Sie Tools wie SHAP, LIME oder IBM‑AI‑Explainability‑360, um Modelle nachvollziehbar zu machen.",
+     "verdict": 0,
+     "reason": "The context does not mention Explainable AI or specific tools."
+    },
+    {
+     "statement": "Planen Sie Data‑Ops parallel zu MLOps, um Datenqualität, -herkunft und -governance von Anfang an zu sichern.",
+     "verdict": 0,
+     "reason": "The context does not discuss Data‑Ops or MLOps planning."
+    },
+    {
+     "statement": "Führen Sie regelmäßige Red‑Team‑Tests (Adversarial Attacks, Model‑Poisoning) durch, um die Robustheit von KI‑Modellen zu prüfen.",
+     "verdict": 0,
+     "reason": "The context does not mention Red‑Team testing."
+    },
+    {
+     "statement": "Erstellen Sie ein internes KI‑Center of Excellence (CoE), das das erworbene Wissen aus den Servicezentrum‑Angeboten bündelt und weiterverbreitet.",
+     "verdict": 0,
+     "reason": "The context does not propose creating an internal KI Center of Excellence."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet ein umfassendes, kostenfreies Portfolio aus Beratung, Weiterbildung und technischer Infrastruktur, das Unternehmen und Institutionen befähigt, KI eigenständig, sicher und verantwortungsbewusst zu entwickeln und zu betreiben.",
+     "verdict": 1,
+     "reason": "The context states that the centre provides free consulting, training and infrastructure to enable companies and institutions to develop and operate KI independently, securely and responsibly."
+    },
+    {
+     "statement": "Die Kombination dieser Angebote mit bewährten Best Practices und einer klaren Governance‑Strategie ermöglicht die erfolgreiche und nachhaltige Umsetzung von KI‑Initiativen.",
+     "verdict": 0,
+     "reason": "The context does not mention best practices or a governance strategy combined with the offers."
+    }
+   ],
+   "score": 0.04918032786885246
+  }
+ },
+ "manual/1/pipeline": {
+  "kind": "manual",
+  "i": 1,
+  "prompt": "pipeline",
+  "answer": "Ja. Laut Quelle 1 sind alle angebotenen Services kostenlos.",
+  "ac": {
+   "answer_claims": [
+    "The answer is yes.",
+    "According to source 1, all offered services are free."
+   ],
+   "reference_claims": [
+    "Alle Services sind kostenlos.",
+    "Das KI-Servicezentrum wird vom Bundesministerium für Forschung, Technologie und Raumfahrt gefördert."
+   ],
+   "TP": [
+    {
+     "statement": "The answer is yes.",
+     "reason": "The ground truth states that all services are free ('Alle Services sind kostenlos'), which directly confirms a 'yes' answer to the question."
+    },
+    {
+     "statement": "According to source 1, all offered services are free.",
+     "reason": "This statement paraphrases the ground truth claim that all services are free, so it is directly supported."
+    }
+   ],
+   "FP": [],
+   "FN": [
+    {
+     "statement": "Das KI-Servicezentrum wird vom Bundesministerium für Forschung, Technologie und Raumfahrt gefördert.",
+     "reason": "This information about the funding of the KI-Servicezentrum appears in the ground truth but is not mentioned in the answer."
+    }
+   ],
+   "f1": 0.8,
+   "similarity": 0.6554919397250116,
+   "score": 0.763872984931253
+  },
+  "faithfulness": {
+   "claims": [
+    {
+     "statement": "Yes.",
+     "verdict": 0,
+     "reason": "The statement \"Yes.\" does not convey any factual information that can be verified or inferred from the given context."
+    },
+    {
+     "statement": "All offered services are free according to source 1.",
+     "verdict": 1,
+     "reason": "The context explicitly states \"Alle unsere Angebote sind kostenlos,\" which directly supports the claim that all offered services are free."
+    }
+   ],
+   "score": 0.5
+  }
+ },
+ "manual/1/original": {
+  "kind": "manual",
+  "i": 1,
+  "prompt": "original",
+  "answer": "Ja. Laut **Quelle 1** heißt es ausdrücklich: „Alle unsere Angebote sind kostenlos.“ Damit wird angegeben, dass sämtliche angebotenen Services (Beratung, Weiterbildung, Infrastruktur usw.) kostenfrei bereitgestellt werden. Die anderen Quellen enthalten hierzu keine gegenteiligen Informationen.",
+  "ac": {
+   "answer_claims": [
+    "The answer to the question is yes.",
+    "Source 1 states explicitly that all offers are free.",
+    "All offered services, such as consulting, further education, and infrastructure, are provided free of charge.",
+    "The other sources do not contain any contradictory information."
+   ],
+   "reference_claims": [
+    "Alle Services sind kostenlos.",
+    "Das KI-Servicezentrum wird vom Bundesministerium für Forschung, Technologie und Raumfahrt gefördert."
+   ],
+   "TP": [
+    {
+     "statement": "The answer to the question is yes.",
+     "reason": "Ground truth states \"Alle Services sind kostenlos\", which directly confirms that the answer to the question is yes."
+    },
+    {
+     "statement": "Source 1 states explicitly that all offers are free.",
+     "reason": "Ground truth asserts that all services are free, supporting the claim that a source states all offers are free."
+    },
+    {
+     "statement": "All offered services, such as consulting, further education, and infrastructure, are provided free of charge.",
+     "reason": "Ground truth's statement that all services are free directly supports this detailed description of services being free."
+    }
+   ],
+   "FP": [
+    {
+     "statement": "The other sources do not contain any contradictory information.",
+     "reason": "Ground truth does not mention any information about other sources, so this claim is not supported by the provided ground truth."
+    }
+   ],
+   "FN": [
+    {
+     "statement": "Das KI-Servicezentrum wird vom Bundesministerium für Forschung, Technologie und Raumfahrt gefördert.",
+     "reason": "This fact about the funding source is present in the ground truth but absent from the answer."
+    }
+   ],
+   "f1": 0.75,
+   "similarity": 0.6186982327478757,
+   "score": 0.717174558186969
+  },
+  "faithfulness": {
+   "claims": [
+    {
+     "statement": "The answer to the question is yes.",
+     "verdict": 0,
+     "reason": "The context does not contain any question or answer, so this statement cannot be inferred."
+    },
+    {
+     "statement": "Source 1 explicitly states that all offers are free.",
+     "verdict": 1,
+     "reason": "The context explicitly says \"Alle unsere Angebote sind kostenlos,\" which directly states that all offers are free."
+    },
+    {
+     "statement": "The statement indicates that all offered services, including consulting, further education, and infrastructure, are provided free of charge.",
+     "verdict": 1,
+     "reason": "The context mentions consulting (Beratung), further education (Weiterbildung) and infrastructure (Infrastruktur) and then states that all offers are free, supporting this statement."
+    },
+    {
+     "statement": "Other sources do not contain any contradictory information.",
+     "verdict": 0,
+     "reason": "The context provides no information about other sources, so this cannot be inferred."
+    }
+   ],
+   "score": 0.5
+  }
+ },
+ "manual/1/offen": {
+  "kind": "manual",
+  "i": 1,
+  "prompt": "offen",
+  "answer": "## Kurzantwort  \n**Nein – nicht zwangsläufig.** Auch wenn ein Anbieter in seiner Kommunikation (wie in Quelle 1) behauptet, „alle Angebote seien kostenlos“, bedeutet das in der Praxis selten, dass keinerlei Kosten, Einschränkungen oder versteckten Aufwände entstehen.  \n\nIm Folgenden erkläre ich, warum das so ist, welche **typischen Kosten‑ und Risiko‑Faktoren** bei (apparently) kostenlosen KI‑Services auftreten können und welche **Best‑Practices** aus Sicht von IT‑Sicherheit und IT‑Grundschutz zu beachten sind, damit Sie fundierte Entscheidungen treffen können.\n\n---\n\n## 1. Was bedeutet „kostenlos“ in der Praxis?\n\n| Kosten‑/Aufwands‑Kategorie | Was steckt dahinter? | Typische Beispiele bei KI‑Services |\n|----------------------------|----------------------|-------------------------------------|\n| **Direkte Lizenz‑/Nutzungsgebühren** | Keine Rechnung für das reine Produkt. | Freie Nutzung von Entwicklungs‑ und Testumgebungen, aber kostenpflichtige Produktion‑Deployments. |\n| **Nutzungs‑ bzw. Verbrauchs‑Limits** | Gratis‑Kontingente (z. B. CPU‑Stunden, Speicher, API‑Aufrufe). | 100 GB Datenvolumen pro Monat, 10 000 API‑Calls, danach kostenpflichtig. |\n| **Support‑ und Service‑Level** | Basis‑Support (Forum, Dokumentation) ist kostenlos; Premium‑Support kostet. | 24/7 Telefon‑Support, garantierte Reaktionszeiten nur im kostenpflichtigen Tier. |\n| **Daten‑ und Speicher‑Kosten** | Datenhaltung, Backup, Archivierung können extra sein. | Langzeit‑Archivierung von Trainingsdaten, Export‑Kosten. |\n| **Integrations‑ und Betriebs‑Kosten** | Aufwand für Anbindung, Monitoring, Skalierung. | Aufbau von CI/CD‑Pipelines, Lizenzierung von Dritt‑Tools (z. B. Monitoring‑Agenten). |\n| **Compliance‑ und Sicherheits‑Kosten** | Audits, Zertifizierungen, Verschlüsselung, DSGVO‑Konformität. | Zusatzmodule für Verschlüsselung, Daten‑Residency‑Optionen. |\n| **Vertrags‑ und Rechts‑Kosten** | AGB, Lizenz‑ und Haftungsfragen. | Haftungsbeschränkungen, Daten‑Nutzungsrechte, Export‑Kontrollen. |\n\n> **Fazit:** „Kostenlos“ bezieht sich meist nur auf das **Grundpaket**. Sobald Sie das Angebot **skalieren**, **produktiv einsetzen** oder **spezielle Anforderungen** (z. B. Datenschutz, SLA) haben, treten zusätzliche Kosten auf.\n\n---\n\n## 2. Sicherheits‑ und Datenschutz‑Implikationen kostenloser KI‑Services\n\n### 2.1. IT‑Grundschutz‑Perspektive\nDer **IT‑Grundschutz** (BSI‑Standard 200‑2) verlangt, dass **alle** eingesetzten IT‑Komponenten – egal ob kommerziell, Open‑Source oder kostenlos – **nach dem gleichen Sicherheitsstandard** geschützt werden. Das bedeutet:\n\n| Grundschutz‑Baustein | Relevanz für kostenlose KI‑Services |\n|----------------------|--------------------------------------|\n| **ISMS‑Einrichtung** | Risiko‑Analyse muss auch kostenlose Angebote umfassen. |\n| **Zugriffskontrolle (SYS.1)** | Rollen‑ und Rechte‑Management muss implementiert werden, auch wenn das Tool „out‑of‑the‑box“ keine feinkörnige Steuerung bietet. |\n| **Datenschutz (DSB)** | Prüfen, wo Daten verarbeitet werden (EU‑Rechenzentrum vs. US‑Cloud) und ob eine Auftrags‑verarbeitungs‑Vereinbarung (AVV) existiert. |\n| **Verschlüsselung (CRY.1)** | Daten‑in‑Transit und –at‑Rest sollten verschlüsselt sein; bei kostenlosen Services ist das nicht immer garantiert. |\n| **System‑ und Netzwerk‑Monitoring (NET.1, OPS.1)** | Log‑ und Ereignis‑Monitoring muss nachgerüstet werden, wenn der Anbieter keine eigenen Funktionen bereitstellt. |\n| **Backup & Recovery (OPS.2)** | Prüfen, ob der Anbieter Backups anbietet; ggf. eigene Backup‑Strategie implementieren. |\n| **Patch‑Management (SYS.2)** | Auch bei SaaS‑Lösungen muss sichergestellt sein, dass das System regelmäßig gepatcht wird – ggf. durch den Anbieter, ggf. durch Sie. |\n\n### 2.2. Typische Risiken kostenloser Angebote\n| Risiko | Beschreibung | Mögliche Gegenmaßnahme |\n|--------|--------------|------------------------|\n| **Daten‑Leakage** | Daten können in unsicheren Rechenzentren liegen oder an Dritte weitergegeben werden. | Verschlüsselung vor dem Upload, AVV prüfen, Daten‑Minimierung. |\n| **Vendor‑Lock‑In** | Export von Modellen/Datensätzen ist schwierig oder kostenpflichtig. | Open‑Source‑Modelle, standardisierte Export‑Formate (ONNX, PMML). |\n| **Unzureichende SLA** | Keine garantierten Verfügbarkeiten → Produktionsausfall. | Hybrid‑Architektur: kritische Workloads on‑premises oder in zertifizierten Cloud‑Umgebungen. |\n| **Fehlende Audits/Zertifizierungen** | Keine ISO‑27001, BSI‑Grundschutz‑Zertifizierung → fehlende Nachweise für Audits. | Zusätzliche interne Audits, Nutzung von zertifizierten Dritt‑Anbietern. |\n| **Kosten‑Explosion bei Skalierung** | Gratis‑Kontingente schnell überschritten → überraschende Rechnungen. | Monitoring von Verbrauch, Alarme bei 80 %‑Auslastung, Kosten‑Modelle simulieren. |\n| **Rechtliche Unsicherheiten** | Lizenz‑ oder Urheber‑Rechte an generierten Inhalten unklar. | Lizenz‑Check, ggf. eigene IP‑Rechte sichern. |\n\n---\n\n## 3. Best‑Practices & Empfehlungen für die Nutzung (oder Bewertung) kostenloser KI‑Services\n\n### 3.1. Vor der Nutzung – **Due‑Diligence**\n1. **AGB & Datenschutz‑Bestimmungen prüfen**  \n   - Gibt es eine **Auftrags‑Verarbeitungs‑Vereinbarung (AVV)**?  \n   - Wo werden Daten physisch gespeichert? (EU‑Rechenzentrum bevorzugen)  \n   - Welche **Nutzungs‑ und Weitergaberechte** hat der Anbieter an Ihren Daten/Modellen?\n\n2. **Kosten‑Modell verstehen**  \n   - Dokumentieren Sie **Freikontingente** (CPU, GPU, Speicher, API‑Calls).  \n   - Simulieren Sie ein **„Break‑Even‑Scenario“**: ab wann entstehen Kosten?  \n   - Prüfen Sie **Preis‑Stufen** für Skalierung (z. B. pro GB, pro Stunde).\n\n3. **Sicherheits‑ und Compliance‑Check**  \n   - Ist der Dienst **ISO 27001**, **SOC 2**, **BSI‑Grundschutz** zertifiziert?  \n   - Gibt es **Verschlüsselungs‑Mechanismen** (TLS 1.2+, at‑rest AES‑256)?  \n   - Wie wird **Identity‑ & Access‑Management (IAM)** umgesetzt? (z. B. OAuth, SAML)\n\n4. **Risiko‑Analyse nach IT‑Grundschutz**  \n   - Erstellen Sie ein **Risiko‑Profil** (Vertraulichkeit, Integrität, Verfügbarkeit).  \n   - Ordnen Sie den Service einem **Schutzbedarf** (niedrig, mittel, hoch) zu.  \n   - Leiten Sie daraus **Kontrollen** ab (z. B. zusätzliche Verschlüsselung, Monitoring).\n\n### 3.2. Während der Nutzung – **Sicherer Betrieb**\n| Maßnahme | Warum wichtig? | Umsetzung (Beispiel) |\n|----------|----------------|----------------------|\n| **Zero‑Trust‑Zugriff** | Minimiert lateral movement | Nutzung von **MFA**, **Least‑Privilege** Rollen, IP‑Whitelisting. |\n| **End‑to‑End‑Verschlüsselung** | Schützt Daten bereits beim Upload | Daten vor dem Upload mit **AES‑256** verschlüsseln, Schlüssel im eigenen KMS verwalten. |\n| **Audit‑Logging** | Nachvollziehbarkeit & Forensik | Exportieren Sie Service‑Logs (z. B. CloudTrail‑ähnlich) in ein **SIEM**. |\n| **Monitoring von Verbrauch** | Verhindert Kosten‑Schocks | Setzen Sie **Alarme** (z. B. CloudWatch, Grafana) bei 70 %‑Auslastung des Gratis‑Kontingents. |\n| **Backup & Versionierung** | Schutz vor Datenverlust | Regelmäßige **Snapshots** Ihrer Trainingsdaten und Modelle in einem eigenen, gesicherten Speicher. |\n| **Patch‑ und Update‑Management** | Schließt Sicherheitslücken | Prüfen Sie, ob der Anbieter **automatisch patcht**; bei SaaS‑Modellen ist das meist gegeben, bei IaaS‑Modellen müssen Sie selbst handeln. |\n| **Penetration‑Testing / Red‑Team** | Validiert Sicherheitslage | Führen Sie **externe Tests** (z. B. OWASP‑API‑Security) gegen die API‑Endpoints durch. |\n\n### 3.3. Nach der Nutzung – **Exit‑Strategie & Portabilität**\n1. **Export‑ und Migration‑Plan**  \n   - Stellen Sie sicher, dass Modelle, Daten und Metadaten **in offenen Formaten** exportierbar sind.  \n   - Dokumentieren Sie **Abhängigkeiten** (z. B. proprietäre Bibliotheken).\n\n2. **Daten‑Löschung**  \n   - Fordern Sie eine **Best‑Effort‑Löschung** Ihrer Daten an (nach DSGVO Art. 17).  \n   - Prüfen Sie, ob der Anbieter **Nachweis** über die Löschung erbringen kann.\n\n3. **Kosten‑Abschluss**  \n   - Schließen Sie offene **Rechnungen** ab, prüfen Sie **Abrechnungs‑Perioden** (Monat, Quartal).  \n   - Deaktivieren Sie **Zugriffstoken** und **API‑Keys**, um unautorisierten Zugriff zu verhindern.\n\n---\n\n## 4. Praktische Checkliste für Entscheider\n\n| ✅ | Prüfpunkte (Kurzform) |\n|---|------------------------|\n| 1 | **Kosten‑Transparenz**: Freikontingente, Preis‑Stufen, mögliche Überraschungen? |\n| 2 | **Datenschutz**: AVV, Daten‑Residency, Verschlüsselung, DSGVO‑Konformität? |\n| 3 | **Sicherheitszertifikate**: ISO 27001, BSI‑Grundschutz, SOC 2? |\n| 4 | **Service‑Level**: SLA, Verfügbarkeit, Support‑Optionen? |\n| 5 | **Zugriffs‑ und Rollen‑Management**: IAM, MFA, Least‑Privilege? |\n| 6 | **Monitoring & Logging**: Logs exportierbar, SIEM‑Integration? |\n| 7 | **Backup & Recovery**: Eigene Backups, Wiederherstellungs‑Tests? |\n| 8 | **Exit‑Strategie**: Export‑Möglichkeiten, Datenlöschung, Portabilität? |\n| 9 | **Risiko‑Analyse**: IT‑Grundschutz‑Bausteine abgedeckt? |\n|10| **Rechtliche Rahmenbedingungen**: Lizenz, Urheber‑ und Haftungsfragen geklärt? |\n\n---\n\n## 5. Fazit – Sind *alle* Services kostenlos?\n\n- **Kurz:** Nein. Der Hinweis „Alle unsere Angebote sind kostenlos“ bezieht sich in der Regel nur auf **Basis‑Leistungen** (z. B. erste Entwicklungsumgebung, begrenzte API‑Calls). Sobald Sie **Produktions‑Workloads**, **größere Datenmengen**, **erweiterte Support‑Levels** oder **Compliance‑Anforderungen** benötigen, entstehen **zusätzliche Kosten** – sowohl finanziell als auch in Form von Aufwand für Sicherheit, Datenschutz und Betrieb.\n\n- **Langfristig:** Kosten‑freie Services können ein guter **Einstieg** sein, aber ein **nachhaltiger, sicherer Betrieb** erfordert immer ein **Risiko‑Management**, **Monitoring**, **Vertrags‑ und Datenschutz‑Prüfungen** sowie ggf. **Investitionen** in ergänzende Sicherheits‑ und Betriebs‑Tools.\n\n- **Empfehlung:** Nutzen Sie die kostenlosen Angebote zunächst für **Prototyping** und **Evaluation**. Sobald ein Projekt in die **Produktionsphase** übergeht, planen Sie **Budget**, **Sicherheits‑ und Compliance‑Maßnahmen** und prüfen Sie, ob ein kostenpflichtiges, zertifiziertes Service‑Level (oder ein eigener, on‑premises‑Betrieb) sinnvoller ist.\n\n---\n\n### Weiterführende Literatur & Ressourcen\n| Quelle | Inhalt |\n|--------|--------|\n| BSI‑Grundschutz‑Katalog (BSI‑Standard 200‑2) | Vollständige Bausteine für IT‑Sicherheit, inkl. Cloud‑ und SaaS‑Kontrollen. |\n| ISO/IEC 27001 – Information Security Management | Internationaler Standard für Informationssicherheits‑Managementsysteme. |\n| **OWASP API Security Top 10** | Checkliste für sichere API‑Implementierung – besonders relevant für KI‑APIs. |\n| **EU‑Datenschutz‑Verordnung (DSGVO) – Art. 28** | Auftragsverarbeitung, AVV‑Pflichten bei Cloud‑Diensten. |\n| **NIST SP 800‑53 Rev. 5 – Security and Privacy Controls for Information Systems and Organizations** | Ergänzende Controls, z. B. für Cloud‑Umgebungen. |\n| **Open‑Source‑KI‑Frameworks** (TensorFlow, PyTorch, ONNX) | Alternativen, die komplett kostenfrei und unter MIT/Apache‑Lizenzen stehen – ermöglichen volle Kontrolle über Daten und Modelle. |\n\n---\n\n**Zusammengefasst:**  \nKostenlose KI‑Services können ein wertvolles Sprungbrett sein, aber **„kostenlos“ bedeutet nicht „risikofrei“**. Durch eine strukturierte **Due‑Diligence**, konsequente **IT‑Grundschutz‑Umsetzung** und klare **Exit‑Strategien** stellen Sie sicher, dass Sie nicht nur die finanziellen, sondern auch die sicherheits‑ und compliance‑relevanten Aspekte im Griff haben.",
+  "ac": {
+   "answer_claims": [
+    "Nicht alle Services sind zwangsläufig kostenlos.",
+    "Ein Anbieter kann in der Kommunikation behaupten, dass alle Angebote kostenlos seien, aber in der Praxis entstehen selten keinerlei Kosten, Einschränkungen oder versteckte Aufwände.",
+    "Typische Kosten‑ und Risiko‑Faktoren bei (apparently) kostenlosen KI‑Services können auftreten.",
+    "Best‑Practices aus Sicht von IT‑Sicherheit und IT‑Grundschutz sollten beachtet werden, um fundierte Entscheidungen zu treffen.",
+    "Direkte Lizenz‑/Nutzungsgebühren bedeuten, dass für das reine Produkt keine Rechnung gestellt wird.",
+    "Freie Nutzung von Entwicklungs‑ und Testumgebungen ist möglich, aber Produktion‑Deployments können kostenpflichtig sein.",
+    "Nutzungs‑ bzw. Verbrauchs‑Limits bieten Gratis‑Kontingente wie CPU‑Stunden, Speicher oder API‑Calls.",
+    "Nach Überschreiten von 100 GB Datenvolumen pro Monat oder 10 000 API‑Calls entstehen Kosten.",
+    "Basis‑Support über Forum und Dokumentation ist kostenlos, während Premium‑Support kostenpflichtig ist.",
+    "24/7 Telefon‑Support und garantierte Reaktionszeiten sind nur im kostenpflichtigen Tier verfügbar.",
+    "Daten‑ und Speicher‑Kosten können für Datenhaltung, Backup und Archivierung extra anfallen.",
+    "Langzeit‑Archivierung von Trainingsdaten und Export‑Kosten sind Beispiele für solche Kosten.",
+    "Integrations‑ und Betriebs‑Kosten entstehen durch Aufwand für Anbindung, Monitoring und Skalierung.",
+    "Aufbau von CI/CD‑Pipelines und Lizenzierung von Dritt‑Tools wie Monitoring‑Agenten sind Beispiele.",
+    "Compliance‑ und Sicherheits‑Kosten umfassen Audits, Zertifizierungen, Verschlüsselung und DSGVO‑Konformität.",
+    "Zusatzmodule für Verschlüsselung und Daten‑Residency‑Optionen sind Beispiele.",
+    "Vertrags‑ und Rechts‑Kosten betreffen AGB, Lizenz‑ und Haftungsfragen.",
+    "Haftungsbeschränkungen, Daten‑Nutzungsrechte und Export‑Kontrollen sind Beispiele.",
+    "Der Begriff „Kostenlos“ bezieht sich meist nur auf das Grundpaket.",
+    "Bei Skalierung, produktivem Einsatz oder speziellen Anforderungen wie Datenschutz oder SLA entstehen zusätzliche Kosten.",
+    "Der IT‑Grundschutz (BSI‑Standard 200‑2) verlangt, dass alle eingesetzten IT‑Komponenten – unabhängig von kommerzieller, Open‑Source‑ oder kostenloser Herkunft – nach dem gleichen Sicherheitsstandard geschützt werden.",
+    "Risiko‑Analyse muss auch kostenlose Angebote umfassen.",
+    "Rollen‑ und Rechte‑Management muss implementiert werden, auch wenn das Tool out‑of‑the‑box keine feinkörnige Steuerung bietet.",
+    "Datenschutz erfordert Prüfung, wo Daten verarbeitet werden (EU‑Rechenzentrum vs. US‑Cloud) und ob eine Auftrags‑verarbeitungs‑Vereinbarung (AVV) existiert.",
+    "Daten‑in‑Transit und –at‑Rest sollten verschlüsselt sein; bei kostenlosen Services ist das nicht immer garantiert.",
+    "Log‑ und Ereignis‑Monitoring muss nachgerüstet werden, wenn der Anbieter keine eigenen Funktionen bereitstellt.",
+    "Prüfung, ob der Anbieter Backups anbietet, ist erforderlich; ggf. muss eigene Backup‑Strategie implementiert werden.",
+    "Sicherstellung, dass das System regelmäßig gepatcht wird, ist notwendig – entweder durch den Anbieter oder durch den Nutzer.",
+    "Daten‑Leakage kann auftreten, wenn Daten in unsicheren Rechenzentren liegen oder an Dritte weitergegeben werden.",
+    "Verschlüsselung vor dem Upload, Prüfung einer AVV und Daten‑Minimierung können dem Risiko entgegenwirken.",
+    "Vendor‑Lock‑In kann entstehen, wenn Export von Modellen oder Datensätzen schwierig oder kostenpflichtig ist.",
+    "Open‑Source‑Modelle und standardisierte Export‑Formate wie ONNX oder PMML können das Risiko mindern.",
+    "Unzureichende SLA kann zu fehlenden garantierten Verfügbarkeiten und Produktionsausfällen führen.",
+    "Hybrid‑Architektur mit kritischen Workloads on‑premises oder in zertifizierten Cloud‑Umgebungen kann das Risiko mindern.",
+    "Fehlende Audits oder Zertifizierungen wie ISO‑27001 oder BSI‑Grundschutz können fehlende Nachweise für Audits bedeuten.",
+    "Zusätzliche interne Audits und Nutzung von zertifizierten Dritt‑Anbietern können das Risiko mindern.",
+    "Kosten‑Explosion bei Skalierung kann auftreten, wenn Gratis‑Kontingente schnell überschritten werden.",
+    "Monitoring von Verbrauch und Alarme bei 80 %‑Auslastung sowie Simulation von Kosten‑Modellen können das Risiko mindern.",
+    "Rechtliche Unsicherheiten können bei Lizenz‑ oder Urheber‑Rechten an generierten Inhalten auftreten.",
+    "Lizenz‑Check und Sicherung eigener IP‑Rechte können das Risiko mindern.",
+    "AGB und Datenschutz‑Bestimmungen müssen geprüft werden.",
+    "Eine Auftrags‑Verarbeitungs‑Vereinbarung (AVV) sollte vorhanden sein.",
+    "Physischer Speicherort der Daten sollte bevorzugt im EU‑Rechenzentrum liegen.",
+    "Nutzungs‑ und Weitergaberechte des Anbieters an Daten und Modellen sollten geklärt werden.",
+    "Kosten‑Modell muss verstanden werden.",
+    "Freikontingente für CPU, GPU, Speicher und API‑Calls sollten dokumentiert werden.",
+    "Ein Break‑Even‑Scenario sollte simuliert werden, um den Punkt zu bestimmen, ab dem Kosten entstehen.",
+    "Preis‑Stufen für Skalierung sollten geprüft werden.",
+    "Sicherheits‑ und Compliance‑Check muss durchgeführt werden.",
+    "Zertifizierungen wie ISO 27001, SOC 2 oder BSI‑Grundschutz sollten vorhanden sein.",
+    "Verschlüsselungs‑Mechanismen wie TLS 1.2+ und at‑rest AES‑256 sollten vorhanden sein.",
+    "Identity‑ & Access‑Management (IAM) sollte über Mechanismen wie OAuth oder SAML umgesetzt sein.",
+    "Risiko‑Analyse nach IT‑Grundschutz muss durchgeführt werden.",
+    "Ein Risiko‑Profil für Vertraulichkeit, Integrität und Verfügbarkeit sollte erstellt werden.",
+    "Der Service sollte einem Schutzbedarf (niedrig, mittel, hoch) zugeordnet werden.",
+    "Kontrollen wie zusätzliche Verschlüsselung und Monitoring sollten aus dem Risiko‑Profil abgeleitet werden.",
+    "Zero‑Trust‑Zugriff minimiert lateral movement.",
+    "MFA, Least‑Privilege Rollen und IP‑Whitelisting implementieren.",
+    "End‑to‑End‑Verschlüsselung schützt Daten bereits beim Upload.",
+    "Daten vor dem Upload mit AES‑256 verschlüsseln und Schlüssel im eigenen KMS verwalten.",
+    "Audit‑Logging ermöglicht Nachvollziehbarkeit und Forensik.",
+    "Service‑Logs in ein SIEM exportieren.",
+    "Monitoring von Verbrauch verhindert Kosten‑Schocks.",
+    "Alarme bei 70 %‑Auslastung des Gratis‑Kontingents setzen.",
+    "Backup und Versionierung schützen vor Datenverlust.",
+    "Regelmäßige Snapshots von Trainingsdaten und Modellen in eigenem, gesichertem Speicher erstellen.",
+    "Patch‑ und Update‑Management schließt Sicherheitslücken.",
+    "Prüfen, ob der Anbieter automatisch patcht; bei SaaS‑Modellen ist das meist gegeben, bei IaaS‑Modellen muss selbst gehandelt werden.",
+    "Penetration‑Testing oder Red‑Team‑Tests validieren die Sicherheitslage.",
+    "Externe Tests wie OWASP‑API‑Security gegen API‑Endpoints durchführen.",
+    "Export‑ und Migration‑Plan muss sicherstellen, dass Modelle, Daten und Metadaten in offenen Formaten exportierbar sind.",
+    "Abhängigkeiten wie proprietäre Bibliotheken müssen dokumentiert werden.",
+    "Daten‑Löschung erfordert Best‑Effort‑Löschung nach DSGVO Art. 17.",
+    "Nachweis über die Löschung sollte vom Anbieter erbracht werden können.",
+    "Kosten‑Abschluss erfordert Schließen offener Rechnungen und Prüfung von Abrechnungs‑Perioden.",
+    "Zugriffstoken und API‑Keys sollten deaktiviert werden, um unautorisierten Zugriff zu verhindern.",
+    "Kosten‑Transparenz prüfen: Freikontingente, Preis‑Stufen, mögliche Überraschungen.",
+    "Datenschutz prüfen: AVV, Daten‑Residency, Verschlüsselung, DSGVO‑Konformität.",
+    "Sicherheitszertifikate prüfen: ISO 27001, BSI‑Grundschutz, SOC 2.",
+    "Service‑Level prüfen: SLA, Verfügbarkeit, Support‑Optionen.",
+    "Zugriffs‑ und Rollen‑Management prüfen: IAM, MFA, Least‑Privilege.",
+    "Monitoring & Logging prüfen: Logs exportierbar, SIEM‑Integration.",
+    "Backup & Recovery prüfen: Eigene Backups, Wiederherstellungs‑Tests.",
+    "Exit‑Strategie prüfen: Export‑Möglichkeiten, Datenlöschung, Portabilität.",
+    "Risiko‑Analyse prüfen: IT‑Grundschutz‑Bausteine abgedeckt.",
+    "Rechtliche Rahmenbedingungen prüfen: Lizenz, Urheber‑ und Haftungsfragen geklärt.",
+    "Kurz: Nein. Der Hinweis „Alle unsere Angebote sind kostenlos“ bezieht sich in der Regel nur auf Basis‑Leistungen.",
+    "Produktions‑Workloads, größere Datenmengen, erweiterte Support‑Levels oder Compliance‑Anforderungen führen zu zusätzlichen Kosten.",
+    "Langfristig können kosten‑freie Services ein guter Einstieg sein, aber ein nachhaltiger, sicherer Betrieb erfordert Risiko‑Management, Monitoring, Vertrags‑ und Datenschutz‑Prüfungen sowie ggf. Investitionen in ergänzende Sicherheits‑ und Betriebs‑Tools.",
+    "Empfehlung: Kostenlose Angebote zunächst für Prototyping und Evaluation nutzen.",
+    "Sobald ein Projekt in die Produktionsphase übergeht, Budget, Sicherheits‑ und Compliance‑Maßnahmen planen und prüfen, ob ein kostenpflichtiges, zertifiziertes Service‑Level oder ein eigener on‑premises‑Betrieb sinnvoller ist."
+   ],
+   "reference_claims": [
+    "Alle Services sind kostenlos.",
+    "Das KI-Servicezentrum wird vom Bundesministerium für Forschung, Technologie und Raumfahrt gefördert."
+   ],
+   "TP": [],
+   "FP": [
+    {
+     "statement": "Nicht alle Services sind zwangsläufig kostenlos.",
+     "reason": "The ground truth states that all services are free, so this contradictory statement is not supported."
+    },
+    {
+     "statement": "Ein Anbieter kann in der Kommunikation behaupten, dass alle Angebote kostenlos seien, aber in der Praxis entstehen selten keinerlei Kosten, Einschränkungen oder versteckte Aufwände.",
+     "reason": "No ground‑truth statement supports this claim; it contradicts the ground truth that all services are free."
+    },
+    {
+     "statement": "Typische Kosten‑ und Risiko‑Faktoren bei (apparently) kostenlosen KI‑Services können auftreten.",
+     "reason": "The ground truth does not mention any cost or risk factors; therefore the statement is not supported."
+    },
+    {
+     "statement": "Best‑Practices aus Sicht von IT‑Sicherheit und IT‑Grundschutz sollten beachtet werden, um fundierte Entscheidungen zu treffen.",
+     "reason": "No ground‑truth statement addresses best‑practice recommendations."
+    },
+    {
+     "statement": "Direkte Lizenz‑/Nutzungsgebühren bedeuten, dass für das reine Produkt keine Rechnung gestellt wird.",
+     "reason": "The ground truth only says all services are free; it does not specify details about licensing fees."
+    },
+    {
+     "statement": "Freie Nutzung von Entwicklungs‑ und Testumgebungen ist möglich, aber Produktion‑Deployments können kostenpflichtig sein.",
+     "reason": "Not directly supported by the ground truth."
+    },
+    {
+     "statement": "Nutzungs‑ bzw. Verbrauchs‑Limits bieten Gratis‑Kontingente wie CPU‑Stunden, Speicher oder API‑Calls.",
+     "reason": "No ground‑truth statement mentions usage limits or free quotas."
+    },
+    {
+     "statement": "Nach Überschreiten von 100 GB Datenvolumen pro Monat oder 10 000 API‑Calls entstehen Kosten.",
+     "reason": "Not covered by the ground truth."
+    },
+    {
+     "statement": "Basis‑Support über Forum und Dokumentation ist kostenlos, während Premium‑Support kostenpflichtig ist.",
+     "reason": "Ground truth does not discuss support tiers."
+    },
+    {
+     "statement": "24/7 Telefon‑Support und garantierte Reaktionszeiten sind nur im kostenpflichtigen Tier verfügbar.",
+     "reason": "Not supported by the ground truth."
+    },
+    {
+     "statement": "Daten‑ und Speicher‑Kosten können für Datenhaltung, Backup und Archivierung extra anfallen.",
+     "reason": "Ground truth does not mention additional data or storage costs."
+    },
+    {
+     "statement": "Langzeit‑Archivierung von Trainingsdaten und Export‑Kosten sind Beispiele für solche Kosten.",
+     "reason": "No supporting ground‑truth statement."
+    },
+    {
+     "statement": "Integrations‑ und Betriebs‑Kosten entstehen durch Aufwand für Anbindung, Monitoring und Skalierung.",
+     "reason": "Not supported by the ground truth."
+    },
+    {
+     "statement": "Aufbau von CI/CD‑Pipelines und Lizenzierung von Dritt‑Tools wie Monitoring‑Agenten sind Beispiele.",
+     "reason": "Ground truth does not address CI/CD pipelines or third‑party tool licensing."
+    },
+    {
+     "statement": "Compliance‑ und Sicherheits‑Kosten umfassen Audits, Zertifizierungen, Verschlüsselung und DSGVO‑Konformität.",
+     "reason": "No ground‑truth statement mentions compliance or security costs."
+    },
+    {
+     "statement": "Zusatzmodule für Verschlüsselung und Daten‑Residency‑Optionen sind Beispiele.",
+     "reason": "Not covered by the ground truth."
+    },
+    {
+     "statement": "Vertrags‑ und Rechts‑Kosten betreffen AGB, Lizenz‑ und Haftungsfragen.",
+     "reason": "Ground truth does not discuss contractual or legal costs."
+    },
+    {
+     "statement": "Haftungsbeschränkungen, Daten‑Nutzungsrechte und Export‑Kontrollen sind Beispiele.",
+     "reason": "Not supported by the ground truth."
+    },
+    {
+     "statement": "Der Begriff „Kostenlos“ bezieht sich meist nur auf das Grundpaket.",
+     "reason": "Ground truth simply states all services are free; it does not qualify the term."
+    },
+    {
+     "statement": "Bei Skalierung, produktivem Einsatz oder speziellen Anforderungen wie Datenschutz oder SLA entstehen zusätzliche Kosten.",
+     "reason": "No supporting statement in the ground truth."
+    },
+    {
+     "statement": "Der IT‑Grundschutz (BSI‑Standard 200‑2) verlangt, dass alle eingesetzten IT‑Komponenten – unabhängig von kommerzieller, Open‑Source‑oder kostenloser Herkunft – nach dem gleichen Sicherheitsstandard geschützt werden.",
+     "reason": "Ground truth does not mention IT‑Grundschutz requirements."
+    },
+    {
+     "statement": "Risiko‑Analyse muss auch kostenlose Angebote umfassen.",
+     "reason": "Not mentioned in the ground truth."
+    },
+    {
+     "statement": "Rollen‑ und Rechte‑Management muss implementiert werden, auch wenn das Tool out‑of‑the‑box keine feinkörnige Steuerung bietet.",
+     "reason": "Ground truth does not address role‑management."
+    },
+    {
+     "statement": "Datenschutz erfordert Prüfung, wo Daten verarbeitet werden (EU‑Rechenzentrum vs. US‑Cloud) und ob eine Auftrags‑verarbeitungs‑Vereinbarung (AVV) existiert.",
+     "reason": "Not supported by the ground truth."
+    },
+    {
+     "statement": "Daten‑in‑Transit und –at‑Rest sollten verschlüsselt sein; bei kostenlosen Services ist das nicht immer garantiert.",
+     "reason": "Ground truth does not discuss encryption."
+    },
+    {
+     "statement": "Log‑ und Ereignis‑Monitoring muss nachgerüstet werden, wenn der Anbieter keine eigenen Funktionen bereitstellt.",
+     "reason": "No supporting ground‑truth statement."
+    },
+    {
+     "statement": "Prüfung, ob der Anbieter Backups anbietet, ist erforderlich; ggf. muss eigene Backup‑Strategie implementiert werden.",
+     "reason": "Ground truth does not mention backup requirements."
+    },
+    {
+     "statement": "Sicherstellung, dass das System regelmäßig gepatcht wird, ist notwendig – entweder durch den Anbieter oder durch den Nutzer.",
+     "reason": "Not covered by the ground truth."
+    },
+    {
+     "statement": "Daten‑Leakage kann auftreten, wenn Daten in unsicheren Rechenzentren liegen oder an Dritte weitergegeben werden.",
+     "reason": "Ground truth does not discuss data leakage."
+    },
+    {
+     "statement": "Verschlüsselung vor dem Upload, Prüfung einer AVV und Daten‑Minimierung können dem Risiko entgegenwirken.",
+     "reason": "No supporting statement in the ground truth."
+    },
+    {
+     "statement": "Vendor‑Lock‑In kann entstehen, wenn Export von Modellen oder Datensätzen schwierig oder kostenpflichtig ist.",
+     "reason": "Ground truth does not address vendor lock‑in."
+    },
+    {
+     "statement": "Open‑Source‑Modelle und standardisierte Export‑Formate wie ONNX oder PMML können das Risiko mindern.",
+     "reason": "Not supported by the ground truth."
+    },
+    {
+     "statement": "Unzureichende SLA kann zu fehlenden garantierten Verfügbarkeiten und Produktionsausfällen führen.",
+     "reason": "Ground truth does not mention SLA issues."
+    },
+    {
+     "statement": "Hybrid‑Architektur mit kritischen Workloads on‑premises oder in zertifizierten Cloud‑Umgebungen kann das Risiko mindern.",
+     "reason": "No supporting ground‑truth statement."
+    },
+    {
+     "statement": "Fehlende Audits oder Zertifizierungen wie ISO‑27001 oder BSI‑Grundschutz können fehlende Nachweise für Audits bedeuten.",
+     "reason": "Ground truth does not discuss audits or certifications."
+    },
+    {
+     "statement": "Zusätzliche interne Audits und Nutzung von zertifizierten Dritt‑Anbietern können das Risiko mindern.",
+     "reason": "Not covered by the ground truth."
+    },
+    {
+     "statement": "Kosten‑Explosion bei Skalierung kann auftreten, wenn Gratis‑Kontingente schnell überschritten werden.",
+     "reason": "Ground truth does not mention cost explosions."
+    },
+    {
+     "statement": "Monitoring von Verbrauch und Alarme bei 80 %‑Auslastung sowie Simulation von Kosten‑Modellen können das Risiko mindern.",
+     "reason": "No supporting statement in the ground truth."
+    },
+    {
+     "statement": "Rechtliche Unsicherheiten können bei Lizenz‑ oder Urheber‑Rechten an generierten Inhalten auftreten.",
+     "reason": "Ground truth does not address legal uncertainties."
+    },
+    {
+     "statement": "Lizenz‑Check und Sicherung eigener IP‑Rechte können das Risiko mindern.",
+     "reason": "Not supported by the ground truth."
+    },
+    {
+     "statement": "AGB und Datenschutz‑Bestimmungen müssen geprüft werden.",
+     "reason": "Ground truth does not mention AGB or data‑protection checks."
+    },
+    {
+     "statement": "Eine Auftrags‑Verarbeitungs‑Vereinbarung (AVV) sollte vorhanden sein.",
+     "reason": "No supporting ground‑truth statement."
+    },
+    {
+     "statement": "Physischer Speicherort der Daten sollte bevorzugt im EU‑Rechenzentrum liegen.",
+     "reason": "Ground truth does not discuss data residency."
+    },
+    {
+     "statement": "Nutzungs‑ und Weitergaberechte des Anbieters an Daten und Modellen sollten geklärt werden.",
+     "reason": "Not covered by the ground truth."
+    },
+    {
+     "statement": "Kosten‑Modell muss verstanden werden.",
+     "reason": "Ground truth does not mention cost models."
+    },
+    {
+     "statement": "Freikontingente für CPU, GPU, Speicher und API‑Calls sollten dokumentiert werden.",
+     "reason": "No supporting statement in the ground truth."
+    },
+    {
+     "statement": "Ein Break‑Even‑Scenario sollte simuliert werden, um den Punkt zu bestimmen, ab dem Kosten entstehen.",
+     "reason": "Ground truth does not discuss break‑even analysis."
+    },
+    {
+     "statement": "Preis‑Stufen für Skalierung sollten geprüft werden.",
+     "reason": "Not supported by the ground truth."
+    },
+    {
+     "statement": "Sicherheits‑ und Compliance‑Check muss durchgeführt werden.",
+     "reason": "Ground truth does not mention such checks."
+    },
+    {
+     "statement": "Zertifizierungen wie ISO 27001, SOC 2 oder BSI‑Grundschutz sollten vorhanden sein.",
+     "reason": "No supporting ground‑truth statement."
+    },
+    {
+     "statement": "Verschlüsselungs‑Mechanismen wie TLS 1.2+ und at‑rest AES‑256 sollten vorhanden sein.",
+     "reason": "Ground truth does not address encryption mechanisms."
+    },
+    {
+     "statement": "Identity‑ & Access‑Management (IAM) sollte über Mechanismen wie OAuth oder SAML umgesetzt sein.",
+     "reason": "Not covered by the ground truth."
+    },
+    {
+     "statement": "Risiko‑Analyse nach IT‑Grundschutz muss durchgeführt werden.",
+     "reason": "Ground truth does not mention risk analysis."
+    },
+    {
+     "statement": "Ein Risiko‑Profil für Vertraulichkeit, Integrität und Verfügbarkeit sollte erstellt werden.",
+     "reason": "No supporting statement in the ground truth."
+    },
+    {
+     "statement": "Der Service sollte einem Schutzbedarf (niedrig, mittel, hoch) zugeordnet werden.",
+     "reason": "Ground truth does not discuss protection levels."
+    },
+    {
+     "statement": "Kontrollen wie zusätzliche Verschlüsselung und Monitoring sollten aus dem Risiko‑Profil abgeleitet werden.",
+     "reason": "Not supported by the ground truth."
+    },
+    {
+     "statement": "Zero‑Trust‑Zugriff minimiert lateral movement.",
+     "reason": "Ground truth does not mention zero‑trust."
+    },
+    {
+     "statement": "MFA, Least‑Privilege Rollen und IP‑Whitelisting implementieren.",
+     "reason": "No supporting ground‑truth statement."
+    },
+    {
+     "statement": "End‑to‑End‑Verschlüsselung schützt Daten bereits beim Upload.",
+     "reason": "Ground truth does not discuss end‑to‑end encryption."
+    },
+    {
+     "statement": "Daten vor dem Upload mit AES‑256 verschlüsseln und Schlüssel im eigenen KMS verwalten.",
+     "reason": "Not covered by the ground truth."
+    },
+    {
+     "statement": "Audit‑Logging ermöglicht Nachvollziehbarkeit und Forensik.",
+     "reason": "Ground truth does not mention audit logging."
+    },
+    {
+     "statement": "Service‑Logs in ein SIEM exportieren.",
+     "reason": "No supporting statement in the ground truth."
+    },
+    {
+     "statement": "Monitoring von Verbrauch verhindert Kosten‑Shocks.",
+     "reason": "Ground truth does not discuss consumption monitoring."
+    },
+    {
+     "statement": "Alarme bei 70 %‑Auslastung des Gratis‑Kontingents setzen.",
+     "reason": "Not supported by the ground truth."
+    },
+    {
+     "statement": "Backup und Versionierung schützen vor Datenverlust.",
+     "reason": "Ground truth does not mention backup or versioning."
+    },
+    {
+     "statement": "Regelmäßige Snapshots von Trainingsdaten und Modellen in eigenem, gesichertem Speicher erstellen.",
+     "reason": "No supporting ground‑truth statement."
+    },
+    {
+     "statement": "Patch‑ und Update‑Management schließt Sicherheitslücken.",
+     "reason": "Ground truth does not discuss patch management."
+    },
+    {
+     "statement": "Prüfen, ob der Anbieter automatisch patcht; bei SaaS‑Modellen ist das meist gegeben, bei IaaS‑Modellen muss selbst gehandelt werden.",
+     "reason": "Not covered by the ground truth."
+    },
+    {
+     "statement": "Penetration‑Testing oder Red‑Team‑Tests validieren die Sicherheitslage.",
+     "reason": "Ground truth does not mention penetration testing."
+    },
+    {
+     "statement": "Externe Tests wie OWASP‑API‑Security gegen API‑Endpoints durchführen.",
+     "reason": "No supporting statement in the ground truth."
+    },
+    {
+     "statement": "Export‑ und Migration‑Plan muss sicherstellen, dass Modelle, Daten und Metadaten in offenen Formaten exportierbar sind.",
+     "reason": "Ground truth does not discuss export or migration plans."
+    },
+    {
+     "statement": "Abhängigkeiten wie proprietäre Bibliotheken müssen dokumentiert werden.",
+     "reason": "Not supported by the ground truth."
+    },
+    {
+     "statement": "Daten‑Löschung erfordert Best‑Effort‑Löschung nach DSGVO Art. 17.",
+     "reason": "Ground truth does not mention data deletion."
+    },
+    {
+     "statement": "Nachweis über die Löschung sollte vom Anbieter erbracht werden können.",
+     "reason": "No supporting ground‑truth statement."
+    },
+    {
+     "statement": "Kosten‑Abschluss erfordert Schließen offener Rechnungen und Prüfung von Abrechnungs‑Perioden.",
+     "reason": "Ground truth does not discuss cost closure."
+    },
+    {
+     "statement": "Zugriffstoken und API‑Keys sollten deaktiviert werden, um unautorisierten Zugriff zu verhindern.",
+     "reason": "Not covered by the ground truth."
+    },
+    {
+     "statement": "Kosten‑Transparenz prüfen: Freikontingente, Preis‑Stufen, mögliche Überraschungen.",
+     "reason": "Ground truth does not mention cost transparency."
+    },
+    {
+     "statement": "Datenschutz prüfen: AVV, Daten‑Residency, Verschlüsselung, DSGVO‑Konformität.",
+     "reason": "No supporting statement in the ground truth."
+    },
+    {
+     "statement": "Sicherheitszertifikate prüfen: ISO 27001, BSI‑Grundschutz, SOC 2.",
+     "reason": "Ground truth does not discuss security certificates."
+    },
+    {
+     "statement": "Service‑Level prüfen: SLA, Verfügbarkeit, Support‑Optionen.",
+     "reason": "Not supported by the ground truth."
+    },
+    {
+     "statement": "Zugriffs‑ und Rollen‑Management prüfen: IAM, MFA, Least‑Privilege.",
+     "reason": "Ground truth does not mention access‑management checks."
+    },
+    {
+     "statement": "Monitoring & Logging prüfen: Logs exportierbar, SIEM‑Integration.",
+     "reason": "No supporting ground‑truth statement."
+    },
+    {
+     "statement": "Backup & Recovery prüfen: Eigene Backups, Wiederherstellungs‑Tests.",
+     "reason": "Ground truth does not discuss backup & recovery."
+    },
+    {
+     "statement": "Exit‑Strategie prüfen: Export‑Möglichkeiten, Datenlöschung, Portabilität.",
+     "reason": "Not covered by the ground truth."
+    },
+    {
+     "statement": "Risiko‑Analyse prüfen: IT‑Grundschutz‑Bausteine abgedeckt.",
+     "reason": "Ground truth does not mention risk‑analysis checks."
+    },
+    {
+     "statement": "Rechtliche Rahmenbedingungen prüfen: Lizenz, Urheber‑ und Haftungsfragen geklärt.",
+     "reason": "No supporting statement in the ground truth."
+    },
+    {
+     "statement": "Kurz: Nein. Der Hinweis „Alle unsere Angebote sind kostenlos“ bezieht sich in der Regel nur auf Basis‑Leistungen.",
+     "reason": "Although it mentions the phrase \"Alle unsere Angebote sind kostenlos\", it adds a qualification that contradicts the ground truth's absolute claim, so it is not directly supported."
+    },
+    {
+     "statement": "Produktions‑Workloads, größere Datenmengen, erweiterte Support‑Levels oder Compliance‑Anforderungen führen zu zusätzlichen Kosten.",
+     "reason": "Ground truth does not discuss production workloads or additional costs."
+    },
+    {
+     "statement": "Langfristig können kosten‑freie Services ein guter Einstieg sein, aber ein nachhaltiger, sicherer Betrieb erfordert Risiko‑Management, Monitoring, Vertrags‑ und Datenschutz‑Prüfungen sowie ggf. Investitionen in ergänzende Sicherheits‑ und Betriebs‑Tools.",
+     "reason": "Not supported by the ground truth."
+    },
+    {
+     "statement": "Empfehlung: Kostenlose Angebote zunächst für Prototyping und Evaluation nutzen.",
+     "reason": "Ground truth does not provide this recommendation."
+    },
+    {
+     "statement": "Sobald ein Projekt in die Produktionsphase übergeht, Budget, Sicherheits‑ und Compliance‑Maßnahmen planen und prüfen, ob ein kostenpflichtiges, zertifiziertes Service‑Level oder ein eigener on‑premises‑Betrieb sinnvoller ist.",
+     "reason": "No supporting statement in the ground truth."
+    }
+   ],
+   "FN": [
+    {
+     "statement": "Alle Services sind kostenlos.",
+     "reason": "This statement from the ground truth does not appear in the answer."
+    },
+    {
+     "statement": "Das KI-Servicezentrum wird vom Bundesministerium für Forschung, Technologie und Raumfahrt gefördert.",
+     "reason": "This statement from the ground truth is missing from the answer."
+    }
+   ],
+   "f1": 0.0,
+   "similarity": 0.6884612425848781,
+   "score": 0.17211531064621952
+  },
+  "faithfulness": {
+   "claims": [
+    {
+     "statement": "Die Antwort lautet: Nein, nicht zwangsläufig.",
+     "verdict": 0,
+     "reason": "The context only states that all offers are free; it does not provide any conditional or negating information to support this statement."
+    },
+    {
+     "statement": "Eine Behauptung eines Anbieters, dass alle Angebote kostenlos seien, bedeutet in der Praxis selten, dass keinerlei Kosten, Einschränkungen oder versteckte Aufwände entstehen.",
+     "verdict": 0,
+     "reason": "The context asserts that all offers are free but does not discuss practical limitations or hidden costs; therefore this claim cannot be directly inferred."
+    },
+    {
+     "statement": "Im Folgenden wird erklärt, warum die Behauptung so ist, welche typischen Kosten‑ und Risiko‑Faktoren bei kostenlosen KI‑Services auftreten können.",
+     "verdict": 0,
+     "reason": "The context does not contain any explanation of typical cost or risk factors; this statement is not directly supported."
+    },
+    {
+     "statement": "Im Folgenden werden Best‑Practices aus Sicht von IT‑Sicherheit und IT‑Grundschutz beschrieben, damit fundierte Entscheidungen getroffen werden können.",
+     "verdict": 0,
+     "reason": "The context does not mention best‑practices, IT‑security or IT‑Grundschutz; the statement cannot be inferred."
+    },
+    {
+     "statement": "Direkte Lizenz‑ und Nutzungsgebühren bedeuten, dass keine Rechnung für das reine Produkt gestellt wird.",
+     "verdict": 0,
+     "reason": "The context only says all offers are free; it does not discuss licensing or fee structures, so this specific claim is not directly inferable."
+    },
+    {
+     "statement": "Freie Nutzung von Entwicklungs‑ und Testumgebungen ist möglich, während Produktion‑Deployments kostenpflichtig sind.",
+     "verdict": 0,
+     "reason": "The context does not differentiate between development and production usage; it simply states all offers are free."
+    },
+    {
+     "statement": "Nutzungs‑ und Verbrauchs‑Limits umfassen Gratis‑Kontingente wie CPU‑Stunden, Speicher und API‑Aufrufe.",
+     "verdict": 0,
+     "reason": "No information about usage limits or free quotas is present in the context."
+    },
+    {
+     "statement": "Ein Kontingent von 100 GB Datenvolumen pro Monat und 10 000 API‑Calls ist kostenlos, danach entstehen Kosten.",
+     "verdict": 0,
+     "reason": "The context does not specify any quantitative free quota or subsequent charges."
+    },
+    {
+     "statement": "Basis‑Support über Forum und Dokumentation ist kostenlos, während Premium‑Support kostenpflichtig ist.",
+     "verdict": 0,
+     "reason": "Support tiers are not mentioned in the context; therefore this cannot be inferred."
+    },
+    {
+     "statement": "24/7 Telefon‑Support und garantierte Reaktionszeiten stehen nur im kostenpflichtigen Tier zur Verfügung.",
+     "verdict": 0,
+     "reason": "The context provides no details about support levels or availability."
+    },
+    {
+     "statement": "Daten‑ und Speicher‑Kosten können anfallen, wenn Datenhaltung, Backup oder Archivierung extra berechnet werden.",
+     "verdict": 0,
+     "reason": "The context asserts all offers are free and does not mention any possible extra charges."
+    },
+    {
+     "statement": "Langzeit‑Archivierung von Trainingsdaten und Export‑Kosten können extra berechnet werden.",
+     "verdict": 0,
+     "reason": "No mention of archival or export costs exists in the context."
+    },
+    {
+     "statement": "Integrations‑‑ und Betriebs‑Kosten entstehen durch Aufwand für Anbindung, Monitoring und Skalierung.",
+     "verdict": 0,
+     "reason": "The context does not discuss integration or operational costs."
+    },
+    {
+     "statement": "Aufbau von CI/CD‑Pipelines und Lizenzierung von Dritt‑Tools wie Monitoring‑Agenten können Kosten verursachen.",
+     "verdict": 0,
+     "reason": "Such details are absent from the context."
+    },
+    {
+     "statement": "Compliance‑‑ und Sicherheits‑Kosten entstehen durch Audits, Zertifizierungen, Verschlüsselung und DSGVO‑Konformität.",
+     "verdict": 0,
+     "reason": "The context does not address compliance or security expenses."
+    },
+    {
+     "statement": "Zusatzmodule für Verschlüsselung und Daten‑Residency‑Optionen können kostenpflichtig sein.",
+     "verdict": 0,
+     "reason": "No information about optional paid modules is provided in the context."
+    },
+    {
+     "statement": "Vertrags‑‑ und Rechts‑Kosten entstehen durch AGB, Lizenz‑‑ und Haftungsfragen.",
+     "verdict": 0,
+     "reason": "The context does not mention contractual or legal costs."
+    },
+    {
+     "statement": "Haftungsbeschränkungen, Daten‑Nutzungsrechte und Export‑Kontrollen können zu Kosten führen.",
+     "verdict": 0,
+     "reason": "These aspects are not covered in the given context."
+    },
+    {
+     "statement": "Der Begriff \"Kostenlos\" bezieht sich meist nur auf das Grundpaket.",
+     "verdict": 0,
+     "reason": "The context simply states that all offers are free without qualifying the term; this nuance cannot be inferred."
+    },
+    {
+     "statement": "Bei Skalierung des Angebots, produktivem Einsatz oder speziellen Anforderungen wie Datenschutz oder SLA treten zusätzliche Kosten auf.",
+     "verdict": 0,
+     "reason": "The context does not mention any scenario where costs would arise."
+    },
+    {
+     "statement": "Der IT‑Grundschutz (BSI‑Standard 200‑2) verlangt, dass alle eingesetzten IT‑Komponenten, unabhängig von kommerzieller, Open‑Source‑ oder kostenloser Herkunft, nach dem gleichen Sicherheitsstandard geschützt werden.",
+     "verdict": 0,
+     "reason": "No reference to IT‑Grundschutz or security standards appears in the context."
+    },
+    {
+     "statement": "Die ISMS‑Einrichtung erfordert, dass die Risiko‑Analyse auch kostenlose Angebote umfasst.",
+     "verdict": 0,
+     "reason": "The context does not discuss ISMS or risk analysis requirements."
+    },
+    {
+     "statement": "Die Zugriffskontrolle (SYS.1) verlangt die Implementierung von Rollen‑‑ und Rechte‑Management, selbst wenn das Tool out‑of‑the‑box keine feinkörnige Steuerung bietet.",
+     "verdict": 0,
+     "reason": "No details about access control or SYS.1 are present in the context."
+    },
+    {
+     "statement": "Der Datenschutz (DSB) erfordert die Prüfung, wo Daten verarbeitet werden, zum Beispiel in einem EU‑Rechenzentrum versus einer US‑Cloud, und die Existenz einer Auftrags‑verarbeitungs‑Vereinbarung (AVV).",
+     "verdict": 0,
+     "reason": "The context does not contain any information about data protection or AVV."
+    },
+    {
+     "statement": "Die Verschlüsselung (CRY.1) verlangt, dass Daten‑in‑Transit und –at‑Rest verschlüsselt sind; bei kostenlosen Services ist diese Anforderung nicht immer garantiert.",
+     "verdict": 0,
+     "reason": "Encryption requirements are not mentioned in the context."
+    },
+    {
+     "statement": "System‑‑ und Netzwerk‑Monitoring (NET.1, OPS.1) erfordert nachgerüsttes Log‑‑ und Ereignis‑Monitoring, wenn der Anbieter keine eigenen Funktionen bereitstellt.",
+     "verdict": 0,
+     "reason": "No monitoring requirements are described in the context."
+    },
+    {
+     "statement": "Backup & Recovery (OPS.2) verlangt die Prüfung, ob der Anbieter Backups anbietet, und gegebenenfalls die Implementierung einer eigenen Backup‑Strategie.",
+     "verdict": 0,
+     "reason": "The context does not discuss backup or recovery."
+    },
+    {
+     "statement": "Patch‑Management (SYS.2) erfordert, dass das System bei SaaS‑Lösungen regelmäßig gepatcht wird, entweder durch den Anbieter oder durch den Nutzer.",
+     "verdict": 0,
+     "reason": "Patch‑management is not addressed in the context."
+    },
+    {
+     "statement": "Daten‑Leakage kann auftreten, wenn Daten in unsicheren Rechenzentren liegen oder an Dritte weitergegeben werden.",
+     "verdict": 0,
+     "reason": "The context provides no information about data leakage risks."
+    },
+    {
+     "statement": "Gegenmaßnahmen umfassen Verschlüsselung vor dem Upload, Prüfung der AVV und Daten‑Minimierung.",
+     "verdict": 0,
+     "reason": "No counter‑measure details are present in the context."
+    },
+    {
+     "statement": "Vendor‑Lock‑In kann entstehen, wenn der Export von Modellen oder Datensätzen schwierig oder kostenpflichtig ist.",
+     "verdict": 0,
+     "reason": "The context does not mention vendor lock‑in or export difficulties."
+    },
+    {
+     "statement": "Gegenmaßnahmen umfassen die Nutzung von Open‑Source‑Modellen und standardisierten Export‑Formaten wie ONNX oder PMML.",
+     "verdict": 0,
+     "reason": "Such measures are not described in the context."
+    },
+    {
+     "statement": "Unzureichende SLA können zu fehlenden garantierten Verfügbarkeiten und Produktionsausfällen führen.",
+     "verdict": 0,
+     "reason": "SLA considerations are absent from the context."
+    },
+    {
+     "statement": "Eine Gegenmaßnahme ist die Hybrid‑Architektur, bei der kritische Workloads on‑premises oder in zertifizierten Cloud‑Umgebungen betrieben werden.",
+     "verdict": 0,
+     "reason": "The context does not discuss hybrid architectures."
+    },
+    {
+     "statement": "Fehlende Audits und Zertifizierungen, wie ISO‑27001 oder BSI‑Grundschutz, führen zu fehlenden Nachweisen für Audits.",
+     "verdict": 0,
+     "reason": "No mention of audits or certifications exists in the context."
+    },
+    {
+     "statement": "Gegenmaßnahmen umfassen zusätzliche interne Audits und die Nutzung von zertifizierten Dritt‑Anbietern.",
+     "verdict": 0,
+     "reason": "The context does not provide any guidance on audits or third‑party providers."
+    },
+    {
+     "statement": "Kosten‑Explosion bei Skalierung kann auftreten, wenn Gratis‑Kontingente schnell überschritten werden und überraschende Rechnungen entstehen.",
+     "verdict": 0,
+     "reason": "The context does not talk about scaling costs or surprise invoices."
+    },
+    {
+     "statement": "Gegenmaßnahmen umfassen Monitoring des Verbrauchs, Alarme bei 80 %‑Auslastung und Simulation von Kosten‑Modellen.",
+     "verdict": 0,
+     "reason": "No such monitoring or alarm mechanisms are mentioned in the context."
+    },
+    {
+     "statement": "Rechtliche Unsicherheiten können entstehen, wenn Lizenz‑ oder Urheber‑Rechte an generierten Inhalten unklar sind.",
+     "verdict": 0,
+     "reason": "The context does not address legal uncertainties or licensing of generated content."
+    },
+    {
+     "statement": "Gegenmaßnahmen umfassen einen Lizenz‑Check und gegebenenfalls das Sichern eigener IP‑Rechte.",
+     "verdict": 0,
+     "reason": "No licensing checks or IP considerations are described in the context."
+    },
+    {
+     "statement": "Vor der Nutzung müssen die AGB und Datenschutz‑Bestimmungen geprüft werden.",
+     "verdict": 0,
+     "reason": "The context does not mention the need to review terms or privacy policies."
+    },
+    {
+     "statement": "Es muss geprüft werden, ob eine Auftrags‑Verarbeitungs‑Vereinbarung (AVV) existiert.",
+     "verdict": 0,
+     "reason": "AVV requirements are not covered in the context."
+    },
+    {
+     "statement": "Der physische Speicherort der Daten muss ermittelt werden, wobei ein EU‑Rechenzentrum bevorzugt wird.",
+     "verdict": 0,
+     "reason": "No information about data residency is provided in the context."
+    },
+    {
+     "statement": "Die Nutzungs‑ und Weitergaberechte des Anbieters an den Daten und Modellen müssen geklärt werden.",
+     "verdict": 0,
+     "reason": "The context does not discuss usage or transfer rights."
+    },
+    {
+     "statement": "Das Kosten‑Modell muss verstanden werden.",
+     "verdict": 0,
+     "reason": "While the context says offers are free, it does not elaborate on a cost model to be understood."
+    },
+    {
+     "statement": "Freikontingente wie CPU, GPU, Speicher und API‑Calls müssen dokumentiert werden.",
+     "verdict": 0,
+     "reason": "No mention of free quotas or documentation exists in the context."
+    },
+    {
+     "statement": "Ein Break‑Even‑Scenario muss simuliert werden, um den Punkt zu bestimmen, ab dem Kosten entstehen.",
+     "verdict": 0,
+     "reason": "The context does not talk about break‑even analysis or cost thresholds."
+    },
+    {
+     "statement": "Preis‑Stufen für Skalierung, zum Beispiel pro GB oder pro Stunde, müssen geprüft werden.",
+     "verdict": 0,
+     "reason": "Pricing tiers are not referenced in the context."
+    },
+    {
+     "statement": "Ein Sicherheits‑ und Compliance‑Check muss durchgeführt werden.",
+     "verdict": 0,
+     "reason": "No requirement for a security or compliance check is mentioned in the context."
+    },
+    {
+     "statement": "Es muss geprüft werden, ob der Dienst ISO 27001, SOC 2 oder BSI‑Grundschutz zertifiziert ist.",
+     "verdict": 0,
+     "reason": "Certification status is not addressed in the context."
+    },
+    {
+     "statement": "Die vorhandenen Verschlüsselungs‑Mechanismen, wie TLS 1.2+ und at‑rest AES‑256, müssen überprüft werden.",
+     "verdict": 0,
+     "reason": "Encryption mechanisms are not discussed in the context."
+    },
+    {
+     "statement": "Die Umsetzung von Identity‑ & Access‑Management (IAM), zum Beispiel OAuth oder SAML, muss bewertet werden.",
+     "verdict": 0,
+     "reason": "IAM implementation details are absent from the context."
+    },
+    {
+     "statement": "Eine Risiko‑Analyse nach IT‑Grundschutz muss durchgeführt werden.",
+     "verdict": 0,
+     "reason": "The context does not mention a risk analysis requirement."
+    },
+    {
+     "statement": "Ein Risiko‑Profil für Vertraulichkeit, Integrität und Verfügbarkeit muss erstellt werden.",
+     "verdict": 0,
+     "reason": "No guidance on creating a risk profile is provided in the context."
+    },
+    {
+     "statement": "Der Service muss einem Schutzbedarf (niedrig, mittel, hoch) zugeordnet werden.",
+     "verdict": 0,
+     "reason": "The context does not discuss protection needs classification."
+    },
+    {
+     "statement": "Aus dem Schutzbedarf müssen Kontrollen abgeleitet werden, zum Beispiel zusätzliche Verschlüsselung oder Monitoring.",
+     "verdict": 0,
+     "reason": "No such derivation of controls is mentioned in the context."
+    },
+    {
+     "statement": "Zero‑Trust‑Zugriff minimiert lateral movement und wird durch Nutzung von MFA, Least‑Privilege Rollen und IP‑Whitelisting umgesetzt.",
+     "verdict": 0,
+     "reason": "Zero‑trust concepts are not covered in the context."
+    },
+    {
+     "statement": "End‑to‑End‑Verschlüsselung schützt Daten bereits beim Upload, indem Daten vor dem Upload mit AES‑256 verschlüsselt und Schlüssel im eigenen KMS verwaltet werden.",
+     "verdict": 0,
+     "reason": "The context does not mention end‑to‑end encryption or key management."
+    },
+    {
+     "statement": "Audit‑Logging sorgt für Nachvollziehbarkeit und Forensik, indem Service‑Logs in ein SIEM exportiert werden.",
+     "verdict": 0,
+     "reason": "Audit‑logging details are not present in the context."
+    },
+    {
+     "statement": "Monitoring des Verbrauchs verhindert Kosten‑Schocks, indem Alarme bei 70 %‑Auslastung des Gratis‑Kontingents gesetzt werden.",
+     "verdict": 0,
+     "reason": "No monitoring or alarm mechanisms are described in the context."
+    },
+    {
+     "statement": "Backup und Versionierung schützen vor Datenverlust durch regelmäßige Snapshots der Trainingsdaten und Modelle in einem eigenen, gesicherten Speicher.",
+     "verdict": 0,
+     "reason": "Backup and versioning practices are not mentioned in the context."
+    },
+    {
+     "statement": "Patch‑ und Update‑Management schließt Sicherheitslücken, indem geprüft wird, ob der Anbieter automatisch patcht; bei IaaS‑Modellen muss der Nutzer selbst handeln.",
+     "verdict": 0,
+     "reason": "Patch‑ and update‑management are not discussed in the context."
+    },
+    {
+     "statement": "Penetration‑Testing und Red‑Team‑Aktivitäten validieren die Sicherheitslage, indem externe Tests wie OWASP‑API‑Security gegen die API‑Endpoints durchgeführt werden.",
+     "verdict": 0,
+     "reason": "No mention of penetration testing or red‑team activities exists in the context."
+    },
+    {
+     "statement": "Ein Export‑ und Migrations‑Plan muss erstellt werden, um sicherzustellen, dass Modelle, Daten und Metadaten in offenen Formaten exportierbar sind.",
+     "verdict": 0,
+     "reason": "Export and migration planning are not covered in the context."
+    },
+    {
+     "statement": "Abhängigkeiten, zum Beispiel proprietäre Bibliotheken, müssen dokumentiert werden.",
+     "verdict": 0,
+     "reason": "The context does not discuss dependency documentation."
+    },
+    {
+     "statement": "Eine Best‑Effort‑Löschung der Daten muss nach DSGVO Art. 17 angefordert werden.",
+     "verdict": 0,
+     "reason": "Data deletion requirements under DSGVO are not mentioned in the context."
+    },
+    {
+     "statement": "Es muss geprüft werden, ob der Anbieter einen Nachweis über die Löschung erbringen kann.",
+     "verdict": 0,
+     "reason": "No verification of deletion proof is discussed in the context."
+    },
+    {
+     "statement": "Offene Rechnungen müssen abgeschlossen und Abrechnungs‑Perioden wie Monat oder Quartal geprüft werden.",
+     "verdict": 0,
+     "reason": "Billing cycles and open invoices are not referenced in the context."
+    },
+    {
+     "statement": "Zugriffstoken und API‑Keys müssen deaktiviert werden, um unautorisierten Zugriff zu verhindern.",
+     "verdict": 0,
+     "reason": "The context does not contain any information about token management."
+    },
+    {
+     "statement": "Kosten‑Transparenz erfordert die Prüfung von Freikontingenten, Preis‑Stufen und möglichen Überraschungen.",
+     "verdict": 0,
+     "reason": "Cost transparency details are not provided in the context."
+    },
+    {
+     "statement": "Datenschutz erfordert die Sicherstellung von AVV, Daten‑Residency, Verschlüsselung und DSGVO‑Konformität.",
+     "verdict": 0,
+     "reason": "The context does not discuss data protection requirements."
+    },
+    {
+     "statement": "Sicherheitszertifikate wie ISO 27001, BSI‑Grundschutz und SOC 2 müssen vorhanden sein.",
+     "verdict": 0,
+     "reason": "No mention of security certifications exists in the context."
+    },
+    {
+     "statement": "Service‑Level erfordert die Prüfung von SLA, Verfügbarkeit und Support‑Optionen.",
+     "verdict": 0,
+     "reason": "Service level considerations are not addressed in the context."
+    },
+    {
+     "statement": "Zugriffs‑‑ und Rollen‑Management erfordert die Implementierung von IAM, MFA und Least‑Privilege.",
+     "verdict": 0,
+     "reason": "Access and role management details are absent from the context."
+    },
+    {
+     "statement": "Monitoring und Logging erfordern exportierbare Logs und SIEM‑Integration.",
+     "verdict": 0,
+     "reason": "Monitoring and logging requirements are not mentioned in the context."
+    },
+    {
+     "statement": "Backup und Recovery erfordern eigene Backups und Wiederherstellungstests.",
+     "verdict": 0,
+     "reason": "Backup and recovery requirements are not covered in the context."
+    },
+    {
+     "statement": "Exit‑Strategie erfordert geplante Export‑Möglichkeiten, Datenlöschung und Portabilität.",
+     "verdict": 0,
+     "reason": "Exit‑strategy details are not present in the context."
+    },
+    {
+     "statement": "Risiko‑Analyse erfordert die Abdeckung der IT‑Grundschutz‑Bausteine.",
+     "verdict": 0,
+     "reason": "The context does not discuss risk analysis or IT‑Grundschutz modules."
+    },
+    {
+     "statement": "Rechtliche Rahmenbedingungen erfordern die Klärung von Lizenz, Urheber‑ und Haftungsfragen.",
+     "verdict": 0,
+     "reason": "Legal framework considerations are not mentioned in the context."
+    },
+    {
+     "statement": "Kurzantwort: Nein, nicht alle Services sind kostenlos.",
+     "verdict": 0,
+     "reason": "The context explicitly states that all offers are free, which contradicts this statement; therefore it cannot be inferred."
+    },
+    {
+     "statement": "Der Hinweis, dass alle Angebote kostenlos seien, bezieht sich in der Regel nur auf Basis‑Leistungen wie die erste Entwicklungsumgebung und begrenzte API‑Calls.",
+     "verdict": 0,
+     "reason": "The context does not provide any qualification of the \"free\" claim; this nuance cannot be inferred."
+    },
+    {
+     "statement": "Bei Produktions‑Workloads, größeren Datenmengen, erweiterten Support‑Levels oder Compliance‑Anforderungen entstehen zusätzliche Kosten, sowohl finanziell als auch in Form von Aufwand für Sicherheit, Datenschutz und Betrieb.",
+     "verdict": 0,
+     "reason": "The context does not mention any scenario where additional costs arise."
+    },
+    {
+     "statement": "Langfristig können kosten‑freie Services ein guter Einstieg sein, jedoch erfordert ein nachhaltiger, sicherer Betrieb stets Risiko‑Management, Monitoring, Vertrags‑ und Datenschutz‑Prüfungen sowie gegebenenfalls Investitionen in ergänzende Sicherheits‑ und Betriebs‑Tools.",
+     "verdict": 0,
+     "reason": "The context does not discuss long‑term considerations or required investments."
+    },
+    {
+     "statement": "Empfehlung: Kostenlose Angebote sollten zunächst für Prototyping und Evaluation genutzt werden.",
+     "verdict": 0,
+     "reason": "The context does not contain any recommendation about usage phases."
+    },
+    {
+     "statement": "Wenn ein Projekt in die Produktionsphase übergeht, muss Budget, Sicherheits‑ und Compliance‑Maßnahmen geplant und geprüft werden, ob ein kostenpflichtiges, zertifiziertes Service‑Level oder ein eigener on‑premises‑Betrieb sinnvoller ist.",
+     "verdict": 0,
+     "reason": "No guidance about production phase planning is present in the context."
+    },
+    {
+     "statement": "Kostenlose KI‑Services können ein wertvolles Sprungbrett sein, jedoch bedeutet \"kostenlos\" nicht \"risikofrei\".",
+     "verdict": 0,
+     "reason": "The context only states that all offers are free and does not address risk aspects; this statement cannot be directly inferred."
+    }
+   ],
+   "score": 0.0
+  }
+ },
+ "manual/2/pipeline": {
+  "kind": "manual",
+  "i": 2,
+  "prompt": "pipeline",
+  "answer": "Das KI‑Servicezentrum bietet **Beratung, Weiterbildung und Infrastruktur** an, um Ihre KI‑Kompetenzen gezielt auszubauen und KI‑Projekte eigenständig zu planen, zu entwickeln und zu betreiben.",
+  "ac": {
+   "answer_claims": [
+    "Das KI‑Servicezentrum bietet Beratung an.",
+    "Das KI‑Servicezentrum bietet Weiterbildung an.",
+    "Das KI‑Servicezentrum bietet Infrastruktur an.",
+    "Das KI‑Servicezentrum unterstützt den gezielten Ausbau der KI‑Kompetenzen.",
+    "Das KI‑Servicezentrum ermöglicht die eigenständige Planung von KI‑Projekten.",
+    "Das KI‑Servicezentrum ermöglicht die eigenständige Entwicklung von KI‑Projekten.",
+    "Das KI‑Servicezentrum ermöglicht den eigenständigen Betrieb von KI‑Projekten."
+   ],
+   "reference_claims": [
+    "Das KI-Servicezentrum bietet Gruppensprechstunden zum Einsatz von Künstlicher Intelligenz an.",
+    "Das KI-Servicezentrum bietet individuelle Beratung zum Einsatz von Künstlicher Intelligenz an.",
+    "Das KI-Servicezentrum kann dreimonatige Pilotprojekte gemeinsam durchführen."
+   ],
+   "TP": [
+    {
+     "statement": "Das KI‑Servicezentrum bietet Beratung an.",
+     "reason": "The answer states that the KI‑Servicezentrum offers Beratung (consulting), which is directly supported by the ground truth statement that it offers individuelle Beratung zum Einsatz von Künstlicher Intelligenz."
+    }
+   ],
+   "FP": [
+    {
+     "statement": "Das KI‑Servicezentrum bietet Weiterbildung an.",
+     "reason": "The answer claims the centre offers Weiterbildung, but none of the ground truth statements mention training or further education."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet Infrastruktur an.",
+     "reason": "The answer claims the centre offers Infrastruktur, which is not mentioned in any ground truth statement."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum unterstützt den gezielten Ausbau der KI‑Kompetenzen.",
+     "reason": "The answer claims the centre supports the targeted expansion of KI‑Kompetenzen, but this is not covered by any ground truth statement."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum ermöglicht die eigenständige Planung von KI‑Projekten.",
+     "reason": "The answer claims the centre enables independent planning of KI projects, whereas the ground truth only mentions joint three‑month pilot projects, not independent planning."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum ermöglicht die eigenständige Entwicklung von KI‑Projekten.",
+     "reason": "The answer claims the centre enables independent development of KI projects, which is not supported by any ground truth statement."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum ermöglicht den eigenständigen Betrieb von KI‑Projekten.",
+     "reason": "The answer claims the centre enables independent operation of KI projects, but this is not mentioned in the ground truth."
+    }
+   ],
+   "FN": [
+    {
+     "statement": "Das KI-Servicezentrum bietet Gruppensprechstunden zum Einsatz von Künstlicher Intelligenz an.",
+     "reason": "The ground truth states that the centre offers Gruppensprechstunden (group office hours) for AI use, which is absent from the answer."
+    },
+    {
+     "statement": "Das KI-Servicezentrum kann dreimonatige Pilotprojekte gemeinsam durchführen.",
+     "reason": "The ground truth states that the centre can jointly conduct three‑month pilot projects, which is not mentioned in the answer."
+    }
+   ],
+   "f1": 0.2,
+   "similarity": 0.8029205635994338,
+   "score": 0.35073014089985843
+  },
+  "faithfulness": {
+   "claims": [
+    {
+     "statement": "Das KI‑Servicezentrum bietet Beratung an.",
+     "verdict": 1,
+     "reason": "Der Kontext enthält den Satz \"Wir bieten Beratung\", was die Aussage direkt bestätigt."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet Weiterbildung an.",
+     "verdict": 1,
+     "reason": "Der Kontext enthält den Satz \"Wir bieten ... Weiterbildung\", was die Aussage direkt bestätigt."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet Infrastruktur an.",
+     "verdict": 1,
+     "reason": "Der Kontext enthält den Satz \"Wir bieten ... Infrastruktur\", was die Aussage direkt bestätigt."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum unterstützt den gezielten Ausbau von KI‑Kompetenzen.",
+     "verdict": 1,
+     "reason": "Der Kontext sagt \"Wir unterstützen Sie dabei, Ihre KI-Kompetenzen gezielt auszubauen\", was die Aussage direkt bestätigt."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum ermöglicht die eigenständige Planung von KI‑Projekten.",
+     "verdict": 0,
+     "reason": "Der Kontext erwähnt die eigenständige Umsetzung, Entwicklung und den Betrieb von KI‑Projekten, aber nicht explizit die Planung."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum ermöglicht die eigenständige Entwicklung von KI‑Projekten.",
+     "verdict": 1,
+     "reason": "Der Kontext enthält den Satz \"um KI-Anwendungen eigenständig zu entwickeln\", was die Aussage direkt bestätigt."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum ermöglicht den eigenständigen Betrieb von KI‑Projekten.",
+     "verdict": 1,
+     "reason": "Der Kontext enthält den Satz \"um KI-Anwendungen ... zu betreiben\", was die Aussage direkt bestätigt."
+    }
+   ],
+   "score": 0.8571428571428571
+  }
+ },
+ "manual/3/pipeline": {
+  "kind": "manual",
+  "i": 3,
+  "prompt": "pipeline",
+  "answer": "In einem KI‑Pilotprojekt wird gemeinsam mit den Teilnehmenden ein Prototyp entwickelt, um erste Konzepte und deren Machbarkeit zu erproben. KI‑Expert*innen arbeiten dabei zusammen mit den Teilnehmenden (oft an Laptops), um die Basis für eine spätere kommerzielle, marktfähige Lösung zu schaffen.",
+  "ac": {
+   "answer_claims": [
+    "Ein KI‑Pilotprojekt entwickelt gemeinsam mit den Teilnehmenden einen Prototyp.",
+    "Der Prototyp wird eingesetzt, um erste Konzepte und die Machbarkeit dieser Konzepte zu erproben.",
+    "KI‑Expert*innen arbeiten zusammen mit den Teilnehmenden, oft an Laptops.",
+    "Die Zusammenarbeit schafft die Basis für eine spätere kommerzielle, marktfähige Lösung."
+   ],
+   "reference_claims": [
+    "Unternehmen können sich für Pilotprojekte bewerben.",
+    "Unternehmen erhalten 2-3 Tage pro Woche aktive Projektbegleitung, um gemeinsam einen Prototypen zu entwickeln.",
+    "Unternehmen können die Recheninfrastruktur nutzen."
+   ],
+   "TP": [
+    {
+     "statement": "Ein KI‑Pilotprojekt entwickelt gemeinsam mit den Teilnehmenden einen Prototyp.",
+     "reason": "Ground truth states that companies receive active project guidance to jointly develop a prototype, which directly supports this statement."
+    }
+   ],
+   "FP": [
+    {
+     "statement": "Der Prototyp wird eingesetzt, um erste Konzepte und die Machbarkeit dieser Konzepte zu erproben.",
+     "reason": "Ground truth does not mention using the prototype to test concepts or assess feasibility."
+    },
+    {
+     "statement": "KI‑Expert*innen arbeiten zusammen mit den Teilnehmenden, oft an Laptops.",
+     "reason": "Ground truth does not describe KI experts collaborating with participants or the use of laptops."
+    },
+    {
+     "statement": "Die Zusammenarbeit schafft die Basis für eine spätere kommerzielle, marktfähige Lösung.",
+     "reason": "Ground truth does not discuss the collaboration leading to a commercial, marketable solution."
+    }
+   ],
+   "FN": [
+    {
+     "statement": "Unternehmen können sich für Pilotprojekte bewerben.",
+     "reason": "This information about companies applying for pilot projects is absent from the answer."
+    },
+    {
+     "statement": "Unternehmen können die Recheninfrastruktur nutzen.",
+     "reason": "The answer does not mention that companies can use the computing infrastructure."
+    }
+   ],
+   "f1": 0.28571428571428575,
+   "similarity": 0.6711578148431928,
+   "score": 0.38207516799651253
+  },
+  "faithfulness": {
+   "claims": [
+    {
+     "statement": "In einem KI-Pilotprojekt wird ein Prototyp gemeinsam mit den Teilnehmenden entwickelt.",
+     "verdict": 1,
+     "reason": "The context states \"In unseren KI-Pilotprojekten entwickeln wir gemeinsam mit Ihnen einen Prototypen\", directly indicating joint development with participants."
+    },
+    {
+     "statement": "Der Prototyp wird verwendet, um erste Konzepte und die Machbarkeit dieser Konzepte zu erproben.",
+     "verdict": 1,
+     "reason": "The context says the prototype \"dient der ersten Erprobung von Konzepten und Machbarkeit\", which matches the statement."
+    },
+    {
+     "statement": "KI-Expert*innen arbeiten zusammen mit den Teilnehmenden, oft an Laptops.",
+     "verdict": 1,
+     "reason": "The context describes a \"KI-Experte und KI-Expertin am Tisch mit Teilnehmenden eines Pilotprojekts, vor ihnen Laptops\", indicating joint work at laptops."
+    },
+    {
+     "statement": "Die Zusammenarbeit schafft die Basis für eine spätere kommerzielle, marktfähige Lösung.",
+     "verdict": 1,
+     "reason": "The context calls the prototype \"eine hervorragende Grundlage für die Weiterentwicklung zu einer kommerziellen, marktfähigen Lösung\", confirming the basis for a later commercial solution."
+    }
+   ],
+   "score": 1.0
+  }
+ },
+ "manual/4/pipeline": {
+  "kind": "manual",
+  "i": 4,
+  "prompt": "pipeline",
+  "answer": "Ja. Um die Recheninfrastruktur zu nutzen, müssen Sie sich bewerben – entweder indem Sie über das Portal eine Projektbeschreibung einreichen oder sich im Rahmen des begleitenden KI‑Pilotprojekts, das alle drei Monate ausgeschrieben wird, bewerben.",
+  "ac": {
+   "answer_claims": [
+    "Die Antwort lautet ja.",
+    "Die Nutzung der Recheninfrastruktur erfordert eine Bewerbung.",
+    "Eine Bewerbung kann erfolgen, indem über das Portal eine Projektbeschreibung eingereicht wird.",
+    "Eine Bewerbung kann erfolgen, indem im Rahmen des begleitenden KI‑Pilotprojekts, das alle drei Monate ausgeschrieben wird, eine Bewerbung eingereicht wird."
+   ],
+   "reference_claims": [
+    "Eine Bewerbung für ein Pilotprojekt ist nicht erforderlich.",
+    "Um die Recheninfrastruktur zu nutzen, muss eine Beschreibung des Vorhabens über das Portal des KI-Servicezentrums eingereicht werden.",
+    "Ein Produktivbetrieb wird nicht angeboten."
+   ],
+   "TP": [],
+   "FP": [
+    {
+     "statement": "Die Antwort lautet ja.",
+     "reason": "The ground truth states that an application for a pilot project is not required, so answering \"yes\" contradicts the correct information."
+    },
+    {
+     "statement": "Die Nutzung der Recheninfrastruktur erfordert eine Bewerbung.",
+     "reason": "According to the ground truth, no application is required; only a project description via the portal is needed, making this statement unsupported."
+    },
+    {
+     "statement": "Eine Bewerbung kann erfolgen, indem über das Portal eine Projektbeschreibung eingereicht wird.",
+     "reason": "While the portal submission is required, the ground truth does not describe it as a \"Bewerbung\" (application); framing it as such is not directly supported."
+    },
+    {
+     "statement": "Eine Bewerbung kann erfolgen, indem im Rahmen des begleitenden KI‑Pilotprojekts, das alle drei Monate ausgeschrieben wird, eine Bewerbung eingereicht wird.",
+     "reason": "The ground truth explicitly says a pilot‑project application is not required, so this statement is not supported."
+    }
+   ],
+   "FN": [
+    {
+     "statement": "Eine Bewerbung für ein Pilotprojekt ist nicht erforderlich.",
+     "reason": "This correct statement from the ground truth is missing from the answer."
+    },
+    {
+     "statement": "Um die Recheninfrastruktur zu nutzen, muss eine Beschreibung des Vorhabens über das Portal des KI-Servicezentrums eingereicht werden.",
+     "reason": "The answer does not include the requirement to submit a project description via the KI-Servicezentrum portal without labeling it as an application."
+    },
+    {
+     "statement": "Ein Produktivbetrieb wird nicht angeboten.",
+     "reason": "The answer does not mention that a production operation is not offered, which is stated in the ground truth."
+    }
+   ],
+   "f1": 0.0,
+   "similarity": 0.740446497169539,
+   "score": 0.18511162429238476
+  },
+  "faithfulness": {
+   "claims": [
+    {
+     "statement": "Die Nutzung der Recheninfrastruktur erfordert eine Bewerbung.",
+     "verdict": 1,
+     "reason": "Der Kontext sagt, dass man eine Beschreibung über das Portal einreichen muss, um die Infrastruktur zu nutzen, was eine Bewerbung impliziert."
+    },
+    {
+     "statement": "Eine Bewerbung kann über das Portal erfolgen, indem eine Projektbeschreibung eingereicht wird.",
+     "verdict": 1,
+     "reason": "Im Text steht ausdrücklich, dass man eine Beschreibung des Vorhabens über das Portal einreichen soll."
+    },
+    {
+     "statement": "Eine Bewerbung kann im Rahmen des begleitenden KI‑Pilotprojekts erfolgen, das alle drei Monate ausgeschrieben wird.",
+     "verdict": 1,
+     "reason": "Der Kontext erwähnt, dass Bewerbungen für ein begleitetes KI‑Pilotprojekt alle drei Monate möglich sind."
+    }
+   ],
+   "score": 1.0
+  }
+ },
+ "synthetic/0/pipeline": {
+  "kind": "synthetic",
+  "i": 0,
+  "prompt": "pipeline",
+  "answer": "Abonnieren Sie den Newsletter – über den Link https://hpi.de/registrierung/ai-service-center-newsletter/ erhalten Sie regelmäßig die Informationen zum Starttermin der nächsten Bewerbungsphase.",
+  "ac": {
+   "answer_claims": [
+    "Der Nutzer kann den Newsletter abonnieren.",
+    "Der Nutzer erhält über den Link https://hpi.de/registrierung/ai-service-center-newsletter/ regelmäßig Informationen zum Starttermin der nächsten Bewerbungsphase."
+   ],
+   "reference_claims": [
+    "Individuals can stay informed about upcoming KI‑Pilotprojekt application phases by subscribing to the Newsletter via the link https://hpi.de/registrierung/ai-service-center-newsletter/.",
+    "The Newsletter announces the start term of the next application phase.",
+    "The Newsletter enables receipt of timely updates."
+   ],
+   "TP": [
+    {
+     "statement": "Der Nutzer kann den Newsletter abonnieren.",
+     "reason": "The ground truth statement a explicitly says individuals can stay informed by subscribing to the Newsletter via the same link, which directly supports the answer's claim that the user can subscribe to the Newsletter."
+    },
+    {
+     "statement": "Der Nutzer erhält über den Link https://hpi.de/registrierung/ai-service-center-newsletter/ regelmäßig Informationen zum Starttermin der nächsten Bewerbungsphase.",
+     "reason": "The ground truth statements a, b, and c together confirm that the Newsletter (accessed via the given link) provides regular information about the start term of the next application phase and timely updates, directly supporting this answer statement."
+    }
+   ],
+   "FP": [],
+   "FN": [],
+   "f1": 1.0,
+   "similarity": 0.7144656401074904,
+   "score": 0.9286164100268726
+  },
+  "faithfulness": {
+   "claims": [
+    {
+     "statement": "Der Newsletter kann über den Link https://hpi.de/registrierung/ai-service-center-newsletter/ abonniert werden.",
+     "verdict": 1,
+     "reason": "The context includes a bullet '- [Newsletter abonnieren](https://hpi.de/registrierung/ai-service-center-newsletter/)' which explicitly shows that the newsletter can be subscribed to via that link."
+    },
+    {
+     "statement": "Der Newsletter liefert regelmäßig Informationen zum Starttermin der nächsten Bewerbungsphase.",
+     "verdict": 0,
+     "reason": "The context states that the start date of the next application phase can be learned from the newsletter, but it does not mention that the newsletter provides this information regularly; the claim of regularity is not directly supported."
+    }
+   ],
+   "score": 0.5
+  }
+ },
+ "synthetic/1/pipeline": {
+  "kind": "synthetic",
+  "i": 1,
+  "prompt": "pipeline",
+  "answer": "Das KI‑Servicezentrum Berlin‑Brandenburg betreibt in Potsdam ein **Rechenzentrum mit einer heterogenen KI‑Infrastruktur**. Dort stehen verschiedene Hardware‑Typen (z. B. GPUs, CPUs, Beschleuniger) zur Verfügung, sodass Kosten und Leistung verglichen werden können. Diese flexible Umgebung ermöglicht :\n\n* **Training von KI‑Modellen** – durch passende Rechnerressourcen und anpassbare Konfigurationen.  \n* **Entwicklung und Inferenz von KI‑Anwendungen** – inkl. Test von Edge‑Szenarien und Bereitstellung von Lösungen, die auf die jeweilige Hardware abgestimmt sind.",
+  "ac": {
+   "answer_claims": [
+    "The KI‑Servicezentrum Berlin‑Brandenburg operates a data center with a heterogeneous AI infrastructure in Potsdam.",
+    "The data center provides various hardware types such as GPUs, CPUs, and accelerators, allowing cost and performance comparisons.",
+    "The flexible environment enables training of AI models with suitable compute resources and adjustable configurations.",
+    "The flexible environment enables development and inference of AI applications, including testing of edge scenarios and deployment of solutions tailored to the specific hardware."
+   ],
+   "reference_claims": [
+    "The KI‑Servicezentrum Berlin‑Brandenburg operates a data centre in Potsdam that offers a heterogeneous AI infrastructure.",
+    "The KI‑Servicezentrum Berlin‑Brandenburg's infrastructure includes a training cluster consisting of eight NVIDIA Basepods.",
+    "Each NVIDIA Basepod in the training cluster is equipped with eight H100 GPUs with 80 GB VRAM.",
+    "The GPUs in the training cluster are interconnected via 400 Gb/s InfiniBand or 200 Gb/s Ethernet.",
+    "The training cluster is suitable for training machine‑learning or deep‑learning models.",
+    "The infrastructure provides five NVIDIA Pods for inference, each containing eight A30 GPUs.",
+    "The A30 GPUs in the inference pods are linked by 25 Gb/s InfiniBand or 40 Gb/s Ethernet.",
+    "The inference pods enable test‑wise hosting of AI models and prototype applications.",
+    "Neuromorphic systems and other hardware are available in the data centre.",
+    "The availability of diverse hardware allows comparison of cost and performance across hardware types.",
+    "The availability of diverse hardware enables exploration of edge applications.",
+    "The availability of diverse hardware provides flexible solutions for model training and AI‑application development.",
+    "The KI‑Servicezentrum Berlin‑Brandenburg offers consultancy on selecting cloud, on‑premise, or hybrid solutions.",
+    "The KI‑Servicezentrum Berlin‑Brandenburg does not provide production‑grade operation."
+   ],
+   "TP": [
+    {
+     "statement": "The KI‑Servicezentrum Berlin‑Brandenburg operates a data center with a heterogeneous AI infrastructure in Potsdam.",
+     "reason": "This directly matches the ground‑truth statement that the centre operates a data centre in Potsdam offering a heterogeneous AI infrastructure."
+    },
+    {
+     "statement": "The data center provides various hardware types such as GPUs, CPUs, and accelerators, allowing cost and performance comparisons.",
+     "reason": "The ground truth notes the availability of diverse hardware and that it allows comparison of cost and performance across hardware types, which is exactly what the answer states."
+    },
+    {
+     "statement": "The flexible environment enables training of AI models with suitable compute resources and adjustable configurations.",
+     "reason": "Ground‑truth statements describe a training cluster that is suitable for training machine‑learning/deep‑learning models and that the diverse hardware provides flexible solutions for model training, which the answer paraphrases."
+    },
+    {
+     "statement": "The flexible environment enables development and inference of AI applications, including testing of edge scenarios and deployment of solutions tailored to the specific hardware.",
+     "reason": "This is supported by ground‑truth statements about inference pods enabling test‑wise hosting of AI models, the availability of diverse hardware for edge‑application exploration, and flexible solutions for AI‑application development."
+    }
+   ],
+   "FP": [],
+   "FN": [
+    {
+     "statement": "The KI‑Servicezentrum Berlin‑Brandenburg's infrastructure includes a training cluster consisting of eight NVIDIA Basepods.",
+     "reason": "The answer does not mention the specific training cluster composition of eight NVIDIA Basepods."
+    },
+    {
+     "statement": "Each NVIDIA Basepod in the training cluster is equipped with eight H100 GPUs with 80 GB VRAM.",
+     "reason": "Details about the H100 GPUs and their memory are absent from the answer."
+    },
+    {
+     "statement": "The GPUs in the training cluster are interconnected via 400 Gb/s InfiniBand or 200 Gb/s Ethernet.",
+     "reason": "The networking specifications of the training GPUs are not covered in the answer."
+    },
+    {
+     "statement": "The infrastructure provides five NVIDIA Pods for inference, each containing eight A30 GPUs.",
+     "reason": "The answer mentions inference capability but does not specify the five NVIDIA Pods with eight A30 GPUs each."
+    },
+    {
+     "statement": "The A30 GPUs in the inference pods are linked by 25 Gb/s InfiniBand or 40 Gb/s Ethernet.",
+     "reason": "The specific interconnect speeds for the inference GPUs are not mentioned in the answer."
+    },
+    {
+     "statement": "Neuromorphic systems and other hardware are available in the data centre.",
+     "reason": "The answer lists GPUs, CPUs and accelerators but does not mention neuromorphic systems or other hardware types."
+    },
+    {
+     "statement": "The KI‑Servicezentrum Berlin‑Brandenburg offers consultancy on selecting cloud, on‑premise, or hybrid solutions.",
+     "reason": "Consultancy services are not referenced in any of the answer statements."
+    },
+    {
+     "statement": "The KI‑Servicezentrum Berlin‑Brandenburg does not provide production‑grade operation.",
+     "reason": "The answer does not state that the centre does not offer production‑grade operation."
+    }
+   ],
+   "f1": 0.5,
+   "similarity": 0.8646770910471496,
+   "score": 0.5911692727617874
+  },
+  "faithfulness": {
+   "claims": [
+    {
+     "statement": "Das KI‑Servicezentrum Berlin‑Brandenburg betreibt in Potsdam ein Rechenzentrum mit einer heterogenen KI‑Infrastruktur.",
+     "verdict": 0,
+     "reason": "Der Kontext erwähnt das Rechenzentrum in Potsdam und das KI‑Servicezentrum Berlin‑Brandenburg, verbindet sie aber nicht explizit; es wird nicht gesagt, dass das Servicezentrum das Rechenzentrum betreibt."
+    },
+    {
+     "statement": "Das Rechenzentrum in Potsdam stellt verschiedene Hardware‑Typen wie GPUs, CPUs und Beschleuniger zur Verfügung.",
+     "verdict": 0,
+     "reason": "Der Kontext spricht von \"verschiedenen Hardwaretypen\", nennt jedoch keine konkreten Typen wie GPUs, CPUs oder Beschleuniger, sodass die Aussage nicht direkt aus dem Text ableitbar ist."
+    },
+    {
+     "statement": "Die Verfügbarkeit verschiedener Hardware‑Typen ermöglicht den Vergleich von Kosten und Leistung.",
+     "verdict": 1,
+     "reason": "Im Kontext steht: \"So können wir Kosten und Leistung verschiedener Hardwaretypen vergleichen\", was die Aussage exakt bestätigt."
+    },
+    {
+     "statement": "Die heterogene KI‑Infrastruktur ermöglicht das Training von KI‑Modellen durch passende Rechnerressourcen und anpassbare Konfigurationen.",
+     "verdict": 1,
+     "reason": "Der Kontext sagt, dass flexible Lösungen für das Training von KI‑Modellen bereitgestellt werden, was impliziert, dass die Infrastruktur passende Ressourcen und konfigurierbare Optionen bietet."
+    },
+    {
+     "statement": "Die heterogene KI‑Infrastruktur ermöglicht die Entwicklung und Inferenz von KI‑Anwendungen, einschließlich des Tests von Edge‑Szenarien.",
+     "verdict": 1,
+     "reason": "Der Text erwähnt die Bereitstellung von Lösungen für die Entwicklung von KI‑Anwendungen und das Untersuchen von Edge‑Anwendungen, was die Aussage unterstützt."
+    },
+    {
+     "statement": "Die heterogene KI‑Infrastruktur ermöglicht die Bereitstellung von Lösungen, die auf die jeweilige Hardware abgestimmt sind.",
+     "verdict": 1,
+     "reason": "Im Kontext wird von flexiblen, hardware‑spezifischen Lösungen für Training und Entwicklung gesprochen, sodass die Aussage direkt aus dem Text abgeleitet werden kann."
+    }
+   ],
+   "score": 0.6666666666666666
+  }
+ },
+ "manual/2/original": {
+  "kind": "manual",
+  "i": 2,
+  "prompt": "original",
+  "answer": "Das KI‑Servicezentrum stellt folgende Beratungs‑ und Unterstützungsangebote bereit (laut dem bereitgestellten Kontext):\n\n* **Beratung** – gezielte Hilfestellung, um fundierte Entscheidungen zu treffen und KI‑Projekte eigenständig umzusetzen.  \n* **Weiterbildung** – Angebote, mit denen Sie Ihre KI‑Kompetenzen gezielt ausbauen können.  \n* **Infrastruktur** – Bereitstellung von technischer Infrastruktur, damit Sie KI‑Anwendungen selbst entwickeln, betreiben und erfolgreich einsetzen können.  \n\nAlle diese Angebote werden kostenfrei bereitgestellt und verfolgen das Prinzip „Hilfe zur Selbsthilfe“.",
+  "ac": {
+   "answer_claims": [
+    "Das KI‑Servicezentrum stellt Beratungs‑ und Unterstützungsangebote bereit.",
+    "Das Beratungsangebot bietet gezielte Hilfestellung, um fundierte Entscheidungen zu treffen und KI‑Projekte eigenständig umzusetzen.",
+    "Das Weiterbildungsangebot ermöglicht den Ausbau von KI‑Kompetenzen.",
+    "Das Infrastrukturangebot stellt technische Infrastruktur bereit, um KI‑Anwendungen zu entwickeln, zu betreiben und erfolgreich einzusetzen.",
+    "Jedes der Angebote wird kostenfrei bereitgestellt.",
+    "Jedes der Angebote verfolgt das Prinzip \"Hilfe zur Selbsthilfe\"."
+   ],
+   "reference_claims": [
+    "Das KI-Servicezentrum bietet Gruppensprechstunden zum Einsatz von KI.",
+    "Das KI-Servicezentrum bietet individuelle Beratung zum Einsatz von KI.",
+    "Das KI-Servicezentrum kann dreimonatige Pilotprojekte gemeinsam durchführen."
+   ],
+   "TP": [
+    {
+     "statement": "Das KI‑Servicezentrum stellt Beratungs‑ und Unterstützungsangebote bereit.",
+     "reason": "The ground truth states that the KI-Servicezentrum offers individual consulting and group office hours, which are forms of consulting and support, directly supporting this general claim."
+    }
+   ],
+   "FP": [
+    {
+     "statement": "Das Beratungsangebot bietet gezielte Hilfestellung, um fundierte Entscheidungen zu treffen und KI‑Projekte eigenständig umzusetzen.",
+     "reason": "The ground truth does not mention targeted assistance for decision‑making or self‑implementation of KI projects."
+    },
+    {
+     "statement": "Das Weiterbildungsangebot ermöglicht den Ausbau von KI‑Kompetenzen.",
+     "reason": "No statement in the ground truth refers to a training or competency‑building offering."
+    },
+    {
+     "statement": "Das Infrastrukturangebot stellt technische Infrastruktur bereit, um KI‑Anwendungen zu entwickeln, zu betreiben und erfolgreich einzusetzen.",
+     "reason": "The ground truth does not describe any infrastructure provision for KI applications."
+    },
+    {
+     "statement": "Jedes der Angebote wird kostenfrei bereitgestellt.",
+     "reason": "The ground truth contains no information about the cost or free provision of the offers."
+    },
+    {
+     "statement": "Jedes der Angebote verfolgt das Prinzip \"Hilfe zur Selbsthilfe\".",
+     "reason": "The principle of \"Hilfe zur Selbsthilfe\" is not mentioned in the ground truth."
+    }
+   ],
+   "FN": [
+    {
+     "statement": "Das KI-Servicezentrum bietet Gruppensprechstunden zum Einsatz von KI.",
+     "reason": "This specific group office‑hour offering is listed in the ground truth but absent from the answer."
+    },
+    {
+     "statement": "Das KI-Servicezentrum bietet individuelle Beratung zum Einsatz von KI.",
+     "reason": "The individual consulting service is mentioned in the ground truth and not reflected in the answer."
+    },
+    {
+     "statement": "Das KI-Servicezentrum kann dreimonatige Pilotprojekte gemeinsam durchführen.",
+     "reason": "The three‑month pilot‑project capability appears in the ground truth but is missing from the answer."
+    }
+   ],
+   "f1": 0.2,
+   "similarity": 0.8087319583858984,
+   "score": 0.35218298959647465
+  },
+  "faithfulness": {
+   "claims": [
+    {
+     "statement": "Das KI‑Servicezentrum bietet Beratung als gezielte Hilfestellung, um fundierte Entscheidungen zu treffen und KI‑Projekte eigenständig umzusetzen.",
+     "verdict": 1,
+     "reason": "Der Kontext sagt ausdrücklich, dass mit den Beratungsangeboten Hilfe zur Selbsthilfe geleistet wird, um fundierte Entscheidungen zu treffen und KI‑Projekte eigenständig umzusetzen."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum bietet Weiterbildung an, um KI‑Kompetenzen gezielt auszubauen.",
+     "verdict": 1,
+     "reason": "Im Kontext wird erwähnt, dass die KI‑Kompetenzen gezielt ausgebaut werden sollen und dass Weiterbildung zu den angebotenen Leistungen gehört."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum stellt Infrastruktur bereit, um technische Infrastruktur für die eigenständige Entwicklung, den Betrieb und den erfolgreichen Einsatz von KI‑Anwendungen zu ermöglichen.",
+     "verdict": 1,
+     "reason": "Der Text gibt an, dass Infrastruktur angeboten wird, um KI‑Anwendungen eigenständig zu entwickeln, zu betreiben und erfolgreich einzusetzen."
+    },
+    {
+     "statement": "Das KI‑Servicezentrum stellt alle Angebote kostenfrei bereit.",
+     "verdict": 1,
+     "reason": "Im Kontext steht: \"Alle unsere Angebote sind kostenlos.\""
+    },
+    {
+     "statement": "Das KI‑Servicezentrum verfolgt das Prinzip \"Hilfe zur Selbsthilfe\".",
+     "verdict": 1,
+     "reason": "Der Kontext formuliert: \"Mit unseren Beratungsangeboten leisten wir Hilfe zur Selbsthilfe.\""
+    }
+   ],
+   "score": 1.0
+  }
+ },
+ "manual/3/original": {
+  "kind": "manual",
+  "i": 3,
+  "prompt": "original",
+  "answer": "In einem KI‑Pilotprojekt wird gemeinsam mit den Teilnehmenden ein erster Prototyp entwickelt. Der Prototyp dient dazu, die zugrunde liegenden Konzepte und deren Machbarkeit praktisch zu erproben. Dabei arbeiten KI‑Expertinnen und KI‑Experten zusammen mit den Projektbeteiligten – häufig an Laptops – um die Idee zu testen und eine solide Basis für eine spätere, kommerzielle und marktfähige Lösung zu schaffen.  \n\nZusätzlich können Interessierte alle drei Monate einen Antrag für ein begleitetes KI‑Pilotprojekt stellen; die genauen Starttermine werden über den Newsletter oder das Bewerbungsformular bekanntgegeben.",
+  "ac": {
+   "answer_claims": [
+    "Ein KI-Pilotprojekt entwickelt gemeinsam mit den Teilnehmenden einen ersten Prototyp.",
+    "Der Prototyp dient dazu, die zugrunde liegenden Konzepte praktisch zu erproben.",
+    "Der Prototyp dient dazu, die Machbarkeit der Konzepte praktisch zu erproben.",
+    "KI-Expertinnen und KI-Experten arbeiten zusammen mit den Projektbeteiligten, häufig an Laptops, um die Idee zu testen.",
+    "KI-Expertinnen und KI-Experten arbeiten zusammen mit den Projektbeteiligten, häufig an Laptops, um eine solide Basis für eine spätere kommerzielle und marktfähige Lösung zu schaffen.",
+    "Interessierte können alle drei Monate einen Antrag für ein begleitetes KI-Pilotprojekt stellen.",
+    "Die genauen Starttermine werden über den Newsletter bekanntgegeben.",
+    "Die genauen Starttermine werden über das Bewerbungsformular bekanntgegeben."
+   ],
+   "reference_claims": [
+    "Unternehmen können sich für Pilotprojekte bewerben.",
+    "Unternehmen erhalten 2-3 Tage pro Woche aktive Projektbegleitung, um gemeinsam einen Prototypen zu entwickeln.",
+    "Unternehmen können die Recheninfrastruktur nutzen."
+   ],
+   "TP": [
+    {
+     "statement": "Ein KI-Pilotprojekt entwickelt gemeinsam mit den Teilnehmenden einen ersten Prototyp.",
+     "reason": "Ground truth states that companies receive active project guidance to jointly develop a prototype; the answer describes a KI pilot project jointly developing a first prototype, which is directly supported."
+    },
+    {
+     "statement": "Interessierte können alle drei Monate einen Antrag für ein begleitetes KI-Pilotprojekt stellen.",
+     "reason": "Ground truth mentions that companies can apply for pilot projects; the answer indicates that interested parties can submit an application for an accompanied KI pilot project, matching the ground truth."
+    }
+   ],
+   "FP": [
+    {
+     "statement": "Der Prototyp dient dazu, die zugrunde liegenden Konzepte praktisch zu erproben.",
+     "reason": "The ground truth does not specify the purpose of the prototype, so this statement is not directly supported."
+    },
+    {
+     "statement": "Der Prototyp dient dazu, die Machbarkeit der Konzepte praktisch zu erproben.",
+     "reason": "The ground truth contains no information about testing feasibility of concepts, thus the statement is unsupported."
+    },
+    {
+     "statement": "KI-Expertinnen und KI-Experten arbeiten zusammen mit den Projektbeteiligten, häufig an Laptops, um die Idee zu testen.",
+     "reason": "Ground truth does not mention experts working on laptops or testing ideas, so this statement is not supported."
+    },
+    {
+     "statement": "KI-Expertinnen und KI-Experten arbeiten zusammen mit den Projektbeteiligten, häufig an Laptops, um eine solide Basis für eine spätere kommerzielle und marktfähige Lösung zu schaffen.",
+     "reason": "The ground truth does not include any detail about experts creating a commercial basis, making this statement unsupported."
+    },
+    {
+     "statement": "Die genauen Starttermine werden über den Newsletter bekanntgegeben.",
+     "reason": "Ground truth does not provide information about how start dates are communicated, so this statement is not supported."
+    },
+    {
+     "statement": "Die genauen Starttermine werden über das Bewerbungsformular bekanntgegeben.",
+     "reason": "There is no mention in the ground truth of start dates being announced via the application form, thus the statement is unsupported."
+    }
+   ],
+   "FN": [
+    {
+     "statement": "Unternehmen können die Recheninfrastruktur nutzen.",
+     "reason": "The answer does not contain any statement about companies being able to use computing infrastructure, so this ground‑truth statement is missing."
+    }
+   ],
+   "f1": 0.36363636363636365,
+   "similarity": 0.7167853965579157,
+   "score": 0.4519236218667516
+  },
+  "faithfulness": {
+   "claims": [
+    {
+     "statement": "Ein erster Prototyp wird in einem KI-Pilotprojekt gemeinsam mit den Teilnehmenden entwickelt.",
+     "verdict": 1,
+     "reason": "Der Kontext sagt ausdrücklich, dass in den KI-Pilotprojekten gemeinsam mit Ihnen (den Teilnehmenden) ein Prototyp entwickelt wird."
+    },
+    {
+     "statement": "Der Prototyp dient dazu, die zugrunde liegenden Konzepte und die praktische Machbarkeit der zugrunde liegenden Konzepte zu erproben.",
+     "verdict": 1,
+     "reason": "Im Kontext wird erwähnt, dass der Prototyp der ersten Erprobung von Konzepten und Machbarkeit dient."
+    },
+    {
+     "statement": "KI-Expertinnen und KI-Experten arbeiten zusammen mit den Projektbeteiligten, häufig an Laptops, um die Projektidee zu testen und eine solide Basis für eine spätere kommerzielle und marktfähige Lösung zu schaffen.",
+     "verdict": 1,
+     "reason": "Der Kontext beschreibt KI‑Expert*innen am Tisch mit Teilnehmenden und Laptops sowie dass der Prototyp eine Grundlage für eine kommerzielle, marktfähige Lösung bildet, was die Aussage unterstützt."
+    },
+    {
+     "statement": "Interessierte können alle drei Monate einen Antrag für ein begleitetes KI-Pilotprojekt stellen.",
+     "verdict": 1,
+     "reason": "Der Text sagt, dass Bewerbungen für ein begleitetes KI‑Pilotprojekt alle drei Monate möglich sind."
+    },
+    {
+     "statement": "Genaue Starttermine werden über den Newsletter oder das Bewerbungsformular bekanntgegeben.",
+     "verdict": 1,
+     "reason": "Im Kontext wird erklärt, dass der Starttermin der nächsten Bewerbungsphase im Newsletter oder im Bewerbungsformular zu erfahren ist."
+    }
+   ],
+   "score": 1.0
+  }
+ },
+ "manual/4/original": {
+  "kind": "manual",
+  "i": 4,
+  "prompt": "original",
+  "answer": "Ja. Um die bereitgestellte Recheninfrastruktur zu nutzen, müssen Sie sich bewerben – entweder indem Sie über das Portal eine Projektbeschreibung einreichen (wie in Quelle 1 beschrieben) oder, konkreter, indem Sie sich für ein begleitetes KI‑Pilotprojekt bewerben, das alle drei Monate geöffnet wird (Quelle 3). Ohne eine solche Bewerbung wird die Infrastruktur nicht zur Verfügung gestellt.",
+  "ac": {
+   "answer_claims": [
+    "Eine Bewerbung ist erforderlich, um die bereitgestellte Recheninfrastruktur zu nutzen.",
+    "Eine Projektbeschreibung kann über das Portal eingereicht werden, wie in Quelle 1 beschrieben.",
+    "Eine Bewerbung für ein begleitetes KI‑Pilotprojekt ist möglich, das alle drei Monate geöffnet wird, wie in Quelle 3 beschrieben.",
+    "Ohne eine Bewerbung wird die Infrastruktur nicht zur Verfügung gestellt."
+   ],
+   "reference_claims": [
+    "Eine Bewerbung für ein Pilotprojekt ist nicht erforderlich.",
+    "Um die Recheninfrastruktur zu nutzen, muss eine Beschreibung des Vorhabens über das Portal des KI-Servicezentrums eingereicht werden.",
+    "Ein Produktivbetrieb wird nicht angeboten."
+   ],
+   "TP": [
+    {
+     "statement": "Eine Projektbeschreibung kann über das Portal eingereicht werden, wie in Quelle 1 beschrieben.",
+     "reason": "Ground truth states that a project description must be submitted via the KI-Servicezentrum portal to use the infrastructure; the answer’s statement that a project description can be submitted via the portal directly aligns with this requirement."
+    }
+   ],
+   "FP": [
+    {
+     "statement": "Eine Bewerbung ist erforderlich, um die bereitgestellte Recheninfrastruktur zu nutzen.",
+     "reason": "Ground truth explicitly says an application for a pilot project is not required, so claiming that an application is required contradicts the ground truth."
+    },
+    {
+     "statement": "Eine Bewerbung für ein begleitetes KI‑Pilotprojekt ist möglich, das alle drei Monate geöffnet wird, wie in Quelle 3 beschrieben.",
+     "reason": "Ground truth does not mention any application process or periodic openings and explicitly states that an application is not required; therefore this statement is unsupported."
+    },
+    {
+     "statement": "Ohne eine Bewerbung wird die Infrastruktur nicht zur Verfügung gestellt.",
+     "reason": "Ground truth indicates that no application is needed, making the claim that the infrastructure is unavailable without an application unsupported."
+    }
+   ],
+   "FN": [
+    {
+     "statement": "Eine Bewerbung für ein Pilotprojekt ist nicht erforderlich.",
+     "reason": "The ground truth explicitly states that an application for a pilot project is not required, which is missing from the answer."
+    },
+    {
+     "statement": "Um die Recheninfrastruktur zu nutzen, muss eine Beschreibung des Vorhabens über das Portal des KI-Servicezentrums eingereicht werden.",
+     "reason": "The requirement to submit a project description via the KI-Servicezentrum portal to use the infrastructure is not mentioned in the answer."
+    },
+    {
+     "statement": "Ein Produktivbetrieb wird nicht angeboten.",
+     "reason": "The statement that a productive operation is not offered is absent from the answer."
+    }
+   ],
+   "f1": 0.25,
+   "similarity": 0.7883541776705989,
+   "score": 0.3845885444176497
+  },
+  "faithfulness": {
+   "claims": [
+    {
+     "statement": "Die Nutzung der bereitgestellten Recheninfrastruktur erfordert eine Bewerbung.",
+     "verdict": 1,
+     "reason": "Der Kontext sagt, dass man eine Projektbeschreibung über das Portal einreichen muss, um die KI-Anwendung mit der Infrastruktur zu entwickeln und zu erproben, was impliziert, dass eine Bewerbung erforderlich ist."
+    },
+    {
+     "statement": "Eine Bewerbung kann erfolgen, indem die interessierte Person über das Portal eine Projektbeschreibung einreicht, wie in Quelle 1 beschrieben.",
+     "verdict": 1,
+     "reason": "Im Kontext wird ausdrücklich erwähnt, dass man eine Beschreibung für das Vorhaben über das Portal einreichen soll."
+    },
+    {
+     "statement": "Alternativ kann die interessierte Person sich für ein begleitetes KI‑Pilotprojekt bewerben, das alle drei Monate geöffnet wird, wie in Quelle 3 angegeben.",
+     "verdict": 1,
+     "reason": "Der Kontext weist darauf hin, dass Bewerbungen für ein begleitetes KI‑Pilotprojekt alle drei Monate möglich sind."
+    },
+    {
+     "statement": "Ohne eine solche Bewerbung wird die Infrastruktur nicht zur Verfügung gestellt.",
+     "verdict": 1,
+     "reason": "Da der Kontext verlangt, dass man eine Projektbeschreibung über das Portal einreicht, um die Infrastruktur zu nutzen, lässt sich schließen, dass ohne diese Bewerbung die Infrastruktur nicht bereitgestellt wird."
+    }
+   ],
+   "score": 1.0
+  }
+ }
+}
