@@ -34,10 +34,13 @@ def _():
     from ragkit import i18n, theme  # language and scope switches, HPI look
     from ragkit import intro_rag as rag  # the website lines of w3_01 (module A, C27)
     from ragkit import w3_eval as ev  # gold data, caches and the judge
+    from ragkit.corpus_text import (
+        CorpusText,  # corpus text in the language of the notebook
+    )
     from ragkit.viz import md_table
 
     theme.apply_mpl()
-    return ev, i18n, json, md_table, mo, os, pd, plt, rag, theme
+    return CorpusText, ev, i18n, json, md_table, mo, os, pd, plt, rag, theme
 
 
 @app.cell(hide_code=True)
@@ -97,7 +100,7 @@ def _(mo, t, theme):
     # Every place where participants act gets a numbered task box; the short version has no TOP_K choice.
     # Each quiz is its own counted step (CR-19, as in w3_01): "Kurz geprüft" before the task it prepares.
     TASK_ORDER = (['judge', 'quiz_cp', 'cp', 'quiz_cr', 'cr', 'check', 'spread', 'topk_predict']
-                  + t.full(['quiz_topk', 'topk_choose'], []))
+                  + t.full(['quiz_topk', 'topk_choose', 'topk_choose2'], []))
 
     def task(name, title, steps, time):
         """The task box of a numbered task, or of the extra task (name='extra')."""
@@ -145,6 +148,20 @@ def _(card, cards, hint, key, mo, t):
         ]),
         hint(t('Die Daten kennen Sie aus Notebook 1: Zum Nachvollziehen nehmen wir die KISZ-Webseite, zum Messen den Gold-Datensatz.',
                'You know the data from notebook 1: to follow the steps we use the AI Service Center website, to measure the gold data set.')),
+        mo.accordion({t('Die vier Konfigurationen in diesem Notebook', 'The four configurations in this notebook'): mo.md(t(
+            'Eine Konfiguration ist eine Kombination aus Chunking, Embedding-Modell und Richter. Die Kurven in Abschnitt F zeigen die Standard-Konfiguration; die Zusatzaufgabe vergleicht sie mit drei Varianten, die je eine Stellschraube ändern.\n\n'
+            '| Name | Chunking | Embedding-Modell | Richter | Was anders ist |\n|---|---|---|---|---|\n'
+            '| Standard | json_structured_sections (ein Chunk je Abschnitt des Kompendiums) | octen-embedding-8b | gpt-oss-120b | |\n'
+            '| Embedding miniLM | json_structured_sections | miniLM (ein kleines, älteres Modell) | gpt-oss-120b | das Embedding-Modell |\n'
+            '| Chunking markdown_headers | markdown_headers (ein Chunk je Überschrift) | octen-embedding-8b | gpt-oss-120b | das Chunking |\n'
+            '| Richter llama | json_structured_sections | octen-embedding-8b | llama-3-3-70b (eine andere Modellfamilie) | nur der Richter |',
+            'A configuration is one combination of chunking, embedding model and judge. The curves in section F show the standard configuration; the extra task compares it with three variants that each change one lever.\n\n'
+            '| Name | Chunking | Embedding model | Judge | What differs |\n|---|---|---|---|---|\n'
+            '| Standard | json_structured_sections (one chunk per section of the Kompendium) | octen-embedding-8b | gpt-oss-120b | |\n'
+            '| Embedding miniLM | json_structured_sections | miniLM (a small, older model) | gpt-oss-120b | the embedding model |\n'
+            '| Chunking markdown_headers | markdown_headers (one chunk per heading) | octen-embedding-8b | gpt-oss-120b | the chunking |\n'
+            '| Judge llama | json_structured_sections | octen-embedding-8b | llama-3-3-70b (another model family) | only the judge |',
+        ))}),
     ], gap=1)
     return
 
@@ -152,7 +169,7 @@ def _(card, cards, hint, key, mo, t):
 @app.cell(hide_code=True)
 def _(ev, mo, rag, t):
     # Row 4 (C30): no note about the collection any more; a red callout only when the cache is missing
-    cache_ok = ev.cache_complete() and rag.CHUNKS_FILE.exists()
+    cache_ok = ev.cache_complete() and rag.CHUNKS_FILE.exists() and ev.LMM_FILE.exists()
     (None if cache_ok else mo.callout(mo.md(t(
         'Der Cache mit den Ergebnissen fehlt. Bauen Sie ihn einmal mit `uv run python -m tools.precompute_w3_02` im Ordner `notebooks`.',
         'The results cache is missing. Build it once with `uv run python -m tools.precompute_w3_02` in the `notebooks` folder.',
@@ -161,7 +178,7 @@ def _(ev, mo, rag, t):
 
 
 @app.cell(hide_code=True)
-def _(cache_ok, ev, mo, rag):
+def _(cache_ok, ev, json, mo, rag):
     mo.stop(not cache_ok)
     # Module A (C27): one question about the website of the KI-Servicezentrum, its top-5 lines and five judge runs
     _lines = rag.load_corpus()[0]
@@ -175,44 +192,19 @@ def _(cache_ok, ev, mo, rag):
     TR = ev.load_translations()  # {'en': {German: English}, 'de': {English: German}}
     KTR = ev.load_kisz_translations()
     CFG = {name: ev.load_config(name) for name in ev.CONFIGS}
+    LMM = json.loads(ev.LMM_FILE.read_text(encoding='utf-8'))  # mixed models, tools/precompute_w3_02.py --stage lmm
     JUDGE_DOWN = ('Der Richter ist gerade nicht erreichbar. Probieren Sie es in einer Minute noch einmal.',
                   'The judge cannot be reached right now. Try again in a minute.')
     LIMIT = 3  # live judge runs per person (section E, part c)
-    return CFG, JUDGE_DOWN, KTR, LIMIT, TR, demo, gold, retrieval
+    return CFG, JUDGE_DOWN, KTR, LIMIT, LMM, TR, demo, gold, retrieval
 
 
 @app.cell(hide_code=True)
-def _(KTR, TR, feedback, mo, t, theme):
-    # Corpus and RAGAS output: shown unchanged and marked with the class hpi-corpus (the language check skips it);
-    # in the English version a grey translation below.
-    def en_of(text):
-        """English translation of a German text from the cache; only in the English version, only when it differs."""
-        if t.lang != 'en':
-            return None
-        _en = KTR['en'].get(text) or TR['en'].get(text)
-        return _en if _en and _en.strip() != text.strip() else None
-
-    def _corpus(text):
-        return mo.Html(f'<div class="hpi-corpus">{mo.md(text).text}</div>')
-
-    def bi(text):
-        """Corpus text as it is, with its English translation below in small grey type."""
-        _en = en_of(text)
-        return _corpus(text) if _en is None else mo.vstack([_corpus(text), theme.hint(_en)], gap=0.25)
-
-    def flat(s):
-        return ' '.join(str(s).split()).replace('|', '/')
-
-    def short(text, n=22):
-        _w = flat(text).split()
-        return ' '.join(_w[:n]) + (' ...' if len(_w) > n else '')
-
-    def bi_cell(text, n=None):
-        """`bi` for one Markdown table cell, optionally shortened to n words."""
-        _cut = (lambda s: short(s, n)) if n else flat
-        _en = en_of(text)
-        _orig = f'<span class="hpi-corpus">{_cut(text)}</span>'
-        return _orig if _en is None else f'{_orig}<br><span style="color:{theme.GREY};font-size:.85em">{_cut(_en)}</span>'
+def _(CorpusText, KTR, TR, feedback, mo, t, theme):
+    # Corpus and RAGAS output in the language of the notebook (ragkit/corpus_text.py): the English version shows
+    # the cached translation and keeps the German original in an accordion; table cells show one language only.
+    ct = CorpusText(mo, t, {**TR['en'], **KTR['en']})
+    bi, bi_cell = ct.show, ct.cell
 
     _EN = (' the ', ' and ', ' of ', ' to ', ' is ', ' does ', ' not ', ' context ')
 
@@ -266,7 +258,7 @@ def _(KTR, TR, feedback, mo, t, theme):
         if _x is None:
             return mo.callout(mo.md(t('Geben Sie eine Zahl ein, zum Beispiel 0,50.', 'Enter a number, for example 0.50.')), kind='warn')
         return feedback(True) if abs(_x - target) <= 0.01 + 1e-9 else feedback(False, wrong_text)
-    return ap_steps, bi, bi_cell, check_answer, en_of, is_english, nw, strip_html, yes_no
+    return ap_steps, bi, bi_cell, check_answer, ct, is_english, nw, strip_html, yes_no
 
 
 @app.cell(hide_code=True)
@@ -450,8 +442,78 @@ def _(ap_steps, check_answer, confirmed, cta, demo, ev, mo, strip_html, t, task,
 
 
 @app.cell(hide_code=True)
-def _(bi_cell, chain_html, demo, hint, is_english, key, left, md_table, mo, t, yes_no):
-    # Section D (row 10, section 3f): the chain first, then the claims of the KISZ reference
+def _(card, cards, ev, frame, hint, key, left, md_table, mo, t):
+    # Section D, rows D1 to D3: before the judge counts claims, the participants count (Mentimeter in the room),
+    # four definitions, the working definition of this notebook with its rules, the three examples resolved, and
+    # what RAGAS tells the judge (nothing). The texts are single sentences from gold answers 34, 28 and 30.
+    _, _cr_prompt = ev.judge_prompt_text()
+    EXAMPLES = [
+        ('A', t('Die Anforderungen müssen dokumentiert werden, damit sie identifiziert und bei Planung, Betrieb und Beschaffung berücksichtigt werden können.',
+                'The requirements must be documented so that they can be identified and taken into account during planning, operation, and procurement.'),
+         [t(['Die Anforderungen müssen dokumentiert werden', 'damit sie identifiziert und bei Planung, Betrieb und Beschaffung berücksichtigt werden können'],
+            ['The requirements must be documented', 'so that they can be identified and taken into account during planning, operation, and procurement']),
+          t(['Die Anforderungen müssen dokumentiert werden.', 'Dokumentierte Anforderungen können identifiziert werden.', 'Dokumentierte Anforderungen können bei der Planung berücksichtigt werden.', '... beim Betrieb berücksichtigt werden.', '... bei der Beschaffung berücksichtigt werden.'],
+            ['The requirements must be documented.', 'Documented requirements can be identified.', 'Documented requirements can be taken into account during planning.', '... during operation.', '... during procurement.']),
+          t(['Anforderungen müssen dokumentiert werden.', 'Zweck: Anforderungen identifizieren.', 'Zweck: bei der Planung berücksichtigen.', 'Zweck: beim Betrieb berücksichtigen.', 'Zweck: bei der Beschaffung berücksichtigen.'],
+            ['Requirements must be documented.', 'Purpose: identify requirements.', 'Purpose: take into account during planning.', 'Purpose: during operation.', 'Purpose: during procurement.'])]),
+        ('B', t('Ohne verbindliche Passwortregeln besteht die Gefahr schwacher oder mehrfach genutzter Passwörter, die leicht kompromittiert werden können.',
+                'Without binding password rules, there is a risk of weak or reused passwords that can be easily compromised.'),
+         [t(['Ohne verbindliche Passwortregeln besteht die Gefahr schwacher oder mehrfach genutzter Passwörter', 'die leicht kompromittiert werden können'],
+            ['Without binding password rules, there is a risk of weak or reused passwords', 'that can be easily compromised']),
+          t(['Ohne verbindliche Passwortregeln besteht die Gefahr schwacher Passwörter.', 'Ohne verbindliche Passwortregeln besteht die Gefahr mehrfach genutzter Passwörter.', 'Schwache Passwörter können leicht kompromittiert werden.', 'Mehrfach genutzte Passwörter können leicht kompromittiert werden.'],
+            ['Without binding password rules, there is a risk of weak passwords.', 'Without binding password rules, there is a risk of reused passwords.', 'Weak passwords can be easily compromised.', 'Reused passwords can be easily compromised.']),
+          t(['Ohne Passwortregeln: Gefahr schwacher Passwörter.', 'Ohne Passwortregeln: Gefahr mehrfach genutzter Passwörter.', 'Schwache oder mehrfach genutzte Passwörter sind leicht zu kompromittieren.'],
+            ['Without password rules: risk of weak passwords.', 'Without password rules: risk of reused passwords.', 'Weak or reused passwords are easy to compromise.'])]),
+        ('C', t('Ausgabe und Entzug von Zutritts-, Zugangs- und Zugriffsmitteln sind zu dokumentieren und bei Kompromittierung sofort zu ersetzen.',
+                'Issuance and revocation of entry, access, and usage media must be documented and replaced immediately if compromised.'),
+         [t(['Ausgabe und Entzug von Zutritts-, Zugangs- und Zugriffsmitteln sind zu dokumentieren', 'und bei Kompromittierung sofort zu ersetzen'],
+            ['Issuance and revocation of entry, access, and usage media must be documented', 'and replaced immediately if compromised']),
+          t(['Die Ausgabe von Zutrittsmitteln ist zu dokumentieren.', '... von Zugangsmitteln ...', '... von Zugriffsmitteln ...', 'Der Entzug von Zutrittsmitteln ist zu dokumentieren.', '... von Zugangsmitteln ...', '... von Zugriffsmitteln ...', 'Zutrittsmittel sind bei Kompromittierung sofort zu ersetzen.', 'Zugangsmittel ...', 'Zugriffsmittel ...'],
+            ['Issuance of entry media must be documented.', '... of access media ...', '... of usage media ...', 'Revocation of entry media must be documented.', '... of access media ...', '... of usage media ...', 'Entry media must be replaced immediately if compromised.', 'Access media ...', 'Usage media ...']),
+          t(['Die Ausgabe von Zutritts-, Zugangs- und Zugriffsmitteln ist zu dokumentieren.', 'Der Entzug von Zutritts-, Zugangs- und Zugriffsmitteln ist zu dokumentieren.', 'Zutritts-, Zugangs- und Zugriffsmittel sind bei Kompromittierung sofort zu ersetzen.'],
+            ['Issuance of entry, access and usage media must be documented.', 'Revocation of entry, access and usage media must be documented.', 'Entry, access and usage media must be replaced immediately if compromised.'])]),
+    ]
+    _rows_label = t(['Alltag, ganz', 'Alltag, feiner', 'Logik', 'Arbeitsdefinition'], ['Everyday, whole', 'Everyday, granular', 'Logic', 'Working definition'])
+
+    def _breakdown(letter, text, splits):
+        _lists = [[text], *splits]
+        _rows = [{t('Definition', 'Definition'): lab, t('Aussagen', 'Claims'): ' '.join(f'{i + 1}) {c}' for i, c in enumerate(cl)),
+                  t('Anzahl', 'Count'): str(len(cl))} for lab, cl in zip(_rows_label, _lists)]
+        return mo.md(left(md_table(_rows)))
+
+    claims_block = mo.vstack([
+        mo.md(t('### Was ist eine Aussage?', '### What is a claim?')),
+        key(t('Bevor der Richter zählt, zählen Sie: Wie viele Aussagen stecken in jedem dieser drei Sätze?',
+              'Before the judge counts, you count: how many claims are in each of these three sentences?')),
+        mo.vstack([mo.Html(f'<div class="hpi-corpus"><b>{letter}</b> &nbsp; {text}</div>') for letter, text, _ in EXAMPLES], gap=0.4),
+        hint(t('Drei Sätze aus Referenzantworten des Gold-Datensatzes. Ihre Zahlen geben Sie im Raum über Mentimeter ab. Erst danach geht es hier weiter.',
+               'Three sentences from reference answers of the gold data set. Give your numbers in the room via Mentimeter. Only then continue here.')),
+        mo.md(t('#### Vier Antworten', '#### Four answers')),
+        cards([
+            card(t('Alltag, ganz', 'Everyday, whole'), t('Eine Aussage ist ein Satz, der etwas feststellt.',
+                                                        'A claim is a sentence that states something.')),
+            card(t('Alltag, feiner', 'Everyday, granular'), t('Jeder Teilsatz, der etwas feststellt, ist eine Aussage: Hauptsatz und Nebensatz zählen getrennt.',
+                                                             'Every clause that states something is a claim: main clause and subordinate clause count separately.')),
+            card(t('Logik', 'Logic'), t('Eine Aussage ist etwas, das für sich allein wahr oder falsch sein kann. Jedes Element einer Aufzählung zählt für jede Handlung, zu der es gehört.',
+                                        'A claim is something that can be true or false on its own. Every element of a list counts for every action it belongs to.')),
+            card(t('Arbeitsdefinition', 'Working definition'), t('Eine Aussage ist der kleinste Teil der Referenzantwort, der sich an einer Stelle im Kompendium prüfen lässt.',
+                                                                'A claim is the smallest part of the reference answer that can be checked at one place in the Kompendium.')),
+        ]),
+        frame(t('Arbeitsdefinition für dieses Notebook', 'Working definition for this notebook'), t(
+            'Eine Aussage ist der kleinste Teil der Referenzantwort, der sich an einer Stelle im Kompendium prüfen lässt. Jede Handlung (dokumentieren, ersetzen) ist eine eigene Aussage. Jede Begründung (weil, da) und jeder Zweck (damit, um zu) ist eine eigene Aussage. Eine Aufzählung, die das Kompendium als eine Liste nennt, bleibt eine Aussage. Wiederholungen und Füllwörter zählen nicht. Mit dieser Definition stimmen Sie jetzt noch einmal ab.',
+            'A claim is the smallest part of the reference answer that can be checked at one place in the Kompendium. Every action (document, replace) is its own claim. Every reason (because) and every purpose (so that) is its own claim. A list that the Kompendium states as one list stays one claim. Repetitions and filler do not count. Vote again with this definition.')),
+        mo.accordion({t(f'Auflösung: Satz {letter} nach jeder Definition', f'Solution: sentence {letter} by each definition'): _breakdown(letter, text, splits)
+                      for letter, text, splits in EXAMPLES}),
+        hint(t(f'RAGAS gibt dem Richter keine Definition. Die Anweisung lautet nur: "{_cr_prompt.splitlines()[0]}". Der Richter gpt-oss-120b zerlegt meist je Satz, llama-3-3-70b feiner (Abschnitt E b).',
+               f'RAGAS gives the judge no definition. The instruction only says: "{_cr_prompt.splitlines()[0]}". The judge gpt-oss-120b mostly splits per sentence, llama-3-3-70b finer (section E b).')),
+    ], gap=1)
+    return (claims_block,)
+
+
+@app.cell(hide_code=True)
+def _(bi_cell, chain_html, claims_block, demo, hint, key, left, md_table, mo, t, yes_no):
+    # Section D (row 10, section 3f): the chain first, the definition block (claims_block), then the claims of the
+    # KISZ reference
     _claims = demo['run']['claims']
     _nw = '<span style="white-space:nowrap">{}</span>'.format
     # Section 3g: the judge's reasons in full; long ones wrap (theme.css), nothing is cut off
@@ -459,7 +521,6 @@ def _(bi_cell, chain_html, demo, hint, is_english, key, left, md_table, mo, t, y
               t('Begründung des Richters', "Judge's reason"): bi_cell(c['reason'])} for _n, c in enumerate(_claims)]
     _formula = t(r'$$\text{Context Recall} = \frac{\text{belegte Aussagen der Referenzantwort}}{\text{alle Aussagen der Referenzantwort}}$$',
                  r'$$\text{Context Recall} = \frac{\text{supported claims of the reference answer}}{\text{all claims of the reference answer}}$$')
-    _mixed = any(is_english(c['reason']) for c in _claims) and t.lang == 'de'
     mo.vstack([
         mo.md(t('## D. Context Recall: Fehlt etwas?', '## D. Context Recall: is anything missing?')),
         key(t('Context Recall ist der Anteil der Aussagen aus der Referenzantwort, die in den gefundenen Chunks stehen.',
@@ -468,15 +529,13 @@ def _(bi_cell, chain_html, demo, hint, is_english, key, left, md_table, mo, t, y
                       'Anteil = Context Recall'],
                      ['reference answer', 'judge splits it into claims', 'per claim: is it in the chunks?',
                       'share = Context Recall']), judge_index=1),
-        hint(t('Gemeint ist jeweils eine einzelne, für sich prüfbare Aussage; RAGAS nennt sie Claim.',
-               'Each claim is a single statement that can be checked on its own; RAGAS uses the same word.')),
         mo.md(_formula),
+        claims_block,
         mo.md(t(f'**Die {len(_claims)} Aussagen der Referenzantwort aus Abschnitt B**',
                 f'**The {len(_claims)} claims of the reference answer from section B**')),
         mo.md(left(md_table(_rows))),
-        *([hint(t('Die Begründungen sind englisch, weil die Prompts von RAGAS englisch sind: eine Schwäche von RAGAS bei deutschen Texten.',
-                  'The reasons are in English because the RAGAS prompts are in English: a weakness of RAGAS with German texts.'))]
-          if _mixed else []),
+        hint(t('Der Richter gpt-oss-120b hat hier je Satz eine Aussage gebildet. Was eine Aussage ist, sagt ihm RAGAS nicht; siehe oben.',
+               'The judge gpt-oss-120b formed one claim per sentence here. RAGAS does not tell it what a claim is; see above.')),
         mo.accordion({t('Precision und Recall zusammen', 'Precision and recall together'): mo.md(t(
             '| | Precision hoch | Precision niedrig |\n|---|---|---|\n'
             '| **Recall hoch** | Ideal: Die nützlichen Chunks stehen oben, und alles ist abgedeckt. | Alles ist abgedeckt, aber dafür sind viele Chunks nötig. |\n'
@@ -626,8 +685,8 @@ def _(bi_cell, demo, ev, frame, hint, left, md_table, mo, nw, t, yes_no):
 
     mo.vstack([
         mo.md(t('### b. Was zählt als Aussage?', '### b. What counts as a claim?')),
-        hint(t('Dieselbe Referenzantwort, dieselben fünf Zeilen; zwei Richter zerlegen die Referenzantwort in Aussagen.',
-               'The same reference answer, the same five lines; two judges split the reference answer into claims.')),
+        hint(t(f'Dieselbe Referenzantwort, dieselben fünf Zeilen; zwei Richter zerlegen die Referenzantwort in Aussagen: {ev.JUDGE_MODEL} und {demo["second_judge"]}, ein zweites offenes Modell aus einer anderen Modellfamilie.',
+               f'The same reference answer, the same five lines; two judges split the reference answer into claims: {ev.JUDGE_MODEL} and {demo["second_judge"]}, a second open model from another model family.')),
         mo.hstack([_column(ev.JUDGE_MODEL, demo['run']['claims']), _column(demo['second_judge'], demo['second'][0]['claims'])],
                   widths='equal', gap=2, align='start'),
         frame(t('Kernaussage', 'Key takeaway'), t(
@@ -640,20 +699,23 @@ def _(bi_cell, demo, ev, frame, hint, left, md_table, mo, nw, t, yes_no):
 @app.cell(hide_code=True)
 def _(mo, t, task):
     # Section E, part c (row 12, part 1): heading and prediction; the diagram appears as soon as a prediction is chosen
-    ui_pred12 = mo.ui.radio(
-        {t('immer dieselben Zahlen', 'always the same numbers'): 'same',
-         t('leicht unterschiedliche Zahlen', 'slightly different numbers'): 'slight',
-         t('völlig verschiedene Zahlen', 'completely different numbers'): 'wild'},
-        label=t('Was erwarten Sie?', 'What do you expect?'))
+    _choices = {t('immer dieselben Zahlen', 'always the same numbers'): 'same',
+                t('leicht unterschiedliche Zahlen', 'slightly different numbers'): 'slight',
+                t('völlig verschiedene Zahlen', 'completely different numbers'): 'wild'}
+    # One prediction per metric: the split into claims and the chunk verdicts can vary independently.
+    ui_pred12 = mo.ui.dictionary({
+        'cp': mo.ui.radio(_choices, label=t('Was erwarten Sie für Context Precision?', 'What do you expect for Context Precision?')),
+        'cr': mo.ui.radio(_choices, label=t('Was erwarten Sie für Context Recall?', 'What do you expect for Context Recall?')),
+    })
     mo.vstack([
         mo.md(t('### c. Derselbe Richter, fünf Läufe', '### c. The same judge, five runs')),
         mo.md(t('Der Richter bewertet die Frage aus Abschnitt B mit denselben fünf Zeilen fünfmal.',
                 'The judge scores the question from section B with the same five lines five times.')),
         task('spread', t('Vorhersage', 'Prediction'), t(
-            ['Wählen Sie, was Sie erwarten, bevor Sie das Diagramm sehen.', 'Vergleichen Sie danach mit dem Diagramm.'],
-            ['Choose what you expect before you see the diagram.', 'Then compare with the diagram.']),
+            ['Wählen Sie für jede Kennzahl, was Sie erwarten, bevor Sie das Diagramm sehen.', 'Vergleichen Sie danach mit dem Diagramm.'],
+            ['Choose for each metric what you expect before you see the diagram.', 'Then compare with the diagram.']),
             t('etwa 2 Minuten', 'about 2 minutes')),
-        ui_pred12,
+        mo.hstack([ui_pred12['cp'], ui_pred12['cr']], justify='start', gap=3),
     ], gap=1)
     return (ui_pred12,)
 
@@ -668,8 +730,8 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(demo, feedback, frame, get_live, hint, mo, plt, t, theme, ui_pred12):
-    # Row 12, part 2: the five cached runs (and your own ones), the resolution and the key takeaway
-    mo.stop(ui_pred12.value is None)
+    # Row 12, part 2: the five cached runs (and your own ones), one resolution per metric and the key takeaway
+    mo.stop(any(v is None for v in ui_pred12.value.values()))
     _runs = demo['runs']
     _own = get_live()['runs']
     _all = _runs + _own
@@ -715,16 +777,16 @@ def _(demo, feedback, frame, get_live, hint, mo, plt, t, theme, ui_pred12):
                         else ('liegt', f'zwischen {t.num(min(_v))} und {t.num(max(_v))}'))
         return f'{_verb} {name} {_rest}' if inverted else f'{name} {_verb} {_rest}'
 
-    _width = max(round(max(r[m] for r in _runs) - min(r[m] for r in _runs), 2)
-                 for m in ('context_precision', 'context_recall'))
-    _varies = _width > 0
-    # Which prediction the five cached runs confirm (3g): no change, a change of at most half the scale, or more
-    _actual = 'same' if not _varies else ('slight' if _width <= 0.5 else 'wild')
-    _resolve = t(
-        f"Ihre Rechnung oben war Lauf 1. Bei dieser Frage {_span('context_precision', 'Context Precision', inverted=True)}, und {_span('context_recall', 'Context Recall')}."
-        + (' Immer dieselben Zahlen kamen also nicht heraus.' if _varies and ui_pred12.value == 'same' else ''),
-        f"Your computation above was run 1. For this question, {_span('context_precision', 'Context Precision')}, and {_span('context_recall', 'Context Recall')}."
-        + (' So the numbers were not always the same.' if _varies and ui_pred12.value == 'same' else ''))
+    def _actual(metric):
+        """Which prediction the five cached runs confirm (3g): no change, at most half the scale, or more."""
+        _w = round(max(r[metric] for r in _runs) - min(r[metric] for r in _runs), 2)
+        return 'same' if _w == 0 else ('slight' if _w <= 0.5 else 'wild')
+
+    _metrics = (('cp', 'context_precision', 'Context Precision'), ('cr', 'context_recall', 'Context Recall'))
+    _resolve = [feedback(ui_pred12.value[k] == _actual(m), t(
+        f"{'Ihre Rechnung oben war Lauf 1. ' if k == 'cp' else ''}Bei dieser Frage {_span(m, name, inverted=True)}.",
+        f"{'Your computation above was run 1. ' if k == 'cp' else ''}For this question, {_span(m, name)}."))
+        for k, m, name in _metrics]
     # What varies over the five runs: the verdicts on single ranks, the claims, or both.
     _ranks = [i for i in range(len(demo['chunks'])) if len({r['chunks'][i]['verdict'] for r in _runs}) > 1]
     _claims_same = len({tuple((c['statement'], c['attributed']) for c in r['claims']) for r in _runs}) == 1
@@ -739,7 +801,7 @@ def _(demo, feedback, frame, get_live, hint, mo, plt, t, theme, ui_pred12):
         _fig,
         hint(t('Punkte: Context Precision. Quadrate: Context Recall. Unter jedem Lauf die Zahl der Aussagen.',
                'Dots: Context Precision. Squares: Context Recall. Under each run the number of claims.')),
-        feedback(ui_pred12.value == _actual, _resolve),
+        *_resolve,
         hint(_why),
         frame(t('Kernaussage', 'Key takeaway'), t(
             'Ein einzelner Wert ist eine Stichprobe. Belastbar sind Mittelwerte über viele Fragen, gemessen mit demselben Richter.',
@@ -756,7 +818,7 @@ def _(LIMIT, cta, get_used, hint, mo, t, theme, ui_pred12):
         label=theme.cta_label(t('Alle drei Läufe genutzt', 'All three runs used') if _spent
                               else t('Richter noch einmal fragen', 'Ask the judge again')),
         disabled=_spent, kind='success')
-    mo.stop(t.short or ui_pred12.value is None)
+    mo.stop(t.short or any(v is None for v in ui_pred12.value.values()))
     mo.vstack([
         cta(ui_rerun),
         hint(t('Sie können den Richter bis zu dreimal neu urteilen lassen. Vergleichen Sie Ihre neuen Punkte mit denen Ihres Nachbarn.',
@@ -818,8 +880,9 @@ def _(CFG, frame, hint, mo, t):
 def _(key, mo, t, task):
     # Section F (former G and H, section 3f): from one question to all 43, prediction first
     ui_pred14 = mo.ui.radio(
-        {t('beide steigen', 'both rise'): 'both', t('Recall steigt, Precision fällt irgendwann', 'recall rises, precision falls at some point'): 'trade',
-         t('beide fallen', 'both fall'): 'fall'},
+        {t('Precision und Recall steigen', 'precision and recall rise'): 'both',
+         t('Recall steigt, Precision fällt ab einem Punkt', 'recall rises, precision falls from some point on'): 'trade',
+         t('Precision und Recall fallen', 'precision and recall fall'): 'fall'},
         label=t('Was passiert, wenn TOP_K von 1 auf 10 steigt?', 'What happens when TOP_K rises from 1 to 10?'))
     ui_topk = mo.ui.radio({'1': 1, '3': 3, '5': 5, '10': 10}, value='5', inline=True, label='TOP_K')
     mo.vstack([
@@ -844,8 +907,6 @@ def _(CFG, ev, feedback, frame, hint, mo, plt, t, theme, ui_pred14, ui_topk):
     _cr = [sum(CFG['standard']['topk'][str(k)]['context_recall']) / 43 for k in _ks]
     _sel = _ks.index(ui_topk.value)
     _fig, _ax = plt.subplots(figsize=(6.5, 3.0))
-    _ax.axvspan(3, 5, color=theme.GREYS[4], alpha=0.55, zorder=0, linewidth=0)
-    _ax.text(4, 0.98, 'Sweet Spot', ha='center', va='top', fontsize=8.5, color=theme.GREY)
     _ax.plot(_ks, _cp, '-o', color=theme.GREYS[0])
     _ax.plot(_ks, _cr, '--s', color=theme.GREYS[2], markerfacecolor='white')
     _ax.axvline(ui_topk.value, color=theme.GREYS[3], linewidth=1.2, linestyle=':', zorder=1)
@@ -871,14 +932,11 @@ def _(CFG, ev, feedback, frame, hint, mo, plt, t, theme, ui_pred14, ui_topk):
                    mo.stat(t.num(_cp[_sel]), label='Context Precision', bordered=True),
                    mo.stat(t.num(_cr[_sel]), label='Context Recall', bordered=True)], justify='start', align='center', gap=2),
         _fig,
-        hint(t('Abbildung 1. Mittelwerte über 43 Fragen des Gold-Datensatzes, Standard-Konfiguration, Richter gpt-oss-120b. Grau hinterlegt: der Sweet Spot.',
-               'Figure 1. Means over the 43 questions of the gold data set, standard configuration, judge gpt-oss-120b. Grey band: the sweet spot.')),
+        hint(t('Abbildung 1. Mittelwerte über 43 Fragen des Gold-Datensatzes, Standard-Konfiguration, Richter gpt-oss-120b, ein Lauf des Richters je TOP_K. Die Streuung von Lauf zu Lauf aus Abschnitt E c steckt in jedem Punkt.',
+               'Figure 1. Means over the 43 questions of the gold data set, standard configuration, judge gpt-oss-120b, one judge run per TOP_K. The run-to-run spread of section E c sits in every point.')),
         feedback(ui_pred14.value == _actual, _explain),
         *([hint(t('Vor der Pause: Wer hat "Recall steigt, Precision fällt" getippt?',
                   'Before the break: who predicted "recall rises, precision falls"?'))] if t.short else []),
-        frame('Sweet Spot', t(
-            'Bis TOP_K 3 bis 5 bringt jeder Chunk deutlich mehr Recall; danach steigt Recall kaum noch, Precision fällt, und jeder Chunk kostet Platz im Prompt.',
-            'Up to TOP_K 3 to 5 every chunk brings clearly more recall; after that recall hardly rises, precision falls, and every chunk costs space in the prompt.')),
     ], gap=0.75)
     return
 
@@ -892,9 +950,7 @@ def _(CFG, card, cards, mo, t, ui_pred14):
     mo.stop(t.short or ui_pred14.value is None)
     _k1 = CFG['standard']['topk']['1']['context_precision']
     _k3 = CFG['standard']['topk']['3']['context_precision']
-    _rise = (sum(_k3) - sum(_k1)) / 43
     _flips = [i for i in range(43) if _k1[i] < 0.5 and _k3[i] > 0.99]
-    _flip_part = sum(_k3[i] - _k1[i] for i in _flips) / 43
     _nums = t(' und ', ' and ').join(str(i + 1) for i in _flips)
     mo.vstack([
         mo.md(t('### Warum die Kurven so verlaufen', '### Why the curves run this way')),
@@ -902,18 +958,21 @@ def _(CFG, card, cards, mo, t, ui_pred14):
             card(t('Precision von 1 auf 3', 'Precision from 1 to 3'),
                  t(f'Steigt vor allem durch Streuung: Bei den Fragen {_nums} hat der Richter denselben Chunk auf Rang 1 einmal verworfen und einmal als nützlich gewertet.',
                    f'Rises mostly through variance: for questions {_nums} the judge once rejected and once accepted the same chunk at rank 1.'),
-                 t(f'{t.num(_flip_part, 3)} des Anstiegs von {t.num(_rise, 3)}', f'{t.num(_flip_part, 3)} of the rise of {t.num(_rise, 3)}')),
+                 t(f'{len(_flips)} der 43 Fragen tragen fast den ganzen Anstieg', f'{len(_flips)} of the 43 questions carry almost the whole rise')),
             card(t('Precision ab 3', 'Precision from 3 on'),
                  t('Fällt, weil weiter unten noch nützliche Chunks auftauchen und dort der Anteil nützlicher Chunks kleiner ist. Die Suche wird dadurch nicht schlechter.',
                    'Falls because useful chunks still turn up further down, where the share of useful chunks is smaller. That does not make the search worse.')),
+            card(t('Chunkgröße', 'Chunk size'),
+                 t('Wie viele Chunks nützlich sein können, hängt von der Chunkgröße ab: Große Chunks tragen mehr der Referenzantwort, dann ist Recall schon bei kleinem TOP_K hoch und Precision fällt früher. Die Kurve gilt für diese Chunks (json_structured_sections).',
+                   'How many chunks can be useful depends on chunk size: large chunks carry more of the reference answer, so recall is high at small TOP_K already and precision falls earlier. The curve holds for these chunks (json_structured_sections).')),
             card('Recall', t('Steigt, weil mehr Chunks mehr Stellen der Referenzantwort abdecken.',
                              'Rises because more chunks cover more parts of the reference answer.')),
             card(t('Kosten', 'Cost'), t('Jeder Chunk kostet später Platz im Prompt, Zeit und Geld; Text, der nicht zur Frage passt, kann das Sprachmodell ablenken.',
                                         'Every chunk later costs space in the prompt, time and money; text that does not fit the question can distract the language model.')),
         ]),
         mo.accordion({t('Warum kann Precision von TOP_K 1 auf 3 überhaupt steigen?', 'Why can precision rise from TOP_K 1 to 3 at all?'): mo.md(t(
-            'Bei TOP_K 1 bekommt eine Frage nur 0 oder 1; ist Rang 1 nicht nützlich, holt ein nützlicher Chunk auf Rang 2 oder 3 sie auf etwa 0,5. Außerdem hat der Richter für jeden TOP_K-Wert neu geurteilt, und er urteilt nicht immer gleich.',
-            'At TOP_K 1 a question gets only 0 or 1; if rank 1 is not useful, a useful chunk at rank 2 or 3 brings it to about 0.5. Besides, the judge judged anew for every TOP_K value, and it does not always judge the same way.'))}),
+            'Context Precision einer Frage kann beim Verlängern der Liste nur steigen, wenn bis dahin kein nützlicher Chunk dabei war (Wert 0): Ein nützlicher Chunk auf Rang 2 oder 3 hebt sie dann auf etwa 0,5. Ist schon einer dabei, senkt jeder weitere nützliche Chunk weiter unten den Durchschnitt oder lässt ihn gleich. Von 1 auf 3 stehen noch viele Fragen bei 0, von 10 auf 13 fast keine mehr; dort kann Precision also kaum noch steigen. Dazu kommt die Streuung des Richters: Er hat für jeden TOP_K-Wert neu geurteilt, und er urteilt nicht immer gleich.',
+            'Context Precision of one question can only rise when the list grows if no useful chunk was in it so far (value 0): a useful chunk at rank 2 or 3 then lifts it to about 0.5. Once one is in, every further useful chunk lower down lowers the average or leaves it. From 1 to 3 many questions still sit at 0, from 10 to 13 almost none; so precision can hardly rise there. On top comes the judge\'s spread: it judged anew for every TOP_K value, and it does not always judge the same way.'))}),
     ], gap=1)
     return
 
@@ -925,12 +984,16 @@ def _(confirm, mo, t):
         {t('weil Recall bei 10 sinkt', 'because recall drops at 10'): 'a',
          t('weil mehr Chunks den Prompt verlängern und die Antwort verschlechtern können',
            'because more chunks lengthen the prompt and can make the answer worse'): 'b',
-         t('weil Qdrant nicht mehr als 5 liefert', 'because Qdrant returns no more than 5'): 'c'},
+         t('weil die Suche nicht mehr als 5 liefert', 'because the search returns no more than 5'): 'c'},
         label=t('Warum nimmt man nicht einfach immer TOP_K 10?', 'Why not simply always take TOP_K 10?'))
     ui_choice = mo.ui.radio({'1': 1, '3': 3, '5': 5, '10': 10}, inline=True, label=t('Ihr TOP_K', 'Your TOP_K'))
     ui_reason = mo.ui.text_area(label=t('Ihre Begründung', 'Your reason'), rows=2, full_width=True)
     ui_choice_go = confirm(t('Wahl bestätigen', 'Confirm choice'), lambda: (ui_choice.value, ui_reason.value))
-    return ui_choice, ui_choice_go, ui_quiz16, ui_reason
+    # The second choice, after the intervals (its own cell would rebuild the first button; both live here)
+    ui_choice2 = mo.ui.radio({'1': 1, '3': 3, '5': 5, '10': 10}, inline=True, label=t('Ihr TOP_K, zweite Wahl', 'Your TOP_K, second choice'))
+    ui_reason2 = mo.ui.text_area(label=t('Ihre Begründung', 'Your reason'), rows=2, full_width=True)
+    ui_choice2_go = confirm(t('Zweite Wahl bestätigen', 'Confirm second choice'), lambda: (ui_choice2.value, ui_reason2.value))
+    return ui_choice, ui_choice2, ui_choice2_go, ui_choice_go, ui_quiz16, ui_reason, ui_reason2
 
 
 @app.cell(hide_code=True)
@@ -938,7 +1001,8 @@ def _(key, mo, quiz_feedback, quiz_task, t, ui_quiz16):
     # Section G, the quiz as its own counted step before the choice (CR-19)
     t.full(mo.vstack([
         mo.md(t('## G. Ihr TOP_K', '## G. Your TOP_K')),
-        key(t('TOP_K ist eine Abwägung zwischen Precision und Recall.', 'TOP_K is a trade-off between precision and recall.')),
+        key(t('TOP_K ist eine Abwägung: Wo die Zahlen keinen Unterschied belegen, entscheiden die Kosten.',
+              'TOP_K is a trade-off: where the numbers show no difference, cost decides.')),
         quiz_task('quiz_topk'),
         ui_quiz16,
         quiz_feedback(ui_quiz16.value, 'b', t(
@@ -950,7 +1014,7 @@ def _(key, mo, quiz_feedback, quiz_task, t, ui_quiz16):
 
 @app.cell(hide_code=True)
 def _(CFG, cta, ev, left, md_table, mo, t, task, ui_choice, ui_choice_go, ui_reason):
-    # Section G: the task with both curves as a small table next to it (visible context)
+    # Section G: the first choice, with the means only (the intervals come after it, in the accordion)
     _means = [{'TOP_K': str(k),
                'Context Precision': t.num(sum(CFG['standard']['topk'][str(k)]['context_precision']) / 43),
                'Context Recall': t.num(sum(CFG['standard']['topk'][str(k)]['context_recall']) / 43)} for k in ev.TOP_K_VALUES]
@@ -968,21 +1032,169 @@ def _(CFG, cta, ev, left, md_table, mo, t, task, ui_choice, ui_choice_go, ui_rea
 
 
 @app.cell(hide_code=True)
-def _(CFG, confirmed, feedback, hint, mo, t, ui_choice_go):
-    # Assessment of section G, after "Wahl bestätigen" with a TOP_K and a reason; a choice without a right answer (3g)
+def _(LMM, mo, nw, t):
+    # The mixed models of the cache as tables and labels, shared by section G and the extra task
+    METRICS = (('context_precision', 'Context Precision'), ('context_recall', 'Context Recall'))
+
+    def signed(x, digits=2):
+        return nw(t.num(x, digits).replace('-', '&minus;'))
+
+    def p_text(p):
+        return nw(t('< 0,001', '< 0.001') if p < 0.001 else t.num(p, 3))
+
+    def level_label(model, level):
+        """TOP_K as a number, a configuration by its name in the notebook."""
+        return str(level) if model['factor'] == 'topk' else {'standard': t('Standard', 'Standard'), 'minilm': 'miniLM',
+                                                             'markdown': 'markdown_headers', 'llama': 'llama'}[level]
+
+    def coef_rows(model):
+        """The fixed effects as a tidy table: term, estimate, standard error, z, p, interval."""
+        _ref = level_label(model, model['reference'])
+        _rows = []
+        for c in model['coef']:
+            _term = (t(f'Mittelwert bei {_ref} (Referenz)', f'Mean at {_ref} (reference)') if c['level'] is None
+                     else t(f'{_ref} &#8594; {level_label(model, c["level"])}', f'{_ref} &#8594; {level_label(model, c["level"])}'))
+            _rows.append({t('Term', 'Term'): _term, t('Schätzung', 'Estimate'): signed(c['estimate']),
+                          nw(t('Std.-Fehler', 'Std. error')): nw(t.num(c['se'], 3)), 'z': signed(c['z'], 2), 'p': p_text(c['p']),
+                          nw(t('95-%-Intervall', '95 % interval')): nw(f"[{t.num(c['lo'])}, {t.num(c['hi'])}]".replace('-', '&minus;'))})
+        return _rows
+
+    def variance_text(model):
+        _gv, _rv = model['group_var'], model['resid_var']
+        _share = _gv / (_gv + _rv)
+        return t(f'Varianz zwischen den Fragen (zufälliger Achsenabschnitt): {t.num(_gv, 3)} (Standardabweichung {t.num(_gv ** 0.5)}). Restvarianz: {t.num(_rv, 3)} (Standardabweichung {t.num(_rv ** 0.5)}). {t.num(100 * _share, 0)} % der Streuung liegen zwischen den Fragen, nicht zwischen den TOP_K-Werten.',
+                 f'Variance between questions (random intercept): {t.num(_gv, 3)} (standard deviation {t.num(_gv ** 0.5)}). Residual variance: {t.num(_rv, 3)} (standard deviation {t.num(_rv ** 0.5)}). {t.num(100 * _share, 0)} % of the spread lies between questions, not between TOP_K values.')
+
+    def contrast_rows(model):
+        return [{t('Vergleich', 'Comparison'): nw(f"{level_label(model, c['a'])} &#8594; {level_label(model, c['b'])}"),
+                 t('Differenz', 'Difference'): signed(c['estimate']),
+                 nw(t('95-%-Intervall', '95 % interval')): nw(f"[{t.num(c['lo'])}, {t.num(c['hi'])}]".replace('-', '&minus;')),
+                 nw(t('Effektstärke', 'Effect size')): signed(c['estimate'] / model['resid_var'] ** 0.5, 2),
+                 'p': p_text(c['p']), nw(t('p nach Holm', 'p after Holm')): p_text(c['p_holm']),
+                 t('Belegt?', 'Shown?'): nw(t('ja', 'yes') if c['p_holm'] < 0.05 else t('nein', 'no'))} for c in model['contrasts']]
+
+    def summary_accordion(models):
+        return mo.accordion({t('Modellausgabe von statsmodels, unverändert', 'Model output of statsmodels, unchanged'): mo.vstack(
+            [mo.md(f'```\n{m["summary"]}\n```') for m in models])})
+    return METRICS, coef_rows, contrast_rows, level_label, signed, summary_accordion, variance_text
+
+
+@app.cell(hide_code=True)
+def _(LMM, METRICS, coef_rows, confirmed, contrast_rows, frame, hint, left, md_table, mo, plt, summary_accordion, t, theme, ui_choice_go, variance_text):
+    # Section G, after the first choice: the neutral feedback, then the accordion with the mixed models
     _given = confirmed(ui_choice_go)
     mo.stop(t.short or ui_choice_go.value is None)
     mo.stop(_given[0] is None or not _given[1].strip(), mo.callout(mo.md(t(
         'Wählen Sie zuerst ein TOP_K und schreiben Sie eine Begründung.',
         'First choose a TOP_K and write a reason.')), kind='warn'))
-    _m = {k: {m: sum(v) / len(v) for m, v in CFG['standard']['topk'][str(k)].items()} for k in (3, 5, 10)}
+    _models = [LMM['topk'][m] for m, _ in METRICS]
+
+    # Effects plot: the estimated mean per TOP_K with its 95 % interval, one panel per metric
+    _fig1, _axes = plt.subplots(1, 2, figsize=(6.5, 2.6), sharey=True, constrained_layout=True)
+    for _ax, _model, (_, _name) in zip(_axes, _models, METRICS):
+        _lv = [m['level'] for m in _model['means']]
+        _ax.plot(_lv, [m['estimate'] for m in _model['means']], '-', color=theme.GREYS[2], zorder=1)
+        for _m in _model['means']:
+            _ax.plot([_m['level']] * 2, [_m['lo'], _m['hi']], color=theme.INK, linewidth=1.2, zorder=2)
+            _ax.plot(_m['level'], _m['estimate'], 'o', color=theme.INK, markersize=6, zorder=3)
+        _ax.set_xticks(_lv)
+        _ax.set_xlim(0, 11)
+        _ax.set_ylim(0, 1)
+        _ax.set_xlabel('TOP_K')
+        _ax.set_title(_name, fontsize=9.5)
+        _ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _pos: t.num(v, 1)))
+    _axes[0].set_ylabel(t('Geschätzter Mittelwert', 'Estimated mean'))
+
+    # Contrast plot: all six pairwise differences with intervals; filled when shown after the Holm correction
+    _fig2, _axes2 = plt.subplots(1, 2, figsize=(6.5, 2.8), sharey=True, constrained_layout=True)
+    for _ax, _model, (_, _name) in zip(_axes2, _models, METRICS):
+        _ax.axhline(0, color=theme.GREYS[3], linewidth=1, zorder=0)
+        for _i, _c in enumerate(_model['contrasts']):
+            _ax.plot([_i, _i], [_c['lo'], _c['hi']], color=theme.INK, linewidth=1.2, zorder=2)
+            _ax.plot(_i, _c['estimate'], 'o', color=theme.INK, markerfacecolor=theme.INK if _c['p_holm'] < 0.05 else 'white', markersize=6, zorder=3)
+        _ax.set_xticks(range(len(_model['contrasts'])), [t(f"{c['a']} auf {c['b']}", f"{c['a']} to {c['b']}") for c in _model['contrasts']],
+                       fontsize=8, rotation=30, ha='right')
+        _ax.set_title(_name, fontsize=9.5)
+        _ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _pos: t.num(v, 1).replace('-', '\u2212')))
+    _axes2[0].set_ylabel(t('Differenz der Mittelwerte', 'Difference of the means'))
+
+    _accordion = mo.accordion({t('Ist der Unterschied echt? Signifikanz und Effektstärke', 'Is the difference real? Significance and effect size'): mo.vstack([
+        mo.md(t(
+            'Ein gemischtes Modell schätzt für jede Kennzahl den Mittelwert je TOP_K-Wert, mit der Frage als zufälligem Effekt: Jede Frage hat ihr eigenes Niveau, und nur die Änderung durch TOP_K innerhalb der Fragen zählt. Die Erklärung von Signifikanz und Effektstärke gibt es im Raum.',
+            'A mixed-effects model estimates the mean per TOP_K value for each metric, with the question as a random effect: every question has its own level, and only the change through TOP_K within the questions counts. Significance and effect size are explained in the room.')),
+        _fig1,
+        hint(t('Abbildung 2. Geschätzter Mittelwert je TOP_K mit 95-%-Intervall, Standard-Konfiguration, 43 Fragen.',
+               'Figure 2. Estimated mean per TOP_K with the 95 % interval, standard configuration, 43 questions.')),
+        _fig2,
+        hint(t('Abbildung 3. Differenz der Mittelwerte (zweiter minus erster TOP_K-Wert) mit 95-%-Intervall, alle sechs Paare. Gefüllt: nach der Holm-Korrektur belegt (p < 0,05).',
+               'Figure 3. Difference of the means (second minus first TOP_K value) with the 95 % interval, all six pairs. Filled: shown after the Holm correction (p < 0.05).')),
+        *[mo.vstack([mo.md(f'#### {name}'), mo.md(left(md_table(coef_rows(model)))), hint(variance_text(model)),
+                     mo.md(t('**Alle Paare**', '**All pairs**')), mo.md(left(md_table(contrast_rows(model))))], gap=0.5)
+          for model, (_, name) in zip(_models, METRICS)],
+        hint(t('Effektstärke: Differenz geteilt durch die Reststandardabweichung des Modells. Holm: Korrektur für sechs Vergleiche je Kennzahl. Die Scores liegen zwischen 0 und 1; das lineare Modell ist eine Näherung. Jeder Wert ist ein Lauf des Richters; die Streuung von Lauf zu Lauf (Abschnitt E c) steckt nicht in den Intervallen.',
+               'Effect size: difference divided by the residual standard deviation of the model. Holm: correction for six comparisons per metric. Scores lie between 0 and 1; the linear model is an approximation. Every value is one judge run; the run-to-run spread (section E c) is not in the intervals.')),
+        summary_accordion(_models),
+        frame(t('Kernaussage', 'Key takeaway'), t(
+            'Ein Wert ist erst dann besser als ein anderer, wenn der Unterschied belegt und groß genug ist. Sonst entscheiden Kosten, Geschwindigkeit und Promptlänge.',
+            'One value is only better than another when the difference is shown and large enough. Otherwise cost, speed and prompt length decide.')),
+        hint(t('Wer so TOP_K oder eine Konfiguration gewählt hat, hat die 43 Fragen dafür verbraucht. Die endgültige Rechnung gehört auf einen zurückgehaltenen Fragensatz, den die Auswahl nie gesehen hat.',
+               'Whoever chose TOP_K or a configuration this way has used up the 43 questions for it. The final computation belongs on a held-out question set that the selection never saw.')),
+    ], gap=0.75)})
     mo.vstack([
-        feedback(None, t(
-            f"Viele wählen 3 oder 5. Bei 3 ist Precision am höchsten ({t.num(_m[3]['context_precision'])}), bei 5 ist Recall höher ({t.num(_m[5]['context_recall'])} statt {t.num(_m[3]['context_recall'])}), bei 10 noch höher ({t.num(_m[10]['context_recall'])}), dafür fällt Precision auf {t.num(_m[10]['context_precision'])}. Eine einzige richtige Antwort gibt es nicht; sie hängt davon ab, ob fehlende Information oder lange Prompts in Ihrem Fall teurer sind.",
-            f"Many choose 3 or 5. At 3 precision is highest ({t.num(_m[3]['context_precision'])}), at 5 recall is higher ({t.num(_m[5]['context_recall'])} instead of {t.num(_m[3]['context_recall'])}), at 10 higher still ({t.num(_m[10]['context_recall'])}), but precision falls to {t.num(_m[10]['context_precision'])}. There is no single right answer; it depends on whether missing information or long prompts cost more in your case.",
-        )),
-        hint(t('Vor der Pause fragen wir im Raum, wer was gewählt hat (etwa 3 Minuten).',
-               'Before the break we ask the room who chose what (about 3 minutes).')),
+        frame(t('Rückmeldung', 'Feedback'), t(
+            'Viele wählen 3 oder 5. Für eine fundierte Entscheidung brauchen Sie aber auch Effektstärke und Signifikanz: Ist der Unterschied zwischen zwei Werten überhaupt belegt, und wie groß ist er? Öffnen Sie das Panel darunter.',
+            'Many choose 3 or 5. For an informed decision, however, you also need effect size and significance: is the difference between two values shown at all, and how large is it? Open the panel below.')),
+        _accordion,
+    ], gap=0.75)
+    return
+
+
+@app.cell(hide_code=True)
+def _(confirmed, cta, mo, t, task, ui_choice2, ui_choice2_go, ui_choice_go, ui_reason2):
+    # Section G: the second choice, with the intervals in view
+    _given = confirmed(ui_choice_go)
+    mo.stop(t.short or _given is None or _given[0] is None or not _given[1].strip())
+    mo.vstack([
+        mo.md(t('### Ihre Wahl, mit Intervallen', '### Your choice, with intervals')),
+        task('topk_choose2', t('TOP_K noch einmal wählen', 'Choose TOP_K again'), t(
+            ['Wählen Sie noch einmal ein TOP_K, jetzt mit Abbildung 2 und der Tabelle aus dem Panel.',
+             'Begründen Sie in einem Satz: Welcher Unterschied ist belegt, welcher nicht, und was entscheidet dann?',
+             'Drücken Sie auf "Zweite Wahl bestätigen".'],
+            ['Choose a TOP_K once more, now with figure 2 and the table from the panel.',
+             'Give your reason in one sentence: which difference is shown, which is not, and what decides then?',
+             'Press "Confirm second choice".']), t('etwa 3 Minuten', 'about 3 minutes')),
+        mo.vstack([ui_choice2, ui_reason2, cta(ui_choice2_go)]),
+    ], gap=1)
+    return
+
+
+@app.cell(hide_code=True)
+def _(LMM, confirmed, feedback, hint, mo, signed, t, ui_choice2_go, ui_choice_go):
+    # Section G: assessment of the second choice against the first, from the cached mixed models
+    _first, _second = confirmed(ui_choice_go), confirmed(ui_choice2_go)
+    mo.stop(t.short or _second is None)
+    mo.stop(_second[0] is None or not _second[1].strip(), mo.callout(mo.md(t(
+        'Wählen Sie zuerst ein TOP_K und schreiben Sie eine Begründung.',
+        'First choose a TOP_K and write a reason.')), kind='warn'))
+    _k1, _k2 = (_first[0] if _first else None), _second[0]
+
+    def _c(metric, a, b):
+        return next(c for c in LMM['topk'][metric]['contrasts'] if (c['a'], c['b']) == (a, b))
+
+    _r13, _p310, _p35, _r35 = _c('context_recall', 1, 3), _c('context_precision', 3, 10), _c('context_precision', 3, 5), _c('context_recall', 3, 5)
+    _shown = [x['p_holm'] < 0.05 for x in (_r13, _p310, _p35, _r35)]
+    _changed = t(f'Sie haben Ihre Wahl von {_k1} auf {_k2} geändert. ', f'You changed your choice from {_k1} to {_k2}. ') if _k1 != _k2 else t(
+        f'Sie bleiben bei {_k2}. ', f'You stay with {_k2}. ')
+    _three_five = t(
+        f'Zwischen 3 und 5 ist {"keiner der beiden" if not any(_shown[2:]) else "nur einer der beiden"} Unterschiede belegt (Precision {signed(_p35["estimate"])}, p nach Holm {t.num(_p35["p_holm"], 2)}; Recall {signed(_r35["estimate"])}, p nach Holm {t.num(_r35["p_holm"], 2)}).',
+        f'Between 3 and 5 {"neither" if not any(_shown[2:]) else "only one"} of the two differences is shown (precision {signed(_p35["estimate"])}, p after Holm {t.num(_p35["p_holm"], 2)}; recall {signed(_r35["estimate"])}, p after Holm {t.num(_r35["p_holm"], 2)}).')
+    _text = t(
+        f'{_changed}1 ist belegt schlechter im Recall (1 auf 3: {signed(_r13["estimate"])}, p nach Holm {t.num(_r13["p_holm"], 3)}), 10 belegt schlechter in der Precision (3 auf 10: {signed(_p310["estimate"])}, p nach Holm {t.num(_p310["p_holm"], 3)}). {_three_five} Wer 3 wählt, spart Promptlänge; wer 5 wählt, kauft etwas Recall, den die Daten nicht belegen. Beides ist vertretbar, 1 und 10 sind es nicht; zwischen 3 und 5 entscheiden Kosten und Promptlänge.',
+        f'{_changed}1 is shown to be worse in recall (1 to 3: {signed(_r13["estimate"])}, p after Holm {t.num(_r13["p_holm"], 3)}), 10 shown to be worse in precision (3 to 10: {signed(_p310["estimate"])}, p after Holm {t.num(_p310["p_holm"], 3)}). {_three_five} Choosing 3 saves prompt length; choosing 5 buys some recall the data do not show. Both are defensible, 1 and 10 are not; between 3 and 5 cost and prompt length decide.')
+    mo.vstack([
+        feedback(_k2 in (3, 5), _text),
+        hint(t('Vor der Pause fragen wir im Raum, wer was gewählt hat und wer gewechselt ist (etwa 3 Minuten).',
+               'Before the break we ask the room who chose what and who switched (about 3 minutes).')),
     ], gap=0.75)
     return
 
@@ -1007,11 +1219,11 @@ def _(ev, hint, mo, t, theme):
         mo.md(t('### Teil a: System oder Messung?', '### Part a: system or measurement?')),
         mo.Html(theme.task_box(
             t('Zusatzaufgabe, Teil a', 'Extra task, part a'),
-            t(['Wählen Sie direkt unter diesem Kasten eine Konfiguration und vergleichen Sie ihre Kurven mit der Standard-Konfiguration.',
+            t(['Wählen Sie direkt unter diesem Kasten eine Konfiguration und vergleichen Sie ihre Kurven und die Differenz-Tabelle mit der Standard-Konfiguration.',
                'Ordnen Sie darunter jede Änderung zu: Stellschraube am System oder an der Messung?',
                'Schreiben Sie in einem Satz, was Sie Ihrer Leitung sagen, wenn jemand mit dem llama-Richter bessere Zahlen meldet.',
                'Drücken Sie auf "Prüfen".'],
-              ['Right below this box, choose a configuration and compare its curves with the standard configuration.',
+              ['Right below this box, choose a configuration and compare its curves and the difference table with the standard configuration.',
                'Below that, assign each change: a lever on the system or on the measurement?',
                'Write in one sentence what you would tell your management if someone reports better numbers with the llama judge.',
                'Press "Check".']),
@@ -1025,7 +1237,7 @@ def _(ev, hint, mo, t, theme):
 
 
 @app.cell(hide_code=True)
-def _(CFG, CFG_LABELS, ev, left, md_table, mo, plt, t, theme, ui_cfg):
+def _(CFG, CFG_LABELS, LMM, METRICS, ev, left, md_table, mo, nw, plt, signed, summary_accordion, t, theme, ui_cfg):
     # Row 18a: the chosen configuration next to the standard one, as curves and as a table
     _ks = ev.TOP_K_VALUES
 
@@ -1033,29 +1245,39 @@ def _(CFG, CFG_LABELS, ev, left, md_table, mo, plt, t, theme, ui_cfg):
         return [sum(CFG[name]['topk'][str(k)][metric]) / 43 for k in _ks]
 
     _sel = ui_cfg.value
-    _fig, _axes = plt.subplots(1, 2, figsize=(6.5, 2.6), sharey=True)
+    # Fixed axes and a legend inside the axes, so the figure does not move when the configuration changes
+    _fig, _axes = plt.subplots(1, 2, figsize=(6.5, 2.6), sharey=True, constrained_layout=True)
     for _ax, _metric in zip(_axes, ('context_precision', 'context_recall')):
-        _ax.plot(_ks, _means('standard', _metric), '--o', color=theme.GREYS[2], markerfacecolor='white')
-        _ax.annotate(CFG_LABELS['standard'], (_ks[-1], _means('standard', _metric)[-1]), xytext=(5, 0),
-                     textcoords='offset points', va='center', fontsize=8, color=theme.GREY)
+        _ax.plot(_ks, _means('standard', _metric), '--o', color=theme.GREYS[2], markerfacecolor='white', label=CFG_LABELS['standard'])
         if _sel != 'standard':
-            _ax.plot(_ks, _means(_sel, _metric), '-o', color='black')
-            _ax.annotate(CFG_LABELS[_sel], (_ks[-1], _means(_sel, _metric)[-1]), xytext=(5, 0),
-                         textcoords='offset points', va='center', fontsize=8)
+            _ax.plot(_ks, _means(_sel, _metric), '-o', color='black', label=CFG_LABELS[_sel])
         _ax.set_title('Context Precision' if _metric == 'context_precision' else 'Context Recall')
         _ax.set_xticks(_ks)
-        _ax.set_xlim(0, 17)
+        _ax.set_xlim(0, 11)
         _ax.set_ylim(0, 1.0)
         _ax.set_xlabel('TOP_K')
         _ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _pos: t.num(v, 1)))
-    _fig.tight_layout()
+        _ax.legend(loc='lower right', fontsize=8, frameon=False)
     _rows = [{'TOP_K': str(k),
               f"Precision ({CFG_LABELS['standard']})": t.num(_means('standard', 'context_precision')[i]),
               f'Precision ({CFG_LABELS[_sel]})': t.num(_means(_sel, 'context_precision')[i]),
               f"Recall ({CFG_LABELS['standard']})": t.num(_means('standard', 'context_recall')[i]),
               f'Recall ({CFG_LABELS[_sel]})': t.num(_means(_sel, 'context_recall')[i])}
              for i, k in enumerate(_ks)]
-    mo.vstack([_fig, mo.md(left(md_table(_rows)))])
+    # The mixed model configuration vs standard at TOP_K 5 (score ~ configuration + (1 | question)), as in section G
+    _diff_rows = []
+    if _sel != 'standard':
+        for _metric, _name in METRICS:
+            _m = LMM['configs'][_sel][_metric]
+            _c = _m['contrasts'][0]
+            _diff_rows.append({t('Kennzahl', 'Metric'): _name, t('Differenz zu Standard', 'Difference to standard'): signed(_c['estimate']),
+                               nw(t('95-%-Intervall', '95 % interval')): nw(f"[{t.num(_c['lo'])}, {t.num(_c['hi'])}]".replace('-', '&minus;')),
+                               nw(t('Effektstärke', 'Effect size')): signed(_c['estimate'] / _m['resid_var'] ** 0.5),
+                               'p': nw(t('< 0,001', '< 0.001') if _c['p'] < 0.001 else t.num(_c['p'], 3)),
+                               t('Belegt?', 'Shown?'): t('ja', 'yes') if _c['p'] < 0.05 else t('nein', 'no')})
+    mo.vstack([_fig, mo.md(left(md_table(_rows))),
+               *([mo.md(t('**Differenz zu Standard bei TOP_K 5, gemischtes Modell wie in Abschnitt G**', '**Difference to standard at TOP_K 5, mixed model as in section G**')),
+                  mo.md(left(md_table(_diff_rows))), summary_accordion([LMM['configs'][_sel][m] for m, _ in METRICS])] if _sel != 'standard' else [])])
     return
 
 
@@ -1071,7 +1293,7 @@ def _(CFG_LABELS, confirm, cta, mo, t):
 
 
 @app.cell(hide_code=True)
-def _(CFG, confirmed, ev, feedback, mo, t, ui_kind_go):
+def _(CFG, LMM, confirmed, feedback, mo, t, ui_kind_go):
     # Row 18a: the solution in the feedback box; right when all three changes are assigned as below
     _given = confirmed(ui_kind_go)
     mo.stop(t.short or _given is None)
@@ -1081,9 +1303,14 @@ def _(CFG, confirmed, ev, feedback, mo, t, ui_kind_go):
         'First assign all three changes and write a sentence for your management.')), kind='warn'))
     _right = {'minilm': 'system', 'markdown': 'system', 'llama': 'measurement'}
     _cr = {n: sum(CFG[n]['topk']['5']['context_recall']) / 43 for n in ('standard', 'llama')}
+    _md_shown = LMM['configs']['markdown']['context_precision']['contrasts'][0]['p'] < 0.05
     feedback(_kinds == _right, t(
-        f'Embedding-Modell und Chunking ändern, was gefunden wird; das sind Stellschrauben am System. Der Richter ändert nur, wie streng bewertet wird; daher kommt der Sprung von {t.num(_cr["standard"])} auf {t.num(_cr["llama"])} aus Abschnitt E, bei denselben Chunks. Zahlen sind nur unter demselben Richter vergleichbar.',
-        f'Embedding model and chunking change what is found; those are levers on the system. The judge changes only how strictly it scores; that is where the jump from {t.num(_cr["standard"])} to {t.num(_cr["llama"])} in section E comes from, with the same chunks. Numbers are comparable only under the same judge.'))
+        f'Embedding-Modell und Chunking ändern, was gefunden wird; das sind Stellschrauben am System. Der Richter ändert nur, wie streng bewertet wird; daher kommt der Sprung von {t.num(_cr["standard"])} auf {t.num(_cr["llama"])} aus Abschnitt E, bei denselben Chunks. Zahlen sind nur unter demselben Richter vergleichbar.'
+        + (' Dass markdown_headers in der Precision schlechter aussieht, belegt das Modell nicht: Das Intervall enthält die Null. Hier entscheiden Chunkgröße, Promptlänge und Aufwand, nicht der Score.' if not _md_shown else '')
+        + ' Und: Jede Konfiguration wurde einmal bewertet; die Streuung aus Abschnitt E c steckt in jedem Wert.',
+        f'Embedding model and chunking change what is found; those are levers on the system. The judge changes only how strictly it scores; that is where the jump from {t.num(_cr["standard"])} to {t.num(_cr["llama"])} in section E comes from, with the same chunks. Numbers are comparable only under the same judge.'
+        + (' That markdown_headers looks worse in precision is not shown by the model: the interval contains zero. Here chunk size, prompt length and effort decide, not the score.' if not _md_shown else '')
+        + ' And: each configuration was judged once; the spread of section E c sits in every value.'))
     return
 
 
@@ -1128,6 +1355,7 @@ def _(CFG, TR, bi, bi_cell, ev, gold, hint, json, left, md_table, mo, pd, plt, r
         return text.split('\n')[0].strip()
 
     def _head_cell(text):
+        """The German heading stays visible here: the solution argues from the German wording (see the hint below)."""
         _en = TR['en'].get(text) if t.lang == 'en' else None
         _de = f'<span class="hpi-corpus">{_head(text)}</span>'
         return _de if not _en else f'{_de}<br><span style="color:{theme.GREY};font-size:.85em">{_head(_en)}</span>'
@@ -1177,14 +1405,13 @@ def _(CFG, TR, bi, bi_cell, ev, gold, hint, json, left, md_table, mo, pd, plt, r
         bi(_g['reference']),
         mo.md(t('#### Die fünf gefundenen Chunks', '#### The five retrieved chunks')),
         hint(t('Alle fünf stammen aus dem Baustein APP.3.2 Webserver. Hier stehen nur die Überschriften.',
-               'All five come from the module APP.3.2 Webserver. Only the headings are shown here.')),
+               'All five come from the module APP.3.2 Webserver. Only the headings are shown here, in German with the translation below, because the solution argues from the German wording.')),
         mo.md(left(md_table(_chunk_rows))),
         mo.accordion({t('Die fünf Chunks im Volltext', 'The five chunks in full'): mo.vstack(
             [mo.vstack([mo.md(f"**{t('Rang', 'Rank')} {c['rank']}**"), bi(c['text'])], gap=0.25) for c in _chunks[:5]], gap=1)}),
         mo.md(t('#### Urteil des Richters je Aussage', "#### The judge's verdict per claim")),
         mo.md(left(md_table(_claim_rows))),
-        hint(t(f'Context Recall = {_k} von {_n} = {t.num(_k / _n)}. Die Begründungen sind englisch, weil die Prompts von RAGAS englisch sind.',
-               f'Context Recall = {_k} of {_n} = {t.num(_k / _n)}.')),
+        hint(t(f'Context Recall = {_k} von {_n} = {t.num(_k / _n)}.', f'Context Recall = {_k} of {_n} = {t.num(_k / _n)}.')),
         ui_why,
     ], gap=1)
     return DIAG, ui_why
@@ -1239,12 +1466,15 @@ def _(card, cards, frame, hint, key, mo, t):
         cards([
             card('Context Precision', t('Stehen die nützlichen Chunks oben?', 'Are the useful chunks at the top?')),
             card('Context Recall', t('Wurde alles gefunden, was die Referenzantwort braucht?', 'Was everything found that the reference answer needs?')),
-            card('TOP_K', t('Mehr Chunks heben Recall und senken Precision; der Sweet Spot liegt bei 3 bis 5.',
-                            'More chunks raise recall and lower precision; the sweet spot lies at 3 to 5.')),
+            card('TOP_K', t('Mehr Chunks heben Recall und senken Precision. Zwischen 3 und 5 zeigen die Daten keinen klaren Sieger.',
+                            'More chunks raise recall and lower precision. Between 3 and 5 the data show no clear winner.')),
+            card(t('Signifikanz und Effektstärke', 'Significance and effect size'),
+                 t('Ein Unterschied zählt erst, wenn er die Streuung über die Fragen übersteigt und groß genug ist.',
+                   'A difference counts only when it exceeds the spread over the questions and is large enough.')),
         ]),
         frame(t('Kernaussage', 'Key takeaway'), t(
-            'Ein einzelner Wert schwankt, ein Richter kann zu großzügig sein, und schon die Zerlegung in Aussagen verschiebt die Zahl. Belastbar sind Mittelwerte über viele Fragen, gemessen mit demselben Richter, und Stichproben, die Sie selbst prüfen.',
-            'A single value varies, a judge can be too generous, and the split into claims alone shifts the number. Means over many questions, measured with the same judge, and samples you check yourself are what you can rely on.')),
+            'Ein einzelner Wert schwankt, ein Richter kann zu großzügig sein, und schon die Zerlegung in Aussagen verschiebt die Zahl. Belastbar sind Mittelwerte über viele Fragen, gemessen mit demselben Richter, und Stichproben, die Sie selbst prüfen. Sind Unterschiede klein, entscheiden Kosten, Geschwindigkeit und Promptlänge.',
+            'A single value varies, a judge can be too generous, and the split into claims alone shifts the number. Means over many questions, measured with the same judge, and samples you check yourself are what you can rely on. When differences are small, cost, speed and prompt length decide.')),
         hint(t('Können Sie Context Precision und Context Recall in je einem Satz erklären?',
                'Can you explain Context Precision and Context Recall in one sentence each?')),
         mo.hstack([
@@ -1273,13 +1503,16 @@ def _(mo, t):
             'RAGAS hat auch Varianten von Context Precision und Context Recall ohne Sprachmodell. Sie vergleichen die gefundenen Chunks mit vorgegebenen Referenz-Chunks über Textähnlichkeit. Das ist billig und stabil, braucht aber genau die Markierungen, die wir hier nicht haben.',
             'RAGAS also has variants of Context Precision and Context Recall without a language model. They compare the retrieved chunks with given reference chunks by text similarity. That is cheap and stable, but needs exactly the labels we do not have here.')),
         t('Wie rechne ich andere Konfigurationen selbst?', 'How do I compute other configurations myself?'): mo.md(t(
-            'In `ragkit/config.py` stehen Datensatz, Chunking, Embedding-Modell und Richter. Nach einer Änderung starten Sie das Notebook neu. Ohne passende Collection und Cache laufen Suche und Bewertung live, etwa zwei Minuten pro TOP_K-Wert. Dafür braucht es eine Qdrant-Collection; das ist Aufgabe der Kursleitung (siehe README).',
-            'Dataset, chunking, embedding model and judge are set in `ragkit/config.py`. After a change, restart the notebook. Without a matching collection and cache, retrieval and scoring run live, about two minutes per TOP_K value. This needs a Qdrant collection; setting it up is the job of the instructors (see README).')),
+            'In `ragkit/config.py` stehen Datensatz, Chunking, Embedding-Modell und Richter. Nach einer Änderung starten Sie das Notebook neu. Ohne passende Collection und Cache laufen Suche und Bewertung live, etwa zwei Minuten pro TOP_K-Wert. Dafür braucht es eine Collection in Qdrant, der Vektordatenbank, in der die Chunks liegen; das ist Aufgabe der Kursleitung (siehe README).',
+            'Dataset, chunking, embedding model and judge are set in `ragkit/config.py`. After a change, restart the notebook. Without a matching collection and cache, retrieval and scoring run live, about two minutes per TOP_K value. This needs a collection in Qdrant, the vector database that stores the chunks; setting it up is the job of the instructors (see README).')),
     }
     _f5 = {t('Warum der Fragensatz mit 43 Fragen?', 'Why the set of 43 questions?'): mo.md(t(
         'Die 43 komplexen Fragen verteilen ihre Antwort oft auf mehrere Stellen. Dadurch zeigt die TOP_K-Kurve etwas. Bei den 40 einfachen Fragen findet das System fast immer alles, und Context Recall liegt fast überall bei 1.',
         'The 43 complex questions often spread their answer over several places. That is why the TOP_K curve shows something. With the 40 simple questions the system almost always finds everything, and Context Recall is close to 1 almost everywhere.'))}
     _f6_f7 = {
+        t('Warum nur ein Lauf des Richters je Konfiguration?', 'Why only one judge run per configuration?'): mo.md(t(
+            'Jeder Lauf kostet etwa 1000 Aufrufe der API. Die Streuung von Lauf zu Lauf sehen Sie in Abschnitt E c an einer Frage; der Mittelwert über 43 Fragen dämpft sie, nimmt sie aber nicht weg. Mehrere Läufe je TOP_K sind als Erweiterung vorgemerkt (GitHub-Issue im Repository).',
+            'Every run costs about 1000 API calls. You see the run-to-run spread in section E c for one question; the mean over 43 questions dampens it but does not remove it. Several runs per TOP_K are noted as an extension (GitHub issue in the repository).')),
         t('Warum hat dieselbe Frage verschiedene Werte?', 'Why does the same question have different values?'): mo.md(t(
             'Tabelle und Kurve stammen aus verschiedenen Läufen des Richters. Jeder Lauf urteilt neu, deshalb weichen einzelne Werte ab. Belastbar sind Mittelwerte über viele Fragen.',
             'Table and curve come from different runs of the judge. Every run judges anew, so single values differ. Means over many questions are what you can rely on.')),

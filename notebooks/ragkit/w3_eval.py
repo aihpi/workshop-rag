@@ -39,6 +39,7 @@ TRANSLATIONS_FILE = CACHE / 'translations.json'    # {'en': {German: English}, '
 KISZ_FILE = CACHE / 'kisz' / 'kisz_eval.json'      # {'questions': [{question, reference, line_ids, source_ids, runs, second}], 'demos': [...]}
 KISZ_TRANSLATIONS_FILE = CACHE / 'kisz' / 'translations.json'
 DIAGNOSIS_FILE = CACHE / 'diagnosis.json'          # {'index': int, ...}: the question with the lowest Context Recall (w3_02 extra task)
+LMM_FILE = CACHE / 'lmm.json'                      # mixed models score ~ TOP_K + (1 | question), see ragkit/w3_lmm.py
 
 # The four configurations with cached TOP_K experiments (dataset 43_komplex).
 CONFIGS = {
@@ -241,3 +242,4 @@ def judge_prompt_text() -> tuple[str, str]:
     from ragas.metrics.collections.context_recall.util import ContextRecallPrompt
 
     return ContextPrecisionPrompt.instruction, ContextRecallPrompt.instruction
+
