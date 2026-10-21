@@ -27,7 +27,7 @@ T = {
         'menti1': 'Errate die Zahl',
         'menti2': 'Errate die Zahl, Runde 2',
         'menti_lead': 'Wie viele Aussagen stecken in jedem Text?',
-        'code': 'Mentimeter-Code: ____',
+        'code': 'menti.com, Code 7946 2006',
         'defs_title': 'Was ist eine Aussage?',
         'defs': [
             ('Alltag, ganz', 'Eine Aussage ist ein Satz, der etwas feststellt.'),
@@ -56,7 +56,7 @@ T = {
         'menti1': 'Guess the number',
         'menti2': 'Guess the number, round 2',
         'menti_lead': 'How many claims are in each text?',
-        'code': 'Mentimeter code: ____',
+        'code': 'menti.com, code 7946 2006',
         'defs_title': 'What is a claim?',
         'defs': [
             ('Everyday, whole', 'A claim is a sentence that states something.'),
