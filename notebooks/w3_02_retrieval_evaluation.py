@@ -169,7 +169,7 @@ def _(card, cards, hint, key, mo, t):
 @app.cell(hide_code=True)
 def _(ev, mo, rag, t):
     # Row 4 (C30): no note about the collection any more; a red callout only when the cache is missing
-    cache_ok = ev.cache_complete() and rag.CHUNKS_FILE.exists()
+    cache_ok = ev.cache_complete() and rag.CHUNKS_FILE.exists() and ev.LMM_FILE.exists()
     (None if cache_ok else mo.callout(mo.md(t(
         'Der Cache mit den Ergebnissen fehlt. Bauen Sie ihn einmal mit `uv run python -m tools.precompute_w3_02` im Ordner `notebooks`.',
         'The results cache is missing. Build it once with `uv run python -m tools.precompute_w3_02` in the `notebooks` folder.',
@@ -178,7 +178,7 @@ def _(ev, mo, rag, t):
 
 
 @app.cell(hide_code=True)
-def _(cache_ok, ev, mo, rag):
+def _(cache_ok, ev, json, mo, rag):
     mo.stop(not cache_ok)
     # Module A (C27): one question about the website of the KI-Servicezentrum, its top-5 lines and five judge runs
     _lines = rag.load_corpus()[0]
@@ -192,10 +192,11 @@ def _(cache_ok, ev, mo, rag):
     TR = ev.load_translations()  # {'en': {German: English}, 'de': {English: German}}
     KTR = ev.load_kisz_translations()
     CFG = {name: ev.load_config(name) for name in ev.CONFIGS}
+    LMM = json.loads(ev.LMM_FILE.read_text(encoding='utf-8'))  # mixed models, tools/precompute_w3_02.py --stage lmm
     JUDGE_DOWN = ('Der Richter ist gerade nicht erreichbar. Probieren Sie es in einer Minute noch einmal.',
                   'The judge cannot be reached right now. Try again in a minute.')
     LIMIT = 3  # live judge runs per person (section E, part c)
-    return CFG, JUDGE_DOWN, KTR, LIMIT, TR, demo, gold, retrieval
+    return CFG, JUDGE_DOWN, KTR, LIMIT, LMM, TR, demo, gold, retrieval
 
 
 @app.cell(hide_code=True)
@@ -1031,68 +1032,113 @@ def _(CFG, cta, ev, left, md_table, mo, t, task, ui_choice, ui_choice_go, ui_rea
 
 
 @app.cell(hide_code=True)
-def _(CFG, ev):
-    # All six TOP_K pairs of the standard configuration, both metrics: paired bootstrap over the 43 questions
-    TOPK_PAIRS = [(1, 3), (1, 5), (1, 10), (3, 5), (3, 10), (5, 10)]
+def _(LMM, mo, nw, t):
+    # The mixed models of the cache as tables and labels, shared by section G and the extra task
     METRICS = (('context_precision', 'Context Precision'), ('context_recall', 'Context Recall'))
-    PAIR_D = {(a, b, m): ev.paired_diff(CFG['standard']['topk'][str(a)][m], CFG['standard']['topk'][str(b)][m])
-              for a, b in TOPK_PAIRS for m, _ in METRICS}
 
-    def shown(d):
-        """True when the 95 % interval of the mean difference leaves out zero."""
-        return d['lo'] > 0 or d['hi'] < 0
-    return METRICS, PAIR_D, TOPK_PAIRS, shown
+    def signed(x, digits=2):
+        return nw(t.num(x, digits).replace('-', '&minus;'))
+
+    def p_text(p):
+        return nw(t('< 0,001', '< 0.001') if p < 0.001 else t.num(p, 3))
+
+    def level_label(model, level):
+        """TOP_K as a number, a configuration by its name in the notebook."""
+        return str(level) if model['factor'] == 'topk' else {'standard': t('Standard', 'Standard'), 'minilm': 'miniLM',
+                                                             'markdown': 'markdown_headers', 'llama': 'llama'}[level]
+
+    def coef_rows(model):
+        """The fixed effects as a tidy table: term, estimate, standard error, z, p, interval."""
+        _ref = level_label(model, model['reference'])
+        _rows = []
+        for c in model['coef']:
+            _term = (t(f'Mittelwert bei {_ref} (Referenz)', f'Mean at {_ref} (reference)') if c['level'] is None
+                     else t(f'{_ref} &#8594; {level_label(model, c["level"])}', f'{_ref} &#8594; {level_label(model, c["level"])}'))
+            _rows.append({t('Term', 'Term'): _term, t('Schätzung', 'Estimate'): signed(c['estimate']),
+                          nw(t('Std.-Fehler', 'Std. error')): nw(t.num(c['se'], 3)), 'z': signed(c['z'], 2), 'p': p_text(c['p']),
+                          nw(t('95-%-Intervall', '95 % interval')): nw(f"[{t.num(c['lo'])}, {t.num(c['hi'])}]".replace('-', '&minus;'))})
+        return _rows
+
+    def variance_text(model):
+        _gv, _rv = model['group_var'], model['resid_var']
+        _share = _gv / (_gv + _rv)
+        return t(f'Varianz zwischen den Fragen (zufälliger Achsenabschnitt): {t.num(_gv, 3)} (Standardabweichung {t.num(_gv ** 0.5)}). Restvarianz: {t.num(_rv, 3)} (Standardabweichung {t.num(_rv ** 0.5)}). {t.num(100 * _share, 0)} % der Streuung liegen zwischen den Fragen, nicht zwischen den TOP_K-Werten.',
+                 f'Variance between questions (random intercept): {t.num(_gv, 3)} (standard deviation {t.num(_gv ** 0.5)}). Residual variance: {t.num(_rv, 3)} (standard deviation {t.num(_rv ** 0.5)}). {t.num(100 * _share, 0)} % of the spread lies between questions, not between TOP_K values.')
+
+    def contrast_rows(model):
+        return [{t('Vergleich', 'Comparison'): nw(f"{level_label(model, c['a'])} &#8594; {level_label(model, c['b'])}"),
+                 t('Differenz', 'Difference'): signed(c['estimate']),
+                 nw(t('95-%-Intervall', '95 % interval')): nw(f"[{t.num(c['lo'])}, {t.num(c['hi'])}]".replace('-', '&minus;')),
+                 nw(t('Effektstärke', 'Effect size')): signed(c['estimate'] / model['resid_var'] ** 0.5, 2),
+                 'p': p_text(c['p']), nw(t('p nach Holm', 'p after Holm')): p_text(c['p_holm']),
+                 t('Belegt?', 'Shown?'): nw(t('ja', 'yes') if c['p_holm'] < 0.05 else t('nein', 'no'))} for c in model['contrasts']]
+
+    def summary_accordion(models):
+        return mo.accordion({t('Modellausgabe von statsmodels, unverändert', 'Model output of statsmodels, unchanged'): mo.vstack(
+            [mo.md(f'```\n{m["summary"]}\n```') for m in models])})
+    return METRICS, coef_rows, contrast_rows, level_label, signed, summary_accordion, variance_text
 
 
 @app.cell(hide_code=True)
-def _(METRICS, PAIR_D, TOPK_PAIRS, confirmed, frame, hint, left, md_table, mo, nw, plt, shown, t, theme, ui_choice_go):
-    # Section G, after the first choice: the neutral feedback, then the accordion on significance and effect size
+def _(LMM, METRICS, coef_rows, confirmed, contrast_rows, frame, hint, left, md_table, mo, plt, summary_accordion, t, theme, ui_choice_go, variance_text):
+    # Section G, after the first choice: the neutral feedback, then the accordion with the mixed models
     _given = confirmed(ui_choice_go)
     mo.stop(t.short or ui_choice_go.value is None)
     mo.stop(_given[0] is None or not _given[1].strip(), mo.callout(mo.md(t(
         'Wählen Sie zuerst ein TOP_K und schreiben Sie eine Begründung.',
         'First choose a TOP_K and write a reason.')), kind='warn'))
+    _models = [LMM['topk'][m] for m, _ in METRICS]
 
-    def _minus(x):
-        return nw(t.num(x).replace('-', '&minus;'))
+    # Effects plot: the estimated mean per TOP_K with its 95 % interval, one panel per metric
+    _fig1, _axes = plt.subplots(1, 2, figsize=(6.5, 2.6), sharey=True, constrained_layout=True)
+    for _ax, _model, (_, _name) in zip(_axes, _models, METRICS):
+        _lv = [m['level'] for m in _model['means']]
+        _ax.plot(_lv, [m['estimate'] for m in _model['means']], '-', color=theme.GREYS[2], zorder=1)
+        for _m in _model['means']:
+            _ax.plot([_m['level']] * 2, [_m['lo'], _m['hi']], color=theme.INK, linewidth=1.2, zorder=2)
+            _ax.plot(_m['level'], _m['estimate'], 'o', color=theme.INK, markersize=6, zorder=3)
+        _ax.set_xticks(_lv)
+        _ax.set_xlim(0, 11)
+        _ax.set_ylim(0, 1)
+        _ax.set_xlabel('TOP_K')
+        _ax.set_title(_name, fontsize=9.5)
+        _ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _pos: t.num(v, 1)))
+    _axes[0].set_ylabel(t('Geschätzter Mittelwert', 'Estimated mean'))
 
-    _rows = [{'TOP_K': nw(t(f'{a} auf {b}', f'{a} to {b}')), t('Kennzahl', 'Metric'): name,
-              t('Differenz', 'Difference'): _minus(_d['mean']),
-              nw(t('95-%-Intervall', '95 % interval')): nw(f"[{t.num(_d['lo'])}, {t.num(_d['hi'])}]".replace('-', '&minus;')),
-              nw(t('besser / schlechter / gleich', 'better / worse / same')): nw(f"{_d['better']} / {_d['worse']} / {_d['same']}"),
-              nw(t('Effektstärke', 'Effect size')): _minus(_d['dz']),
-              t('Belegt?', 'Shown?'): nw(t('ja', 'yes') if shown(_d) else t('nein', 'no'))}
-             for a, b in TOPK_PAIRS for m, name in METRICS for _d in [PAIR_D[(a, b, m)]]]
-
-    # The differences as dots with their intervals, one panel per metric, zero line; filled when shown
-    _fig, _axes = plt.subplots(1, 2, figsize=(6.5, 2.8), sharey=True, constrained_layout=True)
-    _labels = [t(f'{a} auf {b}', f'{a} to {b}') for a, b in TOPK_PAIRS]
-    for _ax, (_m, _name) in zip(_axes, METRICS):
+    # Contrast plot: all six pairwise differences with intervals; filled when shown after the Holm correction
+    _fig2, _axes2 = plt.subplots(1, 2, figsize=(6.5, 2.8), sharey=True, constrained_layout=True)
+    for _ax, _model, (_, _name) in zip(_axes2, _models, METRICS):
         _ax.axhline(0, color=theme.GREYS[3], linewidth=1, zorder=0)
-        for _i, (_a, _b) in enumerate(TOPK_PAIRS):
-            _d = PAIR_D[(_a, _b, _m)]
-            _ax.plot([_i, _i], [_d['lo'], _d['hi']], color=theme.INK, linewidth=1.2, zorder=2)
-            _ax.plot(_i, _d['mean'], 'o', color=theme.INK, markerfacecolor=theme.INK if shown(_d) else 'white', markersize=6, zorder=3)
-        _ax.set_xticks(range(len(TOPK_PAIRS)), _labels, fontsize=8, rotation=30, ha='right')
+        for _i, _c in enumerate(_model['contrasts']):
+            _ax.plot([_i, _i], [_c['lo'], _c['hi']], color=theme.INK, linewidth=1.2, zorder=2)
+            _ax.plot(_i, _c['estimate'], 'o', color=theme.INK, markerfacecolor=theme.INK if _c['p_holm'] < 0.05 else 'white', markersize=6, zorder=3)
+        _ax.set_xticks(range(len(_model['contrasts'])), [t(f"{c['a']} auf {c['b']}", f"{c['a']} to {c['b']}") for c in _model['contrasts']],
+                       fontsize=8, rotation=30, ha='right')
         _ax.set_title(_name, fontsize=9.5)
         _ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _pos: t.num(v, 1).replace('-', '\u2212')))
-    _axes[0].set_ylabel(t('Differenz des Mittelwerts', 'Difference of the mean'))
+    _axes2[0].set_ylabel(t('Differenz der Mittelwerte', 'Difference of the means'))
 
     _accordion = mo.accordion({t('Ist der Unterschied echt? Signifikanz und Effektstärke', 'Is the difference real? Significance and effect size'): mo.vstack([
         mo.md(t(
-            'Jede Frage wird bei beiden TOP_K-Werten bewertet, also vergleichen wir je Frage die Differenz. Liegt die Null im 95-%-Intervall des Mittelwerts der Differenzen, kann die Stichprobe von 43 Fragen keinen Unterschied belegen. Die Effektstärke ist der Mittelwert der Differenzen geteilt durch ihre Streuung: unter 0,2 klein, um 0,5 mittel, ab 0,8 groß.',
-            'Each question is scored at both TOP_K values, so we compare the difference per question. If zero lies within the 95 % interval of the mean difference, the sample of 43 questions cannot show a difference. The effect size is the mean difference divided by its spread: below 0.2 small, around 0.5 medium, from 0.8 large.')),
-        _fig,
-        hint(t('Abbildung 2. Differenz des Mittelwerts (zweiter minus erster TOP_K-Wert) mit 95-%-Intervall, alle sechs Paare. Gefüllt: das Intervall schließt die Null aus.',
-               'Figure 2. Difference of the mean (second minus first TOP_K value) with the 95 % interval, all six pairs. Filled: the interval leaves out zero.')),
-        mo.md(left(md_table(_rows))),
-        hint(t('Intervall: 5000-faches Ziehen mit Zurücklegen aus den 43 Differenzen (Bootstrap). "Besser" zählt Fragen, bei denen der größere TOP_K-Wert höher liegt.',
-               'Interval: 5000 resamples with replacement from the 43 differences (bootstrap). "Better" counts questions where the larger TOP_K value scores higher.')),
+            'Ein gemischtes Modell schätzt für jede Kennzahl den Mittelwert je TOP_K-Wert, mit der Frage als zufälligem Effekt: Jede Frage hat ihr eigenes Niveau, und nur die Änderung durch TOP_K innerhalb der Fragen zählt. Die Erklärung von Signifikanz und Effektstärke gibt es im Raum.',
+            'A mixed-effects model estimates the mean per TOP_K value for each metric, with the question as a random effect: every question has its own level, and only the change through TOP_K within the questions counts. Significance and effect size are explained in the room.')),
+        _fig1,
+        hint(t('Abbildung 2. Geschätzter Mittelwert je TOP_K mit 95-%-Intervall, Standard-Konfiguration, 43 Fragen.',
+               'Figure 2. Estimated mean per TOP_K with the 95 % interval, standard configuration, 43 questions.')),
+        _fig2,
+        hint(t('Abbildung 3. Differenz der Mittelwerte (zweiter minus erster TOP_K-Wert) mit 95-%-Intervall, alle sechs Paare. Gefüllt: nach der Holm-Korrektur belegt (p < 0,05).',
+               'Figure 3. Difference of the means (second minus first TOP_K value) with the 95 % interval, all six pairs. Filled: shown after the Holm correction (p < 0.05).')),
+        *[mo.vstack([mo.md(f'#### {name}'), mo.md(left(md_table(coef_rows(model)))), hint(variance_text(model)),
+                     mo.md(t('**Alle Paare**', '**All pairs**')), mo.md(left(md_table(contrast_rows(model))))], gap=0.5)
+          for model, (_, name) in zip(_models, METRICS)],
+        hint(t('Effektstärke: Differenz geteilt durch die Reststandardabweichung des Modells. Holm: Korrektur für sechs Vergleiche je Kennzahl. Die Scores liegen zwischen 0 und 1; das lineare Modell ist eine Näherung. Jeder Wert ist ein Lauf des Richters; die Streuung von Lauf zu Lauf (Abschnitt E c) steckt nicht in den Intervallen.',
+               'Effect size: difference divided by the residual standard deviation of the model. Holm: correction for six comparisons per metric. Scores lie between 0 and 1; the linear model is an approximation. Every value is one judge run; the run-to-run spread (section E c) is not in the intervals.')),
+        summary_accordion(_models),
         frame(t('Kernaussage', 'Key takeaway'), t(
             'Ein Wert ist erst dann besser als ein anderer, wenn der Unterschied belegt und groß genug ist. Sonst entscheiden Kosten, Geschwindigkeit und Promptlänge.',
             'One value is only better than another when the difference is shown and large enough. Otherwise cost, speed and prompt length decide.')),
-        hint(t('Wer so TOP_K oder eine Konfiguration gewählt hat, hat die 43 Fragen dafür verbraucht. Die endgültige Signifikanzrechnung gehört auf einen zurückgehaltenen Fragensatz, den die Auswahl nie gesehen hat.',
-               'Whoever chose TOP_K or a configuration this way has used up the 43 questions for it. The final significance computation belongs on a held-out question set that the selection never saw.')),
+        hint(t('Wer so TOP_K oder eine Konfiguration gewählt hat, hat die 43 Fragen dafür verbraucht. Die endgültige Rechnung gehört auf einen zurückgehaltenen Fragensatz, den die Auswahl nie gesehen hat.',
+               'Whoever chose TOP_K or a configuration this way has used up the 43 questions for it. The final computation belongs on a held-out question set that the selection never saw.')),
     ], gap=0.75)})
     mo.vstack([
         frame(t('Rückmeldung', 'Feedback'), t(
@@ -1123,8 +1169,8 @@ def _(confirmed, cta, mo, t, task, ui_choice2, ui_choice2_go, ui_choice_go, ui_r
 
 
 @app.cell(hide_code=True)
-def _(PAIR_D, confirmed, feedback, hint, mo, shown, t, ui_choice2_go, ui_choice_go):
-    # Section G: assessment of the second choice against the first
+def _(LMM, confirmed, feedback, hint, mo, signed, t, ui_choice2_go, ui_choice_go):
+    # Section G: assessment of the second choice against the first, from the cached mixed models
     _first, _second = confirmed(ui_choice_go), confirmed(ui_choice2_go)
     mo.stop(t.short or _second is None)
     mo.stop(_second[0] is None or not _second[1].strip(), mo.callout(mo.md(t(
@@ -1132,23 +1178,21 @@ def _(PAIR_D, confirmed, feedback, hint, mo, shown, t, ui_choice2_go, ui_choice_
         'First choose a TOP_K and write a reason.')), kind='warn'))
     _k1, _k2 = (_first[0] if _first else None), _second[0]
 
-    def _num(x):
-        return t.num(x).replace('-', '&minus;')
+    def _c(metric, a, b):
+        return next(c for c in LMM['topk'][metric]['contrasts'] if (c['a'], c['b']) == (a, b))
 
-    _r13, _p510, _p35, _r35 = (PAIR_D[(1, 3, 'context_recall')], PAIR_D[(5, 10, 'context_precision')],
-                                PAIR_D[(3, 5, 'context_precision')], PAIR_D[(3, 5, 'context_recall')])
+    _r13, _p310, _p35, _r35 = _c('context_recall', 1, 3), _c('context_precision', 3, 10), _c('context_precision', 3, 5), _c('context_recall', 3, 5)
+    _shown = [x['p_holm'] < 0.05 for x in (_r13, _p310, _p35, _r35)]
     _changed = t(f'Sie haben Ihre Wahl von {_k1} auf {_k2} geändert. ', f'You changed your choice from {_k1} to {_k2}. ') if _k1 != _k2 else t(
         f'Sie bleiben bei {_k2}. ', f'You stay with {_k2}. ')
     _three_five = t(
-        'Zwischen 3 und 5 ' + ('sind beide Unterschiede belegt, aber klein bis mittel und entgegengesetzt' if shown(_p35) and shown(_r35)
-                               else 'belegt der Datensatz höchstens einen kleinen Unterschied') + f' (Precision {_num(_p35["mean"])}, Recall {_num(_r35["mean"])}).',
-        'Between 3 and 5 ' + ('both differences are shown, but small to medium and in opposite directions' if shown(_p35) and shown(_r35)
-                              else 'the data set shows at most a small difference') + f' (precision {_num(_p35["mean"])}, recall {_num(_r35["mean"])}).')
-    feedback_text = t(
-        f'{_changed}1 ist messbar schlechter im Recall (1 auf 3: {_num(_r13["mean"])}, Intervall ohne die Null), 10 messbar schlechter in der Precision (5 auf 10: {_num(_p510["mean"])}). {_three_five} Wer 3 wählt, spart Promptlänge; wer 5 wählt, kauft etwas Recall. Beides ist vertretbar, 1 und 10 sind es nicht; zwischen 3 und 5 entscheiden Kosten und Promptlänge.',
-        f'{_changed}1 is measurably worse in recall (1 to 3: {_num(_r13["mean"])}, interval without zero), 10 measurably worse in precision (5 to 10: {_num(_p510["mean"])}). {_three_five} Choosing 3 saves prompt length; choosing 5 buys some recall. Both are defensible, 1 and 10 are not; between 3 and 5 cost and prompt length decide.')
+        f'Zwischen 3 und 5 ist {"keiner der beiden" if not any(_shown[2:]) else "nur einer der beiden"} Unterschiede belegt (Precision {signed(_p35["estimate"])}, p nach Holm {t.num(_p35["p_holm"], 2)}; Recall {signed(_r35["estimate"])}, p nach Holm {t.num(_r35["p_holm"], 2)}).',
+        f'Between 3 and 5 {"neither" if not any(_shown[2:]) else "only one"} of the two differences is shown (precision {signed(_p35["estimate"])}, p after Holm {t.num(_p35["p_holm"], 2)}; recall {signed(_r35["estimate"])}, p after Holm {t.num(_r35["p_holm"], 2)}).')
+    _text = t(
+        f'{_changed}1 ist belegt schlechter im Recall (1 auf 3: {signed(_r13["estimate"])}, p nach Holm {t.num(_r13["p_holm"], 3)}), 10 belegt schlechter in der Precision (3 auf 10: {signed(_p310["estimate"])}, p nach Holm {t.num(_p310["p_holm"], 3)}). {_three_five} Wer 3 wählt, spart Promptlänge; wer 5 wählt, kauft etwas Recall, den die Daten nicht belegen. Beides ist vertretbar, 1 und 10 sind es nicht; zwischen 3 und 5 entscheiden Kosten und Promptlänge.',
+        f'{_changed}1 is shown to be worse in recall (1 to 3: {signed(_r13["estimate"])}, p after Holm {t.num(_r13["p_holm"], 3)}), 10 shown to be worse in precision (3 to 10: {signed(_p310["estimate"])}, p after Holm {t.num(_p310["p_holm"], 3)}). {_three_five} Choosing 3 saves prompt length; choosing 5 buys some recall the data do not show. Both are defensible, 1 and 10 are not; between 3 and 5 cost and prompt length decide.')
     mo.vstack([
-        feedback(_k2 in (3, 5), feedback_text),
+        feedback(_k2 in (3, 5), _text),
         hint(t('Vor der Pause fragen wir im Raum, wer was gewählt hat und wer gewechselt ist (etwa 3 Minuten).',
                'Before the break we ask the room who chose what and who switched (about 3 minutes).')),
     ], gap=0.75)
@@ -1193,7 +1237,7 @@ def _(ev, hint, mo, t, theme):
 
 
 @app.cell(hide_code=True)
-def _(CFG, CFG_LABELS, ev, left, md_table, mo, nw, plt, t, theme, ui_cfg):
+def _(CFG, CFG_LABELS, LMM, METRICS, ev, left, md_table, mo, nw, plt, signed, summary_accordion, t, theme, ui_cfg):
     # Row 18a: the chosen configuration next to the standard one, as curves and as a table
     _ks = ev.TOP_K_VALUES
 
@@ -1220,18 +1264,20 @@ def _(CFG, CFG_LABELS, ev, left, md_table, mo, nw, plt, t, theme, ui_cfg):
               f"Recall ({CFG_LABELS['standard']})": t.num(_means('standard', 'context_recall')[i]),
               f'Recall ({CFG_LABELS[_sel]})': t.num(_means(_sel, 'context_recall')[i])}
              for i, k in enumerate(_ks)]
-    # The paired difference to the standard configuration at TOP_K 5, as in section G
+    # The mixed model configuration vs standard at TOP_K 5 (score ~ configuration + (1 | question)), as in section G
     _diff_rows = []
-    for _metric, _name in (('context_precision', 'Context Precision'), ('context_recall', 'Context Recall')):
-        _d = ev.paired_diff(CFG['standard']['topk']['5'][_metric], CFG[_sel]['topk']['5'][_metric])
-        _diff_rows.append({t('Kennzahl', 'Metric'): _name, t('Differenz zu Standard', 'Difference to standard'): nw(t.num(_d['mean']).replace('-', '&minus;')),
-                           nw(t('95-%-Intervall', '95 % interval')): nw(f"[{t.num(_d['lo'])}, {t.num(_d['hi'])}]".replace('-', '&minus;')),
-                           nw(t('besser / schlechter / gleich', 'better / worse / same')): nw(f"{_d['better']} / {_d['worse']} / {_d['same']}"),
-                           t('Effektstärke', 'Effect size'): nw(t.num(_d['dz']).replace('-', '&minus;')),
-                           t('Belegt?', 'Shown?'): t('ja', 'yes') if (_d['lo'] > 0 or _d['hi'] < 0) else t('nein', 'no')})
+    if _sel != 'standard':
+        for _metric, _name in METRICS:
+            _m = LMM['configs'][_sel][_metric]
+            _c = _m['contrasts'][0]
+            _diff_rows.append({t('Kennzahl', 'Metric'): _name, t('Differenz zu Standard', 'Difference to standard'): signed(_c['estimate']),
+                               nw(t('95-%-Intervall', '95 % interval')): nw(f"[{t.num(_c['lo'])}, {t.num(_c['hi'])}]".replace('-', '&minus;')),
+                               nw(t('Effektstärke', 'Effect size')): signed(_c['estimate'] / _m['resid_var'] ** 0.5),
+                               'p': nw(t('< 0,001', '< 0.001') if _c['p'] < 0.001 else t.num(_c['p'], 3)),
+                               t('Belegt?', 'Shown?'): t('ja', 'yes') if _c['p'] < 0.05 else t('nein', 'no')})
     mo.vstack([_fig, mo.md(left(md_table(_rows))),
-               *([mo.md(t('**Differenz zu Standard bei TOP_K 5, wie in Abschnitt G**', '**Difference to standard at TOP_K 5, as in section G**')),
-                  mo.md(left(md_table(_diff_rows)))] if _sel != 'standard' else [])])
+               *([mo.md(t('**Differenz zu Standard bei TOP_K 5, gemischtes Modell wie in Abschnitt G**', '**Difference to standard at TOP_K 5, mixed model as in section G**')),
+                  mo.md(left(md_table(_diff_rows))), summary_accordion([LMM['configs'][_sel][m] for m, _ in METRICS])] if _sel != 'standard' else [])])
     return
 
 
@@ -1247,7 +1293,7 @@ def _(CFG_LABELS, confirm, cta, mo, t):
 
 
 @app.cell(hide_code=True)
-def _(CFG, confirmed, ev, feedback, mo, t, ui_kind_go):
+def _(CFG, LMM, confirmed, feedback, mo, t, ui_kind_go):
     # Row 18a: the solution in the feedback box; right when all three changes are assigned as below
     _given = confirmed(ui_kind_go)
     mo.stop(t.short or _given is None)
@@ -1257,14 +1303,13 @@ def _(CFG, confirmed, ev, feedback, mo, t, ui_kind_go):
         'First assign all three changes and write a sentence for your management.')), kind='warn'))
     _right = {'minilm': 'system', 'markdown': 'system', 'llama': 'measurement'}
     _cr = {n: sum(CFG[n]['topk']['5']['context_recall']) / 43 for n in ('standard', 'llama')}
-    _md = ev.paired_diff(CFG['standard']['topk']['5']['context_precision'], CFG['markdown']['topk']['5']['context_precision'])
-    _md_shown = _md['lo'] > 0 or _md['hi'] < 0
+    _md_shown = LMM['configs']['markdown']['context_precision']['contrasts'][0]['p'] < 0.05
     feedback(_kinds == _right, t(
         f'Embedding-Modell und Chunking ändern, was gefunden wird; das sind Stellschrauben am System. Der Richter ändert nur, wie streng bewertet wird; daher kommt der Sprung von {t.num(_cr["standard"])} auf {t.num(_cr["llama"])} aus Abschnitt E, bei denselben Chunks. Zahlen sind nur unter demselben Richter vergleichbar.'
-        + (' Dass markdown_headers schlechter aussieht, belegt der Datensatz nicht: Das Intervall enthält die Null. Hier entscheiden Chunkgröße, Promptlänge und Aufwand, nicht der Score.' if not _md_shown else '')
+        + (' Dass markdown_headers in der Precision schlechter aussieht, belegt das Modell nicht: Das Intervall enthält die Null. Hier entscheiden Chunkgröße, Promptlänge und Aufwand, nicht der Score.' if not _md_shown else '')
         + ' Und: Jede Konfiguration wurde einmal bewertet; die Streuung aus Abschnitt E c steckt in jedem Wert.',
         f'Embedding model and chunking change what is found; those are levers on the system. The judge changes only how strictly it scores; that is where the jump from {t.num(_cr["standard"])} to {t.num(_cr["llama"])} in section E comes from, with the same chunks. Numbers are comparable only under the same judge.'
-        + (' That markdown_headers looks worse is not shown by the data set: the interval contains zero. Here chunk size, prompt length and effort decide, not the score.' if not _md_shown else '')
+        + (' That markdown_headers looks worse in precision is not shown by the model: the interval contains zero. Here chunk size, prompt length and effort decide, not the score.' if not _md_shown else '')
         + ' And: each configuration was judged once; the spread of section E c sits in every value.'))
     return
 

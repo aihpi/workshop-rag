@@ -39,6 +39,7 @@ TRANSLATIONS_FILE = CACHE / 'translations.json'    # {'en': {German: English}, '
 KISZ_FILE = CACHE / 'kisz' / 'kisz_eval.json'      # {'questions': [{question, reference, line_ids, source_ids, runs, second}], 'demos': [...]}
 KISZ_TRANSLATIONS_FILE = CACHE / 'kisz' / 'translations.json'
 DIAGNOSIS_FILE = CACHE / 'diagnosis.json'          # {'index': int, ...}: the question with the lowest Context Recall (w3_02 extra task)
+LMM_FILE = CACHE / 'lmm.json'                      # mixed models score ~ TOP_K + (1 | question), see ragkit/w3_lmm.py
 
 # The four configurations with cached TOP_K experiments (dataset 43_komplex).
 CONFIGS = {
@@ -242,23 +243,3 @@ def judge_prompt_text() -> tuple[str, str]:
 
     return ContextPrecisionPrompt.instruction, ContextRecallPrompt.instruction
 
-
-# ---------------------------------------------------------------------------
-# Paired comparison of two configurations over the same questions (w3_02, sections F and G, extra task)
-# ---------------------------------------------------------------------------
-
-def paired_diff(a: list[float], b: list[float], n_boot: int = 5000, seed: int = 0) -> dict:
-    """Mean of the per-question differences b - a with a 95 % bootstrap interval and the effect size d_z.
-
-    Returns {'mean', 'lo', 'hi', 'dz', 'better', 'worse', 'same', 'n'}: 'better' counts questions where b > a.
-    The interval resamples the n differences with replacement n_boot times; d_z is mean / sd of the differences.
-    """
-    import numpy as np
-
-    d = np.asarray(b, dtype=float) - np.asarray(a, dtype=float)
-    rng = np.random.default_rng(seed)
-    means = rng.choice(d, size=(n_boot, len(d)), replace=True).mean(axis=1)
-    lo, hi = np.percentile(means, [2.5, 97.5])
-    sd = d.std(ddof=1) if len(d) > 1 else 0.0
-    return {'mean': float(d.mean()), 'lo': float(lo), 'hi': float(hi), 'dz': float(d.mean() / sd) if sd else 0.0,
-            'better': int((d > 0).sum()), 'worse': int((d < 0).sum()), 'same': int((d == 0).sum()), 'n': len(d)}

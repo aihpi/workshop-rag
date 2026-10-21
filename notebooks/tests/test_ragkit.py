@@ -1019,16 +1019,6 @@ def test_preconvert_lowers_typing_aliases():
     assert LOWERED >= {'List', 'Dict'}
 
 
-def test_paired_diff_known_shift():
-    from ragkit.w3_eval import paired_diff
-
-    r = paired_diff([0.2, 0.4, 0.6, 0.8, 1.0], [0.5, 0.6, 0.7, 0.9, 1.0])
-    assert abs(r['mean'] - 0.14) < 1e-9
-    assert (r['better'], r['worse'], r['same'], r['n']) == (4, 0, 1, 5)
-    assert r['lo'] <= 0.14 <= r['hi'] and r['lo'] > 0
-    assert r['dz'] > 1  # a shift larger than its spread
-
-
 def test_corpus_text_language_rule():
     import marimo as mo
 
@@ -1041,3 +1031,19 @@ def test_corpus_text_language_rule():
     assert de.primary('Hallo Welt') == 'Hallo Welt'
     assert en.primary('ohne Übersetzung') == 'ohne Übersetzung'
     assert en.cell('Hallo | Welt', n=1) == '<span class="hpi-corpus">Hallo ...</span>'
+
+
+def test_lmm_cache_contrasts_match_coefficients():
+    """The cached mixed models: every contrast equals the difference of the two level coefficients."""
+    import json
+
+    from ragkit import w3_eval as ev
+
+    lmm = json.loads(ev.LMM_FILE.read_text(encoding='utf-8'))
+    for model in [*lmm['topk'].values(), *(m for c in lmm['configs'].values() for m in c.values())]:
+        coef = {c['level']: c['estimate'] for c in model['coef']}
+        coef[model['reference']] = 0.0
+        for c in model['contrasts']:
+            assert abs((coef[c['b']] - coef[c['a']]) - c['estimate']) < 1e-9
+            assert c['lo'] <= c['estimate'] <= c['hi'] and 0 <= c['p'] <= c['p_holm'] <= 1
+        assert model['group_var'] > 0 and model['resid_var'] > 0
