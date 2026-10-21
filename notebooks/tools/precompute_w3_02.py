@@ -9,6 +9,7 @@ Writes to data/cache/w3_02/:
 
 - retrieval_top10.json: for all 43 questions of 43_komplex the top-10 chunks
   (text, rank, similarity) from grundschutz_chunks_json_structured_sections__octen-embedding-8b.
+- lmm.json: mixed models score ~ TOP_K + (1 | question) and configuration vs standard (stage lmm, no API).
 - demo_questions.json: the candidates for the demo questions with five judge
   runs each at TOP_K 5 (per-chunk verdicts with reasons, the claims of the
   reference with attributed and reason, Context Precision, Context Recall,
@@ -343,9 +344,19 @@ def stage_diagnosis(gold, retrieval):
     _translate_all(tr, 'en', [c['statement'] for c in run['claims']])
 
 
+def stage_lmm():
+    """Mixed models score ~ TOP_K + (1 | question) on the cached scores (no API, no Qdrant), see ragkit/w3_lmm.py."""
+    from ragkit import w3_lmm
+
+    out = w3_lmm.fit_all()
+    _save(ev.LMM_FILE, out)
+    for m, model in out['topk'].items():
+        print(f"lmm {m}: " + ', '.join(f"{c['a']} vs {c['b']} {c['estimate']:+.3f} (p_holm {c['p_holm']:.3f})" for c in model['contrasts']))
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
-    ap.add_argument('--stage', choices=['retrieve', 'judge', 'select', 'translate', 'kisz', 'diagnosis', 'all'],
+    ap.add_argument('--stage', choices=['retrieve', 'judge', 'select', 'translate', 'kisz', 'diagnosis', 'lmm', 'all'],
                     default='all')
     ap.add_argument('--fresh', action='store_true', help='retrieve again even if the cache exists')
     args = ap.parse_args()
@@ -353,6 +364,10 @@ def main():
     if args.stage in ('kisz', 'all'):
         stage_kisz()
         if args.stage == 'kisz':
+            return
+    if args.stage in ('lmm', 'all'):
+        stage_lmm()
+        if args.stage == 'lmm':
             return
     gold = ev.load_gold()
     retrieval = stage_retrieve(gold, fresh=args.fresh)

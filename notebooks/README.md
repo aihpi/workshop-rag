@@ -151,14 +151,18 @@ Same command, `w3_01` first:
 uv run marimo run w3_01_intro_end_to_end.py
 ```
 
-All four notebooks read precomputed results from `data/cache/`, which ships with the repository, so they need neither Qdrant nor an API key to run. The key only unlocks the live buttons (`w3_01`) and the extra task in `w3_02`. Run them in order: each one builds on the questions and answers of the previous one.
+All four notebooks read precomputed results from `data/cache/`, which ships with the repository, so they need neither Qdrant nor an API key to run. The key only unlocks the live buttons: the three evaluations in `w3_01`, "Ask the judge again" in `w3_02`, and your own reference answer and your own prompt in `w3_03`. Run them in order: each one builds on the questions and answers of the previous one.
 
 | Notebook | What it teaches | Needs |
 |---|---|---|
 | `w3_01_intro_end_to_end` | A whole RAG pipeline end to end, and what RAGAS measures | nothing (key for the live run) |
-| `w3_02_retrieval_evaluation` | Context precision and recall, and what changing top-k does | nothing (key for the extra task) |
-| `w3_03_generation_evaluation` | Answer correctness and faithfulness, and what changing the prompt does | nothing |
+| `w3_02_retrieval_evaluation` | Context precision and recall, what changing top-k does, and when a difference counts | nothing (key for "Ask the judge again") |
+| `w3_03_generation_evaluation` | Answer correctness and faithfulness, and what changing the prompt does | nothing (key for the live runs) |
 | `w3_04_rlhf_rlaif` | RLHF and RLAIF: where preference training sits, and what a judge's leanings do | nothing |
+
+### Before RAG III: your API key
+
+You get a key at the RAG III workshop, even if you skipped RAG I and II. Put it in `notebooks/.env` as in step 4: copy `.env.example` to `.env`, replace `your_openai_api_key_here` with the key, leave the other lines alone. Check: start `w3_01` and the setup table at the top shows a tick next to the API key. Without the key every notebook still runs; only the live buttons show a warning instead.
 
 The caches come from `tools/precompute_w3_0*.py`; an instructor rebuilds one with `uv run python -m tools.precompute_w3_01` in `notebooks/` (needs the key and, for `w3_02` and `w3_03`, Qdrant).
 

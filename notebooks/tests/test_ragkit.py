@@ -1017,3 +1017,33 @@ def test_preconvert_lowers_typing_aliases():
     assert 'from typing import Any' in src
     assert TYPING_IMPORT.sub(drop_lowered_aliases, 'from typing import List\n') == '\n'
     assert LOWERED >= {'List', 'Dict'}
+
+
+def test_corpus_text_language_rule():
+    import marimo as mo
+
+    from ragkit.corpus_text import CorpusText
+    from ragkit.i18n import T
+
+    tr = {'Hallo Welt': 'Hello world'}
+    en, de = CorpusText(mo, T('en', 'normal'), tr), CorpusText(mo, T('de', 'normal'), tr)
+    assert en.primary('Hallo Welt') == 'Hello world'
+    assert de.primary('Hallo Welt') == 'Hallo Welt'
+    assert en.primary('ohne Übersetzung') == 'ohne Übersetzung'
+    assert en.cell('Hallo | Welt', n=1) == '<span class="hpi-corpus">Hallo ...</span>'
+
+
+def test_lmm_cache_contrasts_match_coefficients():
+    """The cached mixed models: every contrast equals the difference of the two level coefficients."""
+    import json
+
+    from ragkit import w3_eval as ev
+
+    lmm = json.loads(ev.LMM_FILE.read_text(encoding='utf-8'))
+    for model in [*lmm['topk'].values(), *(m for c in lmm['configs'].values() for m in c.values())]:
+        coef = {c['level']: c['estimate'] for c in model['coef']}
+        coef[model['reference']] = 0.0
+        for c in model['contrasts']:
+            assert abs((coef[c['b']] - coef[c['a']]) - c['estimate']) < 1e-9
+            assert c['lo'] <= c['estimate'] <= c['hi'] and 0 <= c['p'] <= c['p_holm'] <= 1
+        assert model['group_var'] > 0 and model['resid_var'] > 0
