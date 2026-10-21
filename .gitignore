@@ -83,3 +83,5 @@ __marimo__/
 
 # Qdrant snapshots of the w3 collections (about 150 MB, shared outside git)
 notebooks/data/qdrant_snapshot/
+
+notebooks_old/
