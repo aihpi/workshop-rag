@@ -38,10 +38,11 @@ def _():
     from ragkit import intro_rag as rag
     from ragkit import w3_03_gen as gen
     from ragkit.config import setup
+    from ragkit.corpus_text import CorpusText
     from ragkit.viz import md_table
 
     theme.apply_mpl()
-    return Counter, gen, i18n, md_table, mo, np, pd, plt, rag, re, setup, theme
+    return Counter, CorpusText, gen, i18n, md_table, mo, np, pd, plt, rag, re, setup, theme
 
 
 @app.cell(hide_code=True)
@@ -150,7 +151,8 @@ def _(cache_ok, gen, mo, rag):
     OV = gen.load(gen.OVERVIEW_FILE)        # four metrics for all 43 gold questions
     # German corpus text -> English, English version only: gold texts, website texts of notebook 1, new KISZ texts
     TR = {**gen.load_json_or_empty(gen.TRANSLATIONS_FILE), **rag.load_translations(),
-          **gen.load_json_or_empty(gen.KISZ_TRANSLATIONS_FILE)}
+          **gen.load_json_or_empty(gen.KISZ_TRANSLATIONS_FILE),
+          **gen.load_json_or_empty(gen.DATA_DIR / 'cache' / 'w3_01' / 'translations_en.json')}  # answers of notebook 1
     GOLD, SRC = gen.load_gold(), gen.load_source()
     LLM_DOWN = ('Das Sprachmodell ist gerade nicht erreichbar. Probieren Sie es in einer Minute noch einmal.',
                 'The language model cannot be reached right now. Try again in a minute.')
@@ -159,13 +161,11 @@ def _(cache_ok, gen, mo, rag):
 
 
 @app.cell(hide_code=True)
-def _(TR, info, mo, re, t, theme):
-    def en_of(text):
-        """English translation of a cached German text; only in the English version, only when it differs."""
-        if t.lang != 'en':
-            return None
-        _en = TR.get(text)
-        return _en if _en and _en.strip() != text.strip() else None
+def _(CorpusText, TR, info, mo, re, t, theme):
+    # Corpus text in the language of the notebook: the English version shows the cached translation as the text,
+    # the German original in an accordion below it; judge reasons stay as RAGAS wrote them (English).
+    ct = CorpusText(mo, t, TR)
+    en_of, bi_cell = ct.en_of, ct.cell
 
     _sep = re.compile(r'^\s*\|?(\s*:?-{3,}:?\s*\|)+\s*:?-*:?\s*$', re.M)  # the alignment row of a Markdown table
 
@@ -174,29 +174,21 @@ def _(TR, info, mo, re, t, theme):
         return _sep.sub(lambda m: re.sub(r':?-{3,}:?', ':---', m.group(0)), text)
 
     def bi(text, literal=False):
-        """Corpus text as it is (class hpi-corpus for the language check), English translation below in grey.
+        """Corpus text in the language of the notebook, tables left-aligned; the German original in an accordion.
 
         literal=True shows a leading '#' of a website line as a character, not as a Markdown heading.
         """
-        _shown = re.sub(r'^#+', lambda m: '\\#' * len(m.group(0)), text) if literal else text
-        _orig = mo.Html(f'<div class="hpi-corpus">{mo.md(_left_tables(_shown)).text}</div>')
         _en = en_of(text)
-        if _en is not None and literal:
-            _en = re.sub(r'^#+\s*', '', _en)
-        return _orig if _en is None else mo.vstack(
-            [_orig, theme.hint(_left_tables(_en))], gap=0.25)
+        _block = ct.show(_left_tables(_en or text), literal=literal, original=False)
+        if _en is None:
+            return _block
+        return mo.vstack([_block, mo.accordion({'Original (Deutsch)': ct.show(_left_tables(text), literal=literal, original=False)})], gap=0.25)
 
     def flat(s):
         return ' '.join(str(s).split()).replace('|', '/')
 
-    def bi_cell(text):
-        """`bi` for one Markdown table cell."""
-        _en = en_of(text)
-        _orig = f'<span class="hpi-corpus">{flat(text)}</span>'
-        return _orig if _en is None else f'{_orig}<br><span style="color:{theme.GREY};font-size:.85em">{flat(_en)}</span>'
-
     def reason(text):
-        """A judge reason exactly as RAGAS returned it (German or English, see the hint under each table)."""
+        """A judge reason exactly as RAGAS returned it, in English in both versions."""
         return f'<span class="hpi-corpus">{flat(text)}</span>'
 
     def fund_view(text):
@@ -227,11 +219,9 @@ def _(TR, info, mo, re, t, theme):
 
     def kisz_card(title, e, control):
         """A card for the matrix task: reference and the three chunks left, the answer right, the choice below."""
-        _q_en = en_of(e['question'])
         return mo.Html(f'<div style="border:1px solid {theme.RULE};border-radius:2px;padding:.75rem 1rem;background:#fff">'
                        + mo.vstack([
-                           mo.md(f"**{title}.** <span class=\"hpi-corpus\">{e['question']}</span>"),
-                           *([mo.Html(f'<div class="hpi-hint">{_q_en}</div>')] if _q_en else []),
+                           mo.md(f"**{title}.** <span class=\"hpi-corpus\">{ct.primary(e['question'])}</span>"),
                            mo.hstack([
                                mo.vstack([mo.md(f"**{t('Referenzantwort', 'Reference answer')}**"), bi(e['reference']),
                                           mo.md(f"**{t('Die drei gefundenen Chunks', 'The three retrieved chunks')}**"),
@@ -377,7 +367,7 @@ def _(mo, t):
 
 
 @app.cell(hide_code=True)
-def _(KZ, bi, card, data_label, hint, info, mo, quiz_feedback, t, task, ui_quiz_ref):
+def _(ct, KZ, bi, card, data_label, hint, info, mo, quiz_feedback, t, task, ui_quiz_ref):
     # Section 3d with the coordinator's refinement: the newsletter question of notebook 1, section E.
     # Step 1 shows question, website lines and the pipeline's answer; the RAGAS reference stays hidden until step 3.
     R = KZ['ref']
@@ -402,7 +392,7 @@ def _(KZ, bi, card, data_label, hint, info, mo, quiz_feedback, t, task, ui_quiz_
                        *[mo.vstack([mo.md(f"*{t('Zeile', 'Line')} {n}*"), bi(line)])
                          for n, line in zip(R['source_ids'], R['source_lines'])]], gap=0.5),
         ], widths='equal', gap=2, align='start')),
-        card(t('Antwort der Pipeline', 'Answer of the pipeline'), R['answer'], corpus=True),
+        card(t('Antwort der Pipeline', 'Answer of the pipeline'), ct.primary(R['answer']), corpus=True),
     ], gap=1))
     return (R,)
 
@@ -557,11 +547,9 @@ def _(B, bi_cell, card, cards, chunk_lines, data_label, hint, info, key, left, m
         cards([
             card('MUSS', t('Pflicht', 'obligation')),
             card('SOLLTE', t('Empfehlung', 'recommendation')),
-            card('B, S, H', t('Basis-Anforderung, Standard-Anforderung, Anforderung bei erhöhtem Schutzbedarf',
-                              'basic requirement, standard requirement, requirement for elevated protection needs')),
         ]),
-        hint(t('So steht es im Grundschutz-Kompendium. Macht eine Antwort aus einem SOLLTE ein MUSS, gilt die Aussage als nicht belegt.',
-               'This is how the Grundschutz-Kompendium uses them. If an answer turns a SOLLTE into a MUSS, the claim counts as not supported.')),
+        hint(t('So steht es im Grundschutz-Kompendium (Aufbau in Notebook 1, Abschnitt D). Macht eine Antwort aus einem SOLLTE ein MUSS, gilt die Aussage als nicht belegt.',
+               'This is how the Grundschutz-Kompendium uses them (its structure is in notebook 1, section D). If an answer turns a SOLLTE into a MUSS, the claim counts as not supported.')),
     ], gap=0.75)
     mo.vstack([
         mo.md(t('## D. Faithfulness: steht das in den Chunks?', '## D. Faithfulness: is it in the chunks?')),
@@ -640,14 +628,14 @@ def _(B, CARDS, MATRIX, frame, judge_class, mo, t, ui_cards):
     mo.stop(any(v is None for v in ui_cards.value))
 
     def _entry(label, e):
-        return (f"{label}<br>AC {t.num(e['answer_correctness'])}, Faithfulness {t.num(e['faithfulness_score'])}")
+        return (f"{label}<br>Answer Correctness {t.num(e['answer_correctness'])}, Faithfulness {t.num(e['faithfulness_score'])}")
 
     _cells = {k: [] for k in MATRIX.values()}
     for _n, _e in enumerate(CARDS):
         _cells[judge_class(_e)].append(_entry(t(f'Antwort {_n + 1}', f'Answer {_n + 1}'), _e))
     _cells[judge_class(B)].append(_entry(t('zum Vergleich: die Antwort aus Abschnitt B', 'for comparison: the answer from section B'), B))
     _grid = '\n'.join([
-        f"| | {t('richtig (AC ab 0,5)', 'correct (AC from 0.5)')} | {t('falsch (AC unter 0,5)', 'wrong (AC below 0.5)')} |",
+        f"| | {t('richtig (Answer Correctness ab 0,5)', 'correct (Answer Correctness from 0.5)')} | {t('falsch (Answer Correctness unter 0,5)', 'wrong (Answer Correctness below 0.5)')} |",
         '|:---|:---|:---|',
         f"| **{t('belegt (Faithfulness ab 0,5)', 'supported (Faithfulness from 0.5)')}** | {'<br><br>'.join(_cells['both'])} | {'<br><br>'.join(_cells['supported_only'])} |",
         f"| **{t('nicht belegt (Faithfulness unter 0,5)', 'not supported (Faithfulness below 0.5)')}** | {'<br><br>'.join(_cells['correct_only'])} | {'<br><br>'.join(_cells['neither'])} |",
@@ -679,9 +667,8 @@ def _(Counter, OV, card, cards, data_label, en_of, hint, key, left, md_table, mo
     _cols = {k: f"{n} ({t('Mittel', 'mean')} {t.num(float(_df[k].mean()))})" for k, n in _metrics}
     _cols['faithfulness'] = (f"Faithfulness ({t('Mittel', 'mean')} {t.num(float(_df['faithfulness'].mean()))}, "
                              f"{t('mit Frage 22', 'with question 22')} {t.num(_all_f)})")
-    _table = pd.DataFrame({'#': _df['index'] + 1, t('Frage', 'Question'): _df['question']})  # numbered from 1 as in notebooks 1 and 2
-    if t.lang == 'en':
-        _table['English'] = [en_of(q) or '' for q in _df['question']]
+    # numbered from 1 as in notebooks 1 and 2; the question in the language of the notebook
+    _table = pd.DataFrame({'#': _df['index'] + 1, t('Frage', 'Question'): [en_of(q) or q for q in _df['question']]})
     for _key, _ in _metrics:
         _table[_cols[_key]] = _df[_key].round(2)
     _table[t('Hinweis', 'Note')] = [
@@ -782,10 +769,10 @@ def _(frame, hint, key, left, md_table, mo, t):
     _b, _k, _s = t('Befund', 'Finding'), t('Stellschraube', 'Lever'), t('gesehen in', 'seen in')
     _rows = [
         {_b: t('Context Recall niedrig', 'Context Recall low'),
-         _k: t('TOP_K erhöhen, Chunking prüfen, Suche verbessern (zum Beispiel hybride Suche)', 'raise TOP_K, check the chunking, improve the search (for example hybrid search)'),
+         _k: t('TOP_K erhöhen, Chunking prüfen, Suche verbessern (zum Beispiel hybride Suche: Embeddings und Stichwortsuche kombiniert)', 'raise TOP_K, check the chunking, improve the search (for example hybrid search: embeddings combined with keyword search)'),
          _s: t('Notebook 2, TOP_K', 'notebook 2, TOP_K')},
         {_b: t('Context Precision niedrig', 'Context Precision low'),
-         _k: t('Embedding-Modell, Reranking, weniger Chunks', 'embedding model, reranking, fewer chunks'),
+         _k: t('Embedding-Modell, Reranking (ein zweites Modell sortiert die gefundenen Chunks neu), weniger Chunks', 'embedding model, reranking (a second model re-sorts the retrieved chunks), fewer chunks'),
          _s: t('Notebook 2, TOP_K und Zusatzaufgabe', 'notebook 2, TOP_K and extra task')},
         {_b: t('Faithfulness niedrig', 'Faithfulness low'),
          _k: t('System-Prompt "nur aus dem Kontext", weniger störende Chunks', 'system prompt "only from the context", fewer distracting chunks'),
@@ -887,10 +874,15 @@ def _(EXP, LIMIT, PROMPT_EN, data_label, get_used, hint, key, mo, t, task, theme
                               disabled=_spent, kind='success')
 
     def _prompt_view(k):
+        """The prompt in the language of the notebook; the German original in an accordion in the English version."""
         _en = PROMPT_EN.get(k) if t.lang == 'en' else None
-        _box = (f'<div class="hpi-corpus" style="border:1px solid {theme.RULE};border-radius:2px;padding:.6rem .9rem;background:#fff">'
-                f'{EXP["prompts"][k]}</div>')
-        return mo.vstack([mo.Html(_box), *([hint(_en)] if _en else [])], gap=0.25)
+
+        def _box(text):
+            return mo.Html(f'<div class="hpi-corpus" style="border:1px solid {theme.RULE};border-radius:2px;padding:.6rem .9rem;background:#fff">{text}</div>')
+
+        if _en is None:
+            return _box(EXP['prompts'][k])
+        return mo.vstack([_box(_en), mo.accordion({'Original (Deutsch)': _box(EXP['prompts'][k])})], gap=0.25)
 
     _own = ui_prompt.value == 'own' and not t.short
     _steps = t.full(t(
@@ -1014,7 +1006,7 @@ def _(EXP, LLM_DOWN, PROMPT_LABELS, bi, get_live, hint, left, md_table, mo, np, 
     _rows = []
     for _i, _n in enumerate(_names):
         _row = {t('Frage', 'Question'): _n}
-        for _k, _short in (('ac', 'AC'), ('faithfulness', 'Faithfulness')):
+        for _k, _short in (('ac', 'Answer Correctness'), ('faithfulness', 'Faithfulness')):
             _lo, _hi = _band[_k][_i]
             _row[f"{_short}, {t('grauer Bereich', 'grey band')}"] = f'{t.num(_lo)} {t("bis", "to")} {t.num(_hi)}'
             _row[f"{_short}, {t('gewählt', 'chosen')}"] = t.num(_sel[_k][_i]) if _sel is not None else ''
@@ -1033,7 +1025,7 @@ def _(EXP, LLM_DOWN, PROMPT_LABELS, bi, get_live, hint, left, md_table, mo, np, 
     if len(_live['runs']) > 1 and ui_prompt.value == 'own':
         _own_table = mo.md(left(md_table([
             {t('Lauf', 'Run'): str(n + 1), 'Prompt': f"<span class=\"hpi-corpus\">{r['prompt'].replace(chr(10), ' ').replace('|', '/')[:120]}</span>",
-             t('AC im Mittel', 'mean AC'): t.num(float(np.mean([x['ac'] for x in r['rows']]))),
+             t('Answer Correctness im Mittel', 'mean Answer Correctness'): t.num(float(np.mean([x['ac'] for x in r['rows']]))),
              t('Faithfulness im Mittel', 'mean Faithfulness'): t.num(float(np.mean([x['faithfulness'] for x in r['rows']])))}
             for n, r in enumerate(_live['runs'])])))
     mo.vstack([v for v in (
@@ -1263,15 +1255,15 @@ def _(mo, t):
              "options": {t('als alleinige Grundlage der Bewertung', 'as the sole basis of the evaluation'): 'sole',
                       t('als Entwürfe, die Fachleute prüfen und korrigieren', 'as drafts that experts check and correct'): 'drafts',
                       t('für gar nichts', 'for nothing at all'): 'none'},
-             "fb": t('Ein Gold-Datensatz von Fachleuten bleibt das Fundament; RAGAS liefert schnell viele Entwürfe. Notebook 1, Abschnitt E.',
-                  'A gold data set by experts remains the foundation; RAGAS quickly delivers many drafts. Notebook 1, section E.')},
+             "fb": t('Ein Gold-Datensatz von Fachleuten bleibt das Fundament; RAGAS liefert schnell viele Entwürfe. Notebook 1, Abschnitt F.',
+                  'A gold data set by experts remains the foundation; RAGAS quickly delivers many drafts. Notebook 1, section F.')},
         {"key": 'needs', "short": False, "right": 'reference',
              "q": t('Was braucht der Richter zu jeder Testfrage?', 'What does the judge need for each test question?'),
              "options": {t('die markierte Fundstelle', 'the marked gold passage'): 'passage',
                       t('eine Referenzantwort', 'a reference answer'): 'reference',
                       t('nichts, er kennt die Antwort selbst', 'nothing, it knows the answer itself'): 'nothing'},
-             "fb": t('Gegen die Referenzantwort urteilt er bei drei der vier Kennzahlen; nur Faithfulness kommt ohne sie aus. Notebook 1, Abschnitte C und E.',
-                  'It judges against the reference answer for three of the four metrics; only Faithfulness does without it. Notebook 1, sections C and E.')},
+             "fb": t('Gegen die Referenzantwort urteilt er bei drei der vier Kennzahlen; nur Faithfulness kommt ohne sie aus. Notebook 1, Abschnitte C und F.',
+                  'It judges against the reference answer for three of the four metrics; only Faithfulness does without it. Notebook 1, sections C and F.')},
         {"key": 'cpcr', "short": True, "right": 'cp',
              "q": t('Die Suche findet alle nötigen Stellen, aber erst hinter mehreren nutzlosen Chunks. Welche Kennzahl ist niedrig?',
                  'The search finds all the passages needed, but only behind several useless chunks. Which metric is low?'),

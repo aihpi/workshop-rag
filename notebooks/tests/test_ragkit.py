@@ -1017,3 +1017,27 @@ def test_preconvert_lowers_typing_aliases():
     assert 'from typing import Any' in src
     assert TYPING_IMPORT.sub(drop_lowered_aliases, 'from typing import List\n') == '\n'
     assert LOWERED >= {'List', 'Dict'}
+
+
+def test_paired_diff_known_shift():
+    from ragkit.w3_eval import paired_diff
+
+    r = paired_diff([0.2, 0.4, 0.6, 0.8, 1.0], [0.5, 0.6, 0.7, 0.9, 1.0])
+    assert abs(r['mean'] - 0.14) < 1e-9
+    assert (r['better'], r['worse'], r['same'], r['n']) == (4, 0, 1, 5)
+    assert r['lo'] <= 0.14 <= r['hi'] and r['lo'] > 0
+    assert r['dz'] > 1  # a shift larger than its spread
+
+
+def test_corpus_text_language_rule():
+    import marimo as mo
+
+    from ragkit.corpus_text import CorpusText
+    from ragkit.i18n import T
+
+    tr = {'Hallo Welt': 'Hello world'}
+    en, de = CorpusText(mo, T('en', 'normal'), tr), CorpusText(mo, T('de', 'normal'), tr)
+    assert en.primary('Hallo Welt') == 'Hello world'
+    assert de.primary('Hallo Welt') == 'Hallo Welt'
+    assert en.primary('ohne Übersetzung') == 'ohne Übersetzung'
+    assert en.cell('Hallo | Welt', n=1) == '<span class="hpi-corpus">Hallo ...</span>'

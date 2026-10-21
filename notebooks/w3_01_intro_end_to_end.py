@@ -36,9 +36,10 @@ def _():
     )
     from ragkit import intro_rag as rag  # the mini pipeline and its two metrics
     from ragkit.config import setup
+    from ragkit.corpus_text import CorpusText
     from ragkit.viz import md_table
 
-    return i18n, md_table, mo, pd, rag, re, setup, theme, w3_eval
+    return CorpusText, i18n, md_table, mo, pd, rag, re, setup, theme, w3_eval
 
 
 @app.cell(hide_code=True)
@@ -118,33 +119,11 @@ def _(cache_ok, mo, rag, w3_eval):
 
 
 @app.cell(hide_code=True)
-def _(LIMIT, TR, chunks, mo, pd, re, t, theme):
-    _grey = {'color': theme.GREY, 'font-size': '0.85rem'}
-
-    def en_of(text):
-        """English translation of a cached German text; only in the English version, only when it differs."""
-        if t.lang != 'en':
-            return None
-        _en = TR.get(text)
-        return _en if _en and _en.strip() != text.strip() else None
-
-    def bi(text):
-        """Corpus text as it is, with its English translation below in small grey type.
-
-        The corpus text carries the class hpi-corpus, so the language check can tell it from our own text.
-        """
-        _orig = mo.Html(f'<div class="hpi-corpus">{mo.md(text).text}</div>')
-        _en = en_of(text)
-        return _orig if _en is None else mo.vstack([_orig, theme.hint(_en)], gap=0.25)
-
-    def bi_cell(text):
-        """`bi` for one Markdown table cell."""
-        def _flat(s):
-            return ' '.join(str(s).split()).replace('|', '/')
-        _en = en_of(text)
-        _orig = f'<span class="hpi-corpus">{_flat(text)}</span>'
-        return _orig if _en is None else (
-            f'{_orig}<br><span style="color:{theme.GREY};font-size:.85em">{_flat(_en)}</span>')
+def _(CorpusText, GTR, LIMIT, TR, chunks, mo, pd, re, t):
+    # Corpus text in the language of the notebook: the English version shows the cached translation as the text,
+    # the German original in an accordion below it (website lines, gold rows, answers).
+    ct = CorpusText(mo, t, {**TR, **GTR})
+    en_of, bi, bi_cell = ct.en_of, ct.show, ct.cell
 
     def chunk_list(row):
         """The three retrieved chunks of a result row, labeled as the answer cites them."""
@@ -159,12 +138,12 @@ def _(LIMIT, TR, chunks, mo, pd, re, t, theme):
     def web_table():
         """Searchable table of the website lines, one row per chunk, without image and navigation lines."""
         _ids = [i for i, c in enumerate(chunks) if c != '<!-- image -->' and not _nav.match(c)]
-        _cols = {t('Zeile', 'Line'): _ids, 'Text': [chunks[i] for i in _ids]}
+        _cols = {t('Zeile', 'Line'): _ids, 'Text': [ct.primary(chunks[i]) for i in _ids]}
         if t.lang == 'en':
-            _cols['English'] = [en_of(chunks[i]) or '' for i in _ids]
+            _cols['Original'] = [chunks[i] for i in _ids]
         return mo.ui.table(pd.DataFrame(_cols), selection=None, page_size=10, show_download=False,
                            show_column_summaries=False, show_data_types=False,
-                           wrapped_columns=[c for c in ('Text', 'English') if c in _cols],
+                           wrapped_columns=[c for c in ('Text', 'Original') if c in _cols],
                            label=t('Die Webseite, Zeile für Zeile', 'The website, line by line'))
 
     def eval_button(used):
@@ -178,7 +157,7 @@ def _(LIMIT, TR, chunks, mo, pd, re, t, theme):
               (('Antwort', 'Answer'), ['answer_correctness', 'faithfulness'])]
     NAMES = {'context_precision': 'Context Precision', 'context_recall': 'Context Recall',
              'answer_correctness': 'Answer Correctness', 'faithfulness': 'Faithfulness'}
-    return GROUPS, NAMES, bi, bi_cell, chunk_list, en_of, eval_button, web_table
+    return GROUPS, NAMES, bi, bi_cell, chunk_list, ct, en_of, eval_button, web_table
 
 
 @app.cell(hide_code=True)
@@ -188,7 +167,8 @@ def _(frame, hint, key, left, md_table, mo, t):
     _cmp = md_table([
         {'': t('bewertet', 'scores'), _rk: t('nur die Suche', 'retrieval only'), _rg: t('Suche und Antwort', 'retrieval and answer')},
         {'': t('braucht', 'needs'), _rk: t('Zuordnung Chunk zu Fundstelle, neu für jedes Chunking', 'chunk-to-passage mapping, new for every chunking'),
-         _rg: t('Frage und Referenzantwort, für Faithfulness nicht einmal das', 'question and reference answer, for Faithfulness not even that')},
+         _rg: t('Frage und Referenzantwort; Faithfulness (steht die Antwort in den Chunks?) braucht nicht einmal das',
+                'question and reference answer; Faithfulness (is the answer in the chunks?) does not even need that')},
         {'': t('Konfigurationen vergleichen', 'compare configurations'), _rk: t('Labels neu zuordnen', 're-assign labels'),
          _rg: t('ohne neue Labels', 'without new labels')},
         {'': t('zählt als Treffer', 'counts as a hit'), _rk: t('nur der markierte Chunk', 'only the marked chunk'),
@@ -200,12 +180,12 @@ def _(frame, hint, key, left, md_table, mo, t):
         mo.md(t('## B. Was ist RAGAS, und warum nutzen wir es?', '## B. What is RAGAS, and why do we use it?')),
         key(t('[RAGAS](https://docs.ragas.io) bewertet das ganze RAG-System, auch die Antwort, und macht Einstellungen vergleichbar, ohne neu zu annotieren.',
               '[RAGAS](https://docs.ragas.io) scores the whole RAG system, including the answer, and makes settings comparable without annotating again.')),
-        hint(t('RAGAS ist eine Open-Source-Bibliothek in Python. Ein Richter-LLM urteilt über Inhalte; hier nutzen wir die offenen Modelle der AISC-API.',
-               'RAGAS is an open-source Python library. A judge LLM judges content; here we use the open models of the AISC API.')),
+        hint(t('RAGAS ist eine Open-Source-Bibliothek in Python. Ein Richter-LLM urteilt über Inhalte; hier ist das gpt-oss-120b, ein offenes Modell auf der AISC-API.',
+               'RAGAS is an open-source Python library. A judge LLM judges content; here that is gpt-oss-120b, an open model on the AISC API.')),
         t.full(mo.md(left(_cmp)), mo.accordion({t('Recall@k oder RAGAS?', 'Recall@k or RAGAS?'): mo.md(left(_cmp))})),
         frame(t('Fundament', 'Foundation'), t(
-            'Ein Gold-Datensatz bleibt das Fundament: Fragen mit Referenzantworten von Fachleuten, gern mit Fundstellen. Je besser er ist, desto aussagekräftiger die Zahlen.',
-            'A gold data set remains the foundation: questions with reference answers by experts, ideally with gold passages. The better it is, the more meaningful the numbers.',
+            'Ein Gold-Datensatz bleibt das Fundament: Fragen mit Referenzantworten von Fachleuten, gern mit Fundstellen (Abschnitt D). Je besser er ist, desto aussagekräftiger die Zahlen.',
+            'A gold data set remains the foundation: questions with reference answers by experts, ideally with gold passages (section D). The better it is, the more meaningful the numbers.',
         )),
         mo.md(t('RAGAS bietet [viele weitere Kennzahlen](https://docs.ragas.io/en/stable/concepts/metrics/available_metrics/), zum Beispiel für die Relevanz der Antwort oder die Robustheit gegen störende Chunks. Wir nutzen heute vier davon.',
                 'RAGAS offers [many more metrics](https://docs.ragas.io/en/stable/concepts/metrics/available_metrics/), for example for the relevance of the answer or the robustness against distracting chunks. Today we use four of them.')),
@@ -390,7 +370,7 @@ def _(GTR, gold, mo, pd, t):
              t('Referenzantwort (gekürzt)', 'Reference answer (shortened)'): [_short(r['reference']) for r in gold],
              t('Fundstelle (gekürzt)', 'Gold passage (shortened)'): [_short(r['fundstelle']) for r in gold]}
     if t.lang == 'en':
-        _cols['English question'] = [GTR.get(r['question'], '') for r in gold]
+        _cols[t('Frage', 'Question')] = [GTR.get(r['question']) or r['question'] for r in gold]
     gold_table = mo.ui.table(pd.DataFrame(_cols), selection='single', page_size=8, show_download=False,
                              show_column_summaries=False, show_data_types=False,
                              wrapped_columns=[c for c in _cols if c != '#'],
@@ -399,14 +379,12 @@ def _(GTR, gold, mo, pd, t):
 
 
 @app.cell(hide_code=True)
-def _(GTR, card, cards, chunks, gold, gold_table, hint, key, manual, mo, site_table, synthetic, t, theme):
+def _(card, cards, chunks, ct, gold, gold_table, hint, key, manual, mo, site_table, synthetic, t, theme):
     # Section D (3i): our two data sources, two cards; normal adds one gold row and two tables to browse
-    _grey = f'<span style="color:{theme.GREY};font-size:.85rem">'
 
     def _corpus(de):
-        """German corpus text marked for the language check, with the English translation in the English version."""
-        _en = GTR.get(de) if t.lang == 'en' else None
-        return f'<span class="hpi-corpus">{de}</span>' + (f'\n\n{_grey}{_en}</span>' if _en and _en != de else '')
+        """Corpus text in the language of the notebook, marked for the language check."""
+        return f'<span class="hpi-corpus">{ct.primary(de)}</span>'
 
     _site = card(t('KISZ-Webseite', 'AI Service Center website'), t(
         f'- Webseite des KI-Servicezentrums, {len(chunks)} Zeilen, jede Zeile ein Chunk\n- {len(manual)} Fragen mit Referenzantwort von Hand, {len(synthetic)} von RAGAS erzeugt\n- kurze Texte, die Sie selbst beurteilen können, zum Nachvollziehen\n- in Notebook 1 und in den Aufgaben zum Selbst-Beurteilen in Notebook 2 und 3',
@@ -419,10 +397,12 @@ def _(GTR, card, cards, chunks, gold, gold_table, hint, key, manual, mo, site_ta
         key(t('Im Workshop arbeiten wir mit zwei Datenquellen: kurzen Texten zum Nachvollziehen und einem Gold-Datensatz zum Messen.',
               'In the workshop we work with two data sources: short texts to follow along and a gold data set to measure.')),
         cards([_site, _gold]),
+        hint(t('Das IT-Grundschutz-Kompendium ist das Regelwerk des Bundesamts für Sicherheit in der Informationstechnik (BSI). Es besteht aus Bausteinen wie APP.3.2 Webserver; jeder Baustein enthält nummerierte Anforderungen mit dem Buchstaben B (Basis), S (Standard) oder H (erhöhter Schutzbedarf).',
+               'The IT-Grundschutz-Kompendium is the rulebook of the German Federal Office for Information Security (BSI). It consists of modules such as APP.3.2 Webserver; every module holds numbered requirements marked B (basic), S (standard) or H (increased protection requirements).')),
     ]
     if not t.short and gold:
         _ex = next((r for r in gold if r['question'].startswith('Weshalb sind Passwortregeln')), gold[0])
-        _fund = _ex['fundstelle']
+        _fund = ct.primary(_ex['fundstelle'])
         _short_fund = _fund if len(_fund) <= 380 else _fund[:380].rsplit(' ', 1)[0] + ' ...'
         _arrow = mo.md('&#8594;').style({'font-size': '1.4rem', 'color': theme.GREY, 'padding-top': '2.2rem'})
         _parts += [
@@ -443,20 +423,15 @@ def _(GTR, card, cards, chunks, gold, gold_table, hint, key, manual, mo, site_ta
 
 
 @app.cell(hide_code=True)
-def _(GTR, bi, gold, gold_table, info, mo, t, theme):
+def _(bi, gold, gold_table, info, mo, t):
     # The selected gold row in full (normal only)
     mo.stop(t.short or gold_table.value is None or len(gold_table.value) == 0)
     _r = gold[int(gold_table.value.iloc[0]['#']) - 1]
 
-    def _de_en(text):
-        _en = GTR.get(text) if t.lang == 'en' else None
-        _orig = mo.Html(f'<div class="hpi-corpus">{mo.md(text).text}</div>')
-        return _orig if not _en or _en == text else mo.vstack([_orig, mo.Html(f'<div class="hpi-hint">{mo.md(_en).text}</div>')], gap=0.25)
-
     info(t(f'Zeile {_r["index"] + 1} des Gold-Datensatzes', f'Row {_r["index"] + 1} of the gold data set'), mo.vstack([
-        mo.md(f"**{t('Frage', 'Question')}**"), _de_en(_r['question']),
-        mo.md(f"**{t('Referenzantwort', 'Reference answer')}**"), _de_en(_r['reference']),
-        mo.md(f"**{t('Fundstelle', 'Gold passage')}**"), _de_en(_r['fundstelle']),
+        mo.md(f"**{t('Frage', 'Question')}**"), bi(_r['question']),
+        mo.md(f"**{t('Referenzantwort', 'Reference answer')}**"), bi(_r['reference']),
+        mo.md(f"**{t('Fundstelle', 'Gold passage')}**"), bi(_r['fundstelle']),
     ], gap=0.4))
     return
 
@@ -622,7 +597,7 @@ def _(mo):
 
 
 @app.cell(hide_code=True)
-def _(bi, card, hint, info, mo, ragas_note, synthetic, t):
+def _(bi, card, ct, hint, info, mo, ragas_note, synthetic, t):
     # 3g step 1 (normal only): the RAGAS question and its source in an information box, the pipeline answer visible below
     WRITE_I = next(i for i, r in enumerate(synthetic) if 'source_ids' in r)  # the Newsletter question, lines 13 and 36
     _r = synthetic[WRITE_I]
@@ -635,7 +610,7 @@ def _(bi, card, hint, info, mo, ragas_note, synthetic, t):
                        *[mo.vstack([mo.md(f"*{t('Zeile', 'Line')} {n}*"), bi(line)])
                          for n, line in zip(_r['source_ids'], _r['source_lines'])]], gap=0.5),
         ], widths='equal', gap=2, align='start')),
-        card(t('Antwort der Pipeline', 'Answer of the pipeline'), _r['answer'], corpus=True),
+        card(t('Antwort der Pipeline', 'Answer of the pipeline'), ct.primary(_r['answer']), corpus=True),
         hint(t('Diese Antwort soll bewertet werden. Dafür braucht der Richter eine Referenzantwort.',
                'This answer is to be scored. For that, the judge needs a reference answer.')),
     ], gap=1))

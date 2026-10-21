@@ -31,8 +31,9 @@ def _():
 
     from ragkit import i18n, theme  # language and scope switches, HPI look
     from ragkit.config import DATA_DIR
+    from ragkit.corpus_text import CorpusText
     from ragkit.viz import md_table
-    return Counter, DATA_DIR, i18n, json, md_table, mo, theme
+    return Counter, CorpusText, DATA_DIR, i18n, json, md_table, mo, theme
 
 
 @app.cell(hide_code=True)
@@ -134,21 +135,12 @@ def _(DATA_DIR, json, mo, t):
 
 
 @app.cell(hide_code=True)
-def _(Counter, PAIR, TR, VERDICTS, cache_ok, mo, t, theme):
+def _(Counter, CorpusText, PAIR, TR, VERDICTS, cache_ok, mo, t, theme):
     mo.stop(not cache_ok)
-
-    def en_of(text):
-        """English translation of a cached German text; only in the English version, only when it differs."""
-        if t.lang != 'en':
-            return None
-        _en = TR.get(text)
-        return _en if _en and _en.strip() != text.strip() else None
-
-    def bi(text):
-        """Corpus text as it is (class hpi-corpus for the language check), English translation below in grey."""
-        _orig = mo.Html(f'<div class="hpi-corpus">{mo.md(text).text}</div>')
-        _en = en_of(text)
-        return _orig if _en is None else mo.vstack([_orig, theme.hint(_en)], gap=0.25)
+    # Corpus text in the language of the notebook: the English version shows the cached translation as the text,
+    # the German original in an accordion below it.
+    ct = CorpusText(mo, t, TR)
+    bi = ct.show
 
     # The pair of section D: A is the short answer of notebook 1, B the fuller one of notebook 3, section B.
     ANSWERS = {'A': PAIR['short'], 'B': PAIR['full']}
@@ -277,6 +269,8 @@ def _(hint, key, mo, pipeline_html, t):
         pipeline_html(),
         hint(t('Abbildung 1. Oben der Weg zum fertigen Sprachmodell, unten Ihr RAG-System, das dieses Modell nutzt.',
                'Figure 1. At the top the path to the finished language model, below it your RAG system, which uses this model.')),
+        hint(t('Die drei Schritte oben: Im Vortraining lernt das Modell aus großen Textmengen, das nächste Wort vorherzusagen. Bei der Feinabstimmung mit Beispielen (Supervised Fine-Tuning, SFT) lernt es aus von Menschen geschriebenen Beispielantworten. Bei RLHF oder RLAIF lernt es aus Urteilen darüber, welche von zwei Antworten besser ist.',
+               'The three steps at the top: in pretraining the model learns from large amounts of text to predict the next word. In fine-tuning with examples (supervised fine-tuning, SFT) it learns from example answers written by people. In RLHF or RLAIF it learns from judgments about which of two answers is better.')),
     ], gap=1)
     return
 
