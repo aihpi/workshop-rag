@@ -100,7 +100,7 @@ def _(mo, t, theme):
     # Every place where participants act gets a numbered task box; the short version has no TOP_K choice.
     # Each quiz is its own counted step (CR-19, as in w3_01): "Kurz geprüft" before the task it prepares.
     TASK_ORDER = (['judge', 'quiz_cp', 'cp', 'quiz_cr', 'cr', 'check', 'spread', 'topk_predict']
-                  + t.full(['quiz_topk', 'topk_choose'], []))
+                  + t.full(['quiz_topk', 'topk_choose', 'topk_choose2'], []))
 
     def task(name, title, steps, time):
         """The task box of a numbered task, or of the extra task (name='extra')."""
@@ -906,11 +906,6 @@ def _(CFG, ev, feedback, frame, hint, mo, plt, t, theme, ui_pred14, ui_topk):
     _cr = [sum(CFG['standard']['topk'][str(k)]['context_recall']) / 43 for k in _ks]
     _sel = _ks.index(ui_topk.value)
     _fig, _ax = plt.subplots(figsize=(6.5, 3.0))
-    # The 95 % interval of each mean over the 43 questions (bootstrap), as a light band around the curve;
-    # paired_diff against zeros is the interval of the mean itself.
-    for _metric, _style, _color in (('context_precision', '-o', theme.GREYS[0]), ('context_recall', '--s', theme.GREYS[2])):
-        _ci = [ev.paired_diff([0.0] * 43, CFG['standard']['topk'][str(k)][_metric], n_boot=1000) for k in _ks]
-        _ax.fill_between(_ks, [c['lo'] for c in _ci], [c['hi'] for c in _ci], color=theme.GREYS[4], alpha=0.5, linewidth=0, zorder=0)
     _ax.plot(_ks, _cp, '-o', color=theme.GREYS[0])
     _ax.plot(_ks, _cr, '--s', color=theme.GREYS[2], markerfacecolor='white')
     _ax.axvline(ui_topk.value, color=theme.GREYS[3], linewidth=1.2, linestyle=':', zorder=1)
@@ -936,62 +931,11 @@ def _(CFG, ev, feedback, frame, hint, mo, plt, t, theme, ui_pred14, ui_topk):
                    mo.stat(t.num(_cp[_sel]), label='Context Precision', bordered=True),
                    mo.stat(t.num(_cr[_sel]), label='Context Recall', bordered=True)], justify='start', align='center', gap=2),
         _fig,
-        hint(t('Abbildung 1. Mittelwerte über 43 Fragen des Gold-Datensatzes, Standard-Konfiguration, Richter gpt-oss-120b, ein Lauf des Richters je TOP_K. Graues Band: das 95-%-Intervall des Mittelwerts über die 43 Fragen. Die Streuung von Lauf zu Lauf aus Abschnitt E c steckt in jedem Punkt.',
-               'Figure 1. Means over the 43 questions of the gold data set, standard configuration, judge gpt-oss-120b, one judge run per TOP_K. Grey band: the 95 % interval of the mean over the 43 questions. The run-to-run spread of section E c sits in every point.')),
+        hint(t('Abbildung 1. Mittelwerte über 43 Fragen des Gold-Datensatzes, Standard-Konfiguration, Richter gpt-oss-120b, ein Lauf des Richters je TOP_K. Die Streuung von Lauf zu Lauf aus Abschnitt E c steckt in jedem Punkt.',
+               'Figure 1. Means over the 43 questions of the gold data set, standard configuration, judge gpt-oss-120b, one judge run per TOP_K. The run-to-run spread of section E c sits in every point.')),
         feedback(ui_pred14.value == _actual, _explain),
         *([hint(t('Vor der Pause: Wer hat "Recall steigt, Precision fällt" getippt?',
                   'Before the break: who predicted "recall rises, precision falls"?'))] if t.short else []),
-    ], gap=0.75)
-    return
-
-
-@app.cell(hide_code=True)
-def _(CFG, ev, frame, hint, left, md_table, mo, nw, t, ui_pred14):
-    # Section F, new: is the difference between two TOP_K values real? Paired bootstrap over the 43 questions.
-    mo.stop(ui_pred14.value is None)
-    _pairs = [(1, 3), (3, 5), (5, 10)]
-    _metrics = (('context_precision', 'Context Precision'), ('context_recall', 'Context Recall'))
-
-    _D = {(a, b, m): ev.paired_diff(CFG['standard']['topk'][str(a)][m], CFG['standard']['topk'][str(b)][m])
-          for a, b in _pairs for m, _ in _metrics}
-
-    def _shown(d):
-        return d['lo'] > 0 or d['hi'] < 0
-
-    def _row(a, b, metric, name):
-        _d = _D[(a, b, metric)]
-        return {'TOP_K': nw(t(f'{a} auf {b}', f'{a} to {b}')), t('Kennzahl', 'Metric'): name,
-                t('Differenz', 'Difference'): nw(t.num(_d['mean']).replace('-', '&minus;')),
-                nw(t('95-%-Intervall', '95 % interval')): nw(f"[{t.num(_d['lo'])}, {t.num(_d['hi'])}]".replace('-', '&minus;')),
-                nw(t('besser / schlechter / gleich', 'better / worse / same')): nw(f"{_d['better']} / {_d['worse']} / {_d['same']}"),
-                nw(t('Effektstärke', 'Effect size')): nw(t.num(_d['dz']).replace('-', '&minus;')),
-                t('Belegt?', 'Shown?'): nw(t('ja', 'yes') if _shown(_d) else t('nein', 'no'))}
-
-    _rows = [_row(a, b, m, n) for a, b in _pairs for m, n in _metrics]
-    _three_five = sum(_shown(_D[(3, 5, m)]) for m, _ in _metrics)
-    _verdict = t(
-        {0: 'Zwischen 3 und 5 belegt der Datensatz keinen Unterschied: Beide Intervalle enthalten die Null.',
-         1: 'Zwischen 3 und 5 belegt der Datensatz nur bei einer Kennzahl einen Unterschied, und der Effekt ist klein bis mittel.',
-         2: 'Zwischen 3 und 5 sind beide Unterschiede belegt, aber klein bis mittel, und sie zeigen in entgegengesetzte Richtungen: Recall gewinnt, Precision verliert.'}[_three_five]
-        + ' Zwischen 1 und 3 beim Recall und zwischen 5 und 10 bei beiden Kennzahlen sind die Unterschiede belegt und größer.',
-        {0: 'Between 3 and 5 the data set shows no difference: both intervals contain zero.',
-         1: 'Between 3 and 5 the data set shows a difference for one metric only, and the effect is small to medium.',
-         2: 'Between 3 and 5 both differences are shown, but small to medium, and they point in opposite directions: recall gains, precision loses.'}[_three_five]
-        + ' Between 1 and 3 for recall and between 5 and 10 for both metrics the differences are shown and larger.')
-    mo.vstack([
-        mo.md(t('### Ist der Unterschied echt?', '### Is the difference real?')),
-        mo.md(t(
-            'Jede Frage wird bei beiden TOP_K-Werten bewertet, also vergleichen wir je Frage die Differenz. Liegt die Null im 95-%-Intervall des Mittelwerts der Differenzen, kann die Stichprobe von 43 Fragen keinen Unterschied belegen. Die Effektstärke ist der Mittelwert der Differenzen geteilt durch ihre Streuung: unter 0,2 klein, um 0,5 mittel, ab 0,8 groß.',
-            'Each question is scored at both TOP_K values, so we compare the difference per question. If zero lies within the 95 % interval of the mean difference, the sample of 43 questions cannot show a difference. The effect size is the mean difference divided by its spread: below 0.2 small, around 0.5 medium, from 0.8 large.')),
-        mo.md(left(md_table(_rows))),
-        hint(t('Intervall: 5000-faches Ziehen mit Zurücklegen aus den 43 Differenzen (Bootstrap). "Besser" zählt Fragen, bei denen der größere TOP_K-Wert höher liegt.',
-               'Interval: 5000 resamples with replacement from the 43 differences (bootstrap). "Better" counts questions where the larger TOP_K value scores higher.')),
-        mo.md(_verdict),
-        frame(t('Kernaussage', 'Key takeaway'), t(
-            'Ein Wert ist erst dann besser als ein anderer, wenn der Unterschied belegt und groß genug ist. Sonst entscheiden Kosten, Geschwindigkeit und Promptlänge.',
-            'One value is only better than another when the difference is shown and large enough. Otherwise cost, speed and prompt length decide.')),
-        hint(t('Wer so TOP_K oder eine Konfiguration gewählt hat, hat die 43 Fragen dafür verbraucht. Die endgültige Signifikanzrechnung gehört auf einen zurückgehaltenen Fragensatz, den die Auswahl nie gesehen hat.',
-               'Whoever chose TOP_K or a configuration this way has used up the 43 questions for it. The final significance computation belongs on a held-out question set that the selection never saw.')),
     ], gap=0.75)
     return
 
@@ -1044,7 +988,11 @@ def _(confirm, mo, t):
     ui_choice = mo.ui.radio({'1': 1, '3': 3, '5': 5, '10': 10}, inline=True, label=t('Ihr TOP_K', 'Your TOP_K'))
     ui_reason = mo.ui.text_area(label=t('Ihre Begründung', 'Your reason'), rows=2, full_width=True)
     ui_choice_go = confirm(t('Wahl bestätigen', 'Confirm choice'), lambda: (ui_choice.value, ui_reason.value))
-    return ui_choice, ui_choice_go, ui_quiz16, ui_reason
+    # The second choice, after the intervals (its own cell would rebuild the first button; both live here)
+    ui_choice2 = mo.ui.radio({'1': 1, '3': 3, '5': 5, '10': 10}, inline=True, label=t('Ihr TOP_K, zweite Wahl', 'Your TOP_K, second choice'))
+    ui_reason2 = mo.ui.text_area(label=t('Ihre Begründung', 'Your reason'), rows=2, full_width=True)
+    ui_choice2_go = confirm(t('Zweite Wahl bestätigen', 'Confirm second choice'), lambda: (ui_choice2.value, ui_reason2.value))
+    return ui_choice, ui_choice2, ui_choice2_go, ui_choice_go, ui_quiz16, ui_reason, ui_reason2
 
 
 @app.cell(hide_code=True)
@@ -1065,26 +1013,17 @@ def _(key, mo, quiz_feedback, quiz_task, t, ui_quiz16):
 
 @app.cell(hide_code=True)
 def _(CFG, cta, ev, left, md_table, mo, t, task, ui_choice, ui_choice_go, ui_reason):
-    # Section G: the task with both curves as a small table next to it (visible context)
-    def _vs3(k, metric):
-        """The difference of TOP_K k to TOP_K 3 with its 95 % interval; a blank for 3 itself."""
-        if k == 3:
-            return ''
-        _d = ev.paired_diff(CFG['standard']['topk']['3'][metric], CFG['standard']['topk'][str(k)][metric])
-        return f"{t.num(_d['mean'])} [{t.num(_d['lo'])}, {t.num(_d['hi'])}]".replace('-', '&minus;')
-
+    # Section G: the first choice, with the means only (the intervals come after it, in the accordion)
     _means = [{'TOP_K': str(k),
                'Context Precision': t.num(sum(CFG['standard']['topk'][str(k)]['context_precision']) / 43),
-               t('Differenz zu 3', 'Difference to 3'): _vs3(k, 'context_precision'),
-               'Context Recall': t.num(sum(CFG['standard']['topk'][str(k)]['context_recall']) / 43),
-               t('Differenz zu 3 ', 'Difference to 3 '): _vs3(k, 'context_recall')} for k in ev.TOP_K_VALUES]
+               'Context Recall': t.num(sum(CFG['standard']['topk'][str(k)]['context_recall']) / 43)} for k in ev.TOP_K_VALUES]
     t.full(mo.vstack([
         mo.md(t('### Ihre Wahl', '### Your choice')),
         task('topk_choose', t('TOP_K wählen', 'Choose TOP_K'), t(
             ['Wählen Sie ein TOP_K für Ihr System.',
-             'Begründen Sie Ihre Wahl in einem Satz mit beiden Kurven und den Intervallen aus der Tabelle.', 'Drücken Sie auf "Wahl bestätigen".'],
+             'Begründen Sie Ihre Wahl in einem Satz mit beiden Kurven.', 'Drücken Sie auf "Wahl bestätigen".'],
             ['Choose a TOP_K for your system.',
-             'Give your reason in one sentence, using both curves and the intervals in the table.', 'Press "Confirm choice".']), t('etwa 3 Minuten', 'about 3 minutes')),
+             'Give your reason in one sentence, using both curves.', 'Press "Confirm choice".']), t('etwa 3 Minuten', 'about 3 minutes')),
         mo.hstack([mo.vstack([ui_choice, ui_reason, cta(ui_choice_go)]), mo.md(left(md_table(_means)))],
                   widths=[3, 2], gap=2, align='start'),
     ], gap=1))
@@ -1092,24 +1031,126 @@ def _(CFG, cta, ev, left, md_table, mo, t, task, ui_choice, ui_choice_go, ui_rea
 
 
 @app.cell(hide_code=True)
-def _(CFG, confirmed, ev, feedback, hint, mo, t, ui_choice_go):
-    # Assessment of section G, after "Wahl bestätigen" with a TOP_K and a reason; a choice without a right answer (3g)
+def _(CFG, ev):
+    # All six TOP_K pairs of the standard configuration, both metrics: paired bootstrap over the 43 questions
+    TOPK_PAIRS = [(1, 3), (1, 5), (1, 10), (3, 5), (3, 10), (5, 10)]
+    METRICS = (('context_precision', 'Context Precision'), ('context_recall', 'Context Recall'))
+    PAIR_D = {(a, b, m): ev.paired_diff(CFG['standard']['topk'][str(a)][m], CFG['standard']['topk'][str(b)][m])
+              for a, b in TOPK_PAIRS for m, _ in METRICS}
+
+    def shown(d):
+        """True when the 95 % interval of the mean difference leaves out zero."""
+        return d['lo'] > 0 or d['hi'] < 0
+    return METRICS, PAIR_D, TOPK_PAIRS, shown
+
+
+@app.cell(hide_code=True)
+def _(METRICS, PAIR_D, TOPK_PAIRS, confirmed, frame, hint, left, md_table, mo, nw, plt, shown, t, theme, ui_choice_go):
+    # Section G, after the first choice: the neutral feedback, then the accordion on significance and effect size
     _given = confirmed(ui_choice_go)
     mo.stop(t.short or ui_choice_go.value is None)
     mo.stop(_given[0] is None or not _given[1].strip(), mo.callout(mo.md(t(
         'Wählen Sie zuerst ein TOP_K und schreiben Sie eine Begründung.',
         'First choose a TOP_K and write a reason.')), kind='warn'))
-    _s = CFG['standard']['topk']
-    _r13 = ev.paired_diff(_s['1']['context_recall'], _s['3']['context_recall'])
-    _p510 = ev.paired_diff(_s['5']['context_precision'], _s['10']['context_precision'])
-    _ok = feedback(_given[0] in (3, 5), t(
-        f"1 ist messbar schlechter im Recall (Differenz zu 3: {t.num(-_r13['mean'])}, Intervall ohne die Null), 10 messbar schlechter in der Precision (Differenz zu 5: {t.num(_p510['mean'])}). Zwischen 3 und 5 sind die Unterschiede klein bis mittel und zeigen in entgegengesetzte Richtungen. Wer 3 wählt, spart Promptlänge; wer 5 wählt, kauft etwas Recall, den der Datensatz kaum belegen kann. Beides ist vertretbar, 1 und 10 sind es nicht.",
-        f"1 is measurably worse in recall (difference to 3: {t.num(-_r13['mean'])}, interval without zero), 10 measurably worse in precision (difference to 5: {t.num(_p510['mean'])}). Between 3 and 5 the differences are small to medium and point in opposite directions. Choosing 3 saves prompt length; choosing 5 buys some recall the data set can hardly show. Both are defensible, 1 and 10 are not.",
-    ).replace('-', '&minus;'))
+
+    def _minus(x):
+        return nw(t.num(x).replace('-', '&minus;'))
+
+    _rows = [{'TOP_K': nw(t(f'{a} auf {b}', f'{a} to {b}')), t('Kennzahl', 'Metric'): name,
+              t('Differenz', 'Difference'): _minus(_d['mean']),
+              nw(t('95-%-Intervall', '95 % interval')): nw(f"[{t.num(_d['lo'])}, {t.num(_d['hi'])}]".replace('-', '&minus;')),
+              nw(t('besser / schlechter / gleich', 'better / worse / same')): nw(f"{_d['better']} / {_d['worse']} / {_d['same']}"),
+              nw(t('Effektstärke', 'Effect size')): _minus(_d['dz']),
+              t('Belegt?', 'Shown?'): nw(t('ja', 'yes') if shown(_d) else t('nein', 'no'))}
+             for a, b in TOPK_PAIRS for m, name in METRICS for _d in [PAIR_D[(a, b, m)]]]
+
+    # The differences as dots with their intervals, one panel per metric, zero line; filled when shown
+    _fig, _axes = plt.subplots(1, 2, figsize=(6.5, 2.8), sharey=True, constrained_layout=True)
+    _labels = [t(f'{a} auf {b}', f'{a} to {b}') for a, b in TOPK_PAIRS]
+    for _ax, (_m, _name) in zip(_axes, METRICS):
+        _ax.axhline(0, color=theme.GREYS[3], linewidth=1, zorder=0)
+        for _i, (_a, _b) in enumerate(TOPK_PAIRS):
+            _d = PAIR_D[(_a, _b, _m)]
+            _ax.plot([_i, _i], [_d['lo'], _d['hi']], color=theme.INK, linewidth=1.2, zorder=2)
+            _ax.plot(_i, _d['mean'], 'o', color=theme.INK, markerfacecolor=theme.INK if shown(_d) else 'white', markersize=6, zorder=3)
+        _ax.set_xticks(range(len(TOPK_PAIRS)), _labels, fontsize=8, rotation=30, ha='right')
+        _ax.set_title(_name, fontsize=9.5)
+        _ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _pos: t.num(v, 1).replace('-', '\u2212')))
+    _axes[0].set_ylabel(t('Differenz des Mittelwerts', 'Difference of the mean'))
+
+    _accordion = mo.accordion({t('Ist der Unterschied echt? Signifikanz und Effektstärke', 'Is the difference real? Significance and effect size'): mo.vstack([
+        mo.md(t(
+            'Jede Frage wird bei beiden TOP_K-Werten bewertet, also vergleichen wir je Frage die Differenz. Liegt die Null im 95-%-Intervall des Mittelwerts der Differenzen, kann die Stichprobe von 43 Fragen keinen Unterschied belegen. Die Effektstärke ist der Mittelwert der Differenzen geteilt durch ihre Streuung: unter 0,2 klein, um 0,5 mittel, ab 0,8 groß.',
+            'Each question is scored at both TOP_K values, so we compare the difference per question. If zero lies within the 95 % interval of the mean difference, the sample of 43 questions cannot show a difference. The effect size is the mean difference divided by its spread: below 0.2 small, around 0.5 medium, from 0.8 large.')),
+        _fig,
+        hint(t('Abbildung 2. Differenz des Mittelwerts (zweiter minus erster TOP_K-Wert) mit 95-%-Intervall, alle sechs Paare. Gefüllt: das Intervall schließt die Null aus.',
+               'Figure 2. Difference of the mean (second minus first TOP_K value) with the 95 % interval, all six pairs. Filled: the interval leaves out zero.')),
+        mo.md(left(md_table(_rows))),
+        hint(t('Intervall: 5000-faches Ziehen mit Zurücklegen aus den 43 Differenzen (Bootstrap). "Besser" zählt Fragen, bei denen der größere TOP_K-Wert höher liegt.',
+               'Interval: 5000 resamples with replacement from the 43 differences (bootstrap). "Better" counts questions where the larger TOP_K value scores higher.')),
+        frame(t('Kernaussage', 'Key takeaway'), t(
+            'Ein Wert ist erst dann besser als ein anderer, wenn der Unterschied belegt und groß genug ist. Sonst entscheiden Kosten, Geschwindigkeit und Promptlänge.',
+            'One value is only better than another when the difference is shown and large enough. Otherwise cost, speed and prompt length decide.')),
+        hint(t('Wer so TOP_K oder eine Konfiguration gewählt hat, hat die 43 Fragen dafür verbraucht. Die endgültige Signifikanzrechnung gehört auf einen zurückgehaltenen Fragensatz, den die Auswahl nie gesehen hat.',
+               'Whoever chose TOP_K or a configuration this way has used up the 43 questions for it. The final significance computation belongs on a held-out question set that the selection never saw.')),
+    ], gap=0.75)})
     mo.vstack([
-        _ok,
-        hint(t('Vor der Pause fragen wir im Raum, wer was gewählt hat (etwa 3 Minuten).',
-               'Before the break we ask the room who chose what (about 3 minutes).')),
+        frame(t('Rückmeldung', 'Feedback'), t(
+            'Viele wählen 3 oder 5. Für eine fundierte Entscheidung brauchen Sie aber auch Effektstärke und Signifikanz: Ist der Unterschied zwischen zwei Werten überhaupt belegt, und wie groß ist er? Öffnen Sie das Panel darunter.',
+            'Many choose 3 or 5. For an informed decision, however, you also need effect size and significance: is the difference between two values shown at all, and how large is it? Open the panel below.')),
+        _accordion,
+    ], gap=0.75)
+    return
+
+
+@app.cell(hide_code=True)
+def _(confirmed, cta, mo, t, task, ui_choice2, ui_choice2_go, ui_choice_go, ui_reason2):
+    # Section G: the second choice, with the intervals in view
+    _given = confirmed(ui_choice_go)
+    mo.stop(t.short or _given is None or _given[0] is None or not _given[1].strip())
+    mo.vstack([
+        mo.md(t('### Ihre Wahl, mit Intervallen', '### Your choice, with intervals')),
+        task('topk_choose2', t('TOP_K noch einmal wählen', 'Choose TOP_K again'), t(
+            ['Wählen Sie noch einmal ein TOP_K, jetzt mit Abbildung 2 und der Tabelle aus dem Panel.',
+             'Begründen Sie in einem Satz: Welcher Unterschied ist belegt, welcher nicht, und was entscheidet dann?',
+             'Drücken Sie auf "Zweite Wahl bestätigen".'],
+            ['Choose a TOP_K once more, now with figure 2 and the table from the panel.',
+             'Give your reason in one sentence: which difference is shown, which is not, and what decides then?',
+             'Press "Confirm second choice".']), t('etwa 3 Minuten', 'about 3 minutes')),
+        mo.vstack([ui_choice2, ui_reason2, cta(ui_choice2_go)]),
+    ], gap=1)
+    return
+
+
+@app.cell(hide_code=True)
+def _(PAIR_D, confirmed, feedback, hint, mo, shown, t, ui_choice2_go, ui_choice_go):
+    # Section G: assessment of the second choice against the first
+    _first, _second = confirmed(ui_choice_go), confirmed(ui_choice2_go)
+    mo.stop(t.short or _second is None)
+    mo.stop(_second[0] is None or not _second[1].strip(), mo.callout(mo.md(t(
+        'Wählen Sie zuerst ein TOP_K und schreiben Sie eine Begründung.',
+        'First choose a TOP_K and write a reason.')), kind='warn'))
+    _k1, _k2 = (_first[0] if _first else None), _second[0]
+
+    def _num(x):
+        return t.num(x).replace('-', '&minus;')
+
+    _r13, _p510, _p35, _r35 = (PAIR_D[(1, 3, 'context_recall')], PAIR_D[(5, 10, 'context_precision')],
+                                PAIR_D[(3, 5, 'context_precision')], PAIR_D[(3, 5, 'context_recall')])
+    _changed = t(f'Sie haben Ihre Wahl von {_k1} auf {_k2} geändert. ', f'You changed your choice from {_k1} to {_k2}. ') if _k1 != _k2 else t(
+        f'Sie bleiben bei {_k2}. ', f'You stay with {_k2}. ')
+    _three_five = t(
+        'Zwischen 3 und 5 ' + ('sind beide Unterschiede belegt, aber klein bis mittel und entgegengesetzt' if shown(_p35) and shown(_r35)
+                               else 'belegt der Datensatz höchstens einen kleinen Unterschied') + f' (Precision {_num(_p35["mean"])}, Recall {_num(_r35["mean"])}).',
+        'Between 3 and 5 ' + ('both differences are shown, but small to medium and in opposite directions' if shown(_p35) and shown(_r35)
+                              else 'the data set shows at most a small difference') + f' (precision {_num(_p35["mean"])}, recall {_num(_r35["mean"])}).')
+    feedback_text = t(
+        f'{_changed}1 ist messbar schlechter im Recall (1 auf 3: {_num(_r13["mean"])}, Intervall ohne die Null), 10 messbar schlechter in der Precision (5 auf 10: {_num(_p510["mean"])}). {_three_five} Wer 3 wählt, spart Promptlänge; wer 5 wählt, kauft etwas Recall. Beides ist vertretbar, 1 und 10 sind es nicht; zwischen 3 und 5 entscheiden Kosten und Promptlänge.',
+        f'{_changed}1 is measurably worse in recall (1 to 3: {_num(_r13["mean"])}, interval without zero), 10 measurably worse in precision (5 to 10: {_num(_p510["mean"])}). {_three_five} Choosing 3 saves prompt length; choosing 5 buys some recall. Both are defensible, 1 and 10 are not; between 3 and 5 cost and prompt length decide.')
+    mo.vstack([
+        feedback(_k2 in (3, 5), feedback_text),
+        hint(t('Vor der Pause fragen wir im Raum, wer was gewählt hat und wer gewechselt ist (etwa 3 Minuten).',
+               'Before the break we ask the room who chose what and who switched (about 3 minutes).')),
     ], gap=0.75)
     return
 
@@ -1152,7 +1193,7 @@ def _(ev, hint, mo, t, theme):
 
 
 @app.cell(hide_code=True)
-def _(CFG, CFG_LABELS, ev, left, md_table, mo, plt, t, theme, ui_cfg):
+def _(CFG, CFG_LABELS, ev, left, md_table, mo, nw, plt, t, theme, ui_cfg):
     # Row 18a: the chosen configuration next to the standard one, as curves and as a table
     _ks = ev.TOP_K_VALUES
 
@@ -1179,18 +1220,18 @@ def _(CFG, CFG_LABELS, ev, left, md_table, mo, plt, t, theme, ui_cfg):
               f"Recall ({CFG_LABELS['standard']})": t.num(_means('standard', 'context_recall')[i]),
               f'Recall ({CFG_LABELS[_sel]})': t.num(_means(_sel, 'context_recall')[i])}
              for i, k in enumerate(_ks)]
-    # The paired difference to the standard configuration at TOP_K 5, as in section F
+    # The paired difference to the standard configuration at TOP_K 5, as in section G
     _diff_rows = []
     for _metric, _name in (('context_precision', 'Context Precision'), ('context_recall', 'Context Recall')):
         _d = ev.paired_diff(CFG['standard']['topk']['5'][_metric], CFG[_sel]['topk']['5'][_metric])
-        _diff_rows.append({t('Kennzahl', 'Metric'): _name, t('Differenz zu Standard', 'Difference to standard'): t.num(_d['mean']),
-                           t('95-%-Intervall', '95 % interval'): f"[{t.num(_d['lo'])}, {t.num(_d['hi'])}]",
-                           t('besser / schlechter / gleich', 'better / worse / same'): f"{_d['better']} / {_d['worse']} / {_d['same']}",
-                           t('Effektstärke', 'Effect size'): t.num(_d['dz']),
+        _diff_rows.append({t('Kennzahl', 'Metric'): _name, t('Differenz zu Standard', 'Difference to standard'): nw(t.num(_d['mean']).replace('-', '&minus;')),
+                           nw(t('95-%-Intervall', '95 % interval')): nw(f"[{t.num(_d['lo'])}, {t.num(_d['hi'])}]".replace('-', '&minus;')),
+                           nw(t('besser / schlechter / gleich', 'better / worse / same')): nw(f"{_d['better']} / {_d['worse']} / {_d['same']}"),
+                           t('Effektstärke', 'Effect size'): nw(t.num(_d['dz']).replace('-', '&minus;')),
                            t('Belegt?', 'Shown?'): t('ja', 'yes') if (_d['lo'] > 0 or _d['hi'] < 0) else t('nein', 'no')})
     mo.vstack([_fig, mo.md(left(md_table(_rows))),
-               *([mo.md(t('**Differenz zu Standard bei TOP_K 5**', '**Difference to standard at TOP_K 5**')),
-                  mo.md(left(md_table(_diff_rows)).replace('-', '&minus;'))] if _sel != 'standard' else [])])
+               *([mo.md(t('**Differenz zu Standard bei TOP_K 5, wie in Abschnitt G**', '**Difference to standard at TOP_K 5, as in section G**')),
+                  mo.md(left(md_table(_diff_rows)))] if _sel != 'standard' else [])])
     return
 
 
