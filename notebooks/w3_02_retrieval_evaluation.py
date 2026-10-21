@@ -441,34 +441,68 @@ def _(ap_steps, check_answer, confirmed, cta, demo, ev, mo, strip_html, t, task,
 
 
 @app.cell(hide_code=True)
-def _(card, cards, ev, frame, hint, key, mo, t):
+def _(card, cards, ev, frame, hint, key, left, md_table, mo, t):
     # Section D, rows D1 to D3: before the judge counts claims, the participants count (Mentimeter in the room),
-    # three definitions, the working definition of this notebook, and what RAGAS tells the judge (nothing).
+    # four definitions, the working definition of this notebook with its rules, the three examples resolved, and
+    # what RAGAS tells the judge (nothing). The texts are single sentences from gold answers 34, 28 and 30.
     _, _cr_prompt = ev.judge_prompt_text()
-    _example = t('"Administrationskonten sollten durch Mehr-Faktor-Authentisierung geschützt werden, da sie ein besonders hohes Schadenspotenzial besitzen und bevorzugtes Angriffsziel darstellen."',
-                 '"Admin accounts should be protected by multi-factor authentication, because they carry a particularly high damage potential and are a preferred target of attacks."')
+    EXAMPLES = [
+        ('A', t('Die Anforderungen müssen dokumentiert werden, damit sie identifiziert und bei Planung, Betrieb und Beschaffung berücksichtigt werden können.',
+                'The requirements must be documented so that they can be identified and taken into account during planning, operation, and procurement.'),
+         [t(['Die Anforderungen müssen dokumentiert werden', 'damit sie identifiziert und bei Planung, Betrieb und Beschaffung berücksichtigt werden können'],
+            ['The requirements must be documented', 'so that they can be identified and taken into account during planning, operation, and procurement']),
+          t(['Die Anforderungen müssen dokumentiert werden.', 'Dokumentierte Anforderungen können identifiziert werden.', 'Dokumentierte Anforderungen können bei der Planung berücksichtigt werden.', '... beim Betrieb berücksichtigt werden.', '... bei der Beschaffung berücksichtigt werden.'],
+            ['The requirements must be documented.', 'Documented requirements can be identified.', 'Documented requirements can be taken into account during planning.', '... during operation.', '... during procurement.']),
+          t(['Anforderungen müssen dokumentiert werden.', 'Zweck: Anforderungen identifizieren.', 'Zweck: bei der Planung berücksichtigen.', 'Zweck: beim Betrieb berücksichtigen.', 'Zweck: bei der Beschaffung berücksichtigen.'],
+            ['Requirements must be documented.', 'Purpose: identify requirements.', 'Purpose: take into account during planning.', 'Purpose: during operation.', 'Purpose: during procurement.'])]),
+        ('B', t('Ohne verbindliche Passwortregeln besteht die Gefahr schwacher oder mehrfach genutzter Passwörter, die leicht kompromittiert werden können.',
+                'Without binding password rules, there is a risk of weak or reused passwords that can be easily compromised.'),
+         [t(['Ohne verbindliche Passwortregeln besteht die Gefahr schwacher oder mehrfach genutzter Passwörter', 'die leicht kompromittiert werden können'],
+            ['Without binding password rules, there is a risk of weak or reused passwords', 'that can be easily compromised']),
+          t(['Ohne verbindliche Passwortregeln besteht die Gefahr schwacher Passwörter.', 'Ohne verbindliche Passwortregeln besteht die Gefahr mehrfach genutzter Passwörter.', 'Schwache Passwörter können leicht kompromittiert werden.', 'Mehrfach genutzte Passwörter können leicht kompromittiert werden.'],
+            ['Without binding password rules, there is a risk of weak passwords.', 'Without binding password rules, there is a risk of reused passwords.', 'Weak passwords can be easily compromised.', 'Reused passwords can be easily compromised.']),
+          t(['Ohne Passwortregeln: Gefahr schwacher Passwörter.', 'Ohne Passwortregeln: Gefahr mehrfach genutzter Passwörter.', 'Schwache oder mehrfach genutzte Passwörter sind leicht zu kompromittieren.'],
+            ['Without password rules: risk of weak passwords.', 'Without password rules: risk of reused passwords.', 'Weak or reused passwords are easy to compromise.'])]),
+        ('C', t('Ausgabe und Entzug von Zutritts-, Zugangs- und Zugriffsmitteln sind zu dokumentieren und bei Kompromittierung sofort zu ersetzen.',
+                'Issuance and revocation of entry, access, and usage media must be documented and replaced immediately if compromised.'),
+         [t(['Ausgabe und Entzug von Zutritts-, Zugangs- und Zugriffsmitteln sind zu dokumentieren', 'und bei Kompromittierung sofort zu ersetzen'],
+            ['Issuance and revocation of entry, access, and usage media must be documented', 'and replaced immediately if compromised']),
+          t(['Die Ausgabe von Zutrittsmitteln ist zu dokumentieren.', '... von Zugangsmitteln ...', '... von Zugriffsmitteln ...', 'Der Entzug von Zutrittsmitteln ist zu dokumentieren.', '... von Zugangsmitteln ...', '... von Zugriffsmitteln ...', 'Zutrittsmittel sind bei Kompromittierung sofort zu ersetzen.', 'Zugangsmittel ...', 'Zugriffsmittel ...'],
+            ['Issuance of entry media must be documented.', '... of access media ...', '... of usage media ...', 'Revocation of entry media must be documented.', '... of access media ...', '... of usage media ...', 'Entry media must be replaced immediately if compromised.', 'Access media ...', 'Usage media ...']),
+          t(['Die Ausgabe von Zutritts-, Zugangs- und Zugriffsmitteln ist zu dokumentieren.', 'Der Entzug von Zutritts-, Zugangs- und Zugriffsmitteln ist zu dokumentieren.', 'Zutritts-, Zugangs- und Zugriffsmittel sind bei Kompromittierung sofort zu ersetzen.'],
+            ['Issuance of entry, access and usage media must be documented.', 'Revocation of entry, access and usage media must be documented.', 'Entry, access and usage media must be replaced immediately if compromised.'])]),
+    ]
+    _rows_label = t(['Alltag, ganz', 'Alltag, feiner', 'Logik', 'Arbeitsdefinition'], ['Everyday, whole', 'Everyday, granular', 'Logic', 'Working definition'])
+
+    def _breakdown(letter, text, splits):
+        _lists = [[text], *splits]
+        _rows = [{t('Definition', 'Definition'): lab, t('Aussagen', 'Claims'): ' '.join(f'{i + 1}) {c}' for i, c in enumerate(cl)),
+                  t('Anzahl', 'Count'): str(len(cl))} for lab, cl in zip(_rows_label, _lists)]
+        return mo.md(left(md_table(_rows)))
+
     claims_block = mo.vstack([
         mo.md(t('### Was ist eine Aussage?', '### What is a claim?')),
-        key(t('Bevor der Richter zählt, zählen Sie: Wie viele Aussagen stecken in diesem Satz?',
-              'Before the judge counts, you count: how many claims are in this sentence?')),
-        mo.Html(f'<div class="hpi-corpus">{_example}</div>'),
-        hint(t('Ihre Zahl geben Sie im Raum über Mentimeter ab. Erst danach geht es hier weiter.',
-               'Give your number in the room via Mentimeter. Only then continue here.')),
-        mo.md(t('#### Drei Antworten', '#### Three answers')),
+        key(t('Bevor der Richter zählt, zählen Sie: Wie viele Aussagen stecken in jedem dieser drei Sätze?',
+              'Before the judge counts, you count: how many claims are in each of these three sentences?')),
+        mo.vstack([mo.Html(f'<div class="hpi-corpus"><b>{letter}</b> &nbsp; {text}</div>') for letter, text, _ in EXAMPLES], gap=0.4),
+        hint(t('Drei Sätze aus Referenzantworten des Gold-Datensatzes. Ihre Zahlen geben Sie im Raum über Mentimeter ab. Erst danach geht es hier weiter.',
+               'Three sentences from reference answers of the gold data set. Give your numbers in the room via Mentimeter. Only then continue here.')),
+        mo.md(t('#### Vier Antworten', '#### Four answers')),
         cards([
-            card(t('Alltag (Wörterbuch)', 'Everyday (dictionary)'), t(
-                'Eine Aussage ist ein Satz, der etwas feststellt. Danach ist der Beispielsatz eine Aussage; wer Hauptsatz und Nebensatz als zwei Sätze zählt, kommt auf zwei.',
-                'A claim is a sentence that states something. By that the example is one claim; whoever counts main clause and subordinate clause as two sentences gets two.')),
-            card(t('Logik', 'Logic'), t(
-                'Eine Aussage ist etwas, das für sich allein wahr oder falsch sein kann. "A, weil B und C" sind drei Aussagen, dazu die Behauptung, dass B und C der Grund für A sind. Danach hat der Beispielsatz drei bis vier Aussagen.',
-                'A claim is something that can be true or false on its own. "A, because B and C" are three claims, plus the claim that B and C are the reason for A. By that the example has three to four claims.')),
-            card(t('NLP-Forschung (FActScore)', 'NLP research (FActScore)'), t(
-                'Eine Aussage ist die kleinste Einheit, die eine Information trägt und sich gegen eine Quelle prüfen lässt. Jedes Element einer Aufzählung zählt. Danach hat der Beispielsatz drei Aussagen.',
-                'A claim is the smallest unit that carries one piece of information and can be checked against a source. Each element of a list counts. By that the example has three claims.')),
+            card(t('Alltag, ganz', 'Everyday, whole'), t('Eine Aussage ist ein Satz, der etwas feststellt.',
+                                                        'A claim is a sentence that states something.')),
+            card(t('Alltag, feiner', 'Everyday, granular'), t('Jeder Teilsatz, der etwas feststellt, ist eine Aussage: Hauptsatz und Nebensatz zählen getrennt.',
+                                                             'Every clause that states something is a claim: main clause and subordinate clause count separately.')),
+            card(t('Logik', 'Logic'), t('Eine Aussage ist etwas, das für sich allein wahr oder falsch sein kann. Jedes Element einer Aufzählung zählt für jede Handlung, zu der es gehört.',
+                                        'A claim is something that can be true or false on its own. Every element of a list counts for every action it belongs to.')),
+            card(t('Arbeitsdefinition', 'Working definition'), t('Eine Aussage ist der kleinste Teil der Referenzantwort, der sich an einer Stelle im Kompendium prüfen lässt.',
+                                                                'A claim is the smallest part of the reference answer that can be checked at one place in the Kompendium.')),
         ]),
-        frame(t('Für dieses Notebook', 'For this notebook'), t(
-            'Eine Aussage ist der kleinste Teil der Referenzantwort, der sich für sich allein gegen das Kompendium prüfen lässt. Jedes Element einer Aufzählung, jede Begründung (weil, da) und jeder Zweck (um zu) ist eine eigene Aussage; Wiederholungen und Füllwörter zählen nicht. Mit dieser Definition stimmen Sie jetzt noch einmal ab.',
-            'A claim is the smallest part of the reference answer that can be checked against the Kompendium on its own. Every element of a list, every reason (because) and every purpose (in order to) is its own claim; repetitions and filler do not count. Vote again with this definition.')),
+        frame(t('Arbeitsdefinition für dieses Notebook', 'Working definition for this notebook'), t(
+            'Eine Aussage ist der kleinste Teil der Referenzantwort, der sich an einer Stelle im Kompendium prüfen lässt. Jede Handlung (dokumentieren, ersetzen) ist eine eigene Aussage. Jede Begründung (weil, da) und jeder Zweck (damit, um zu) ist eine eigene Aussage. Eine Aufzählung, die das Kompendium als eine Liste nennt, bleibt eine Aussage. Wiederholungen und Füllwörter zählen nicht. Mit dieser Definition stimmen Sie jetzt noch einmal ab.',
+            'A claim is the smallest part of the reference answer that can be checked at one place in the Kompendium. Every action (document, replace) is its own claim. Every reason (because) and every purpose (so that) is its own claim. A list that the Kompendium states as one list stays one claim. Repetitions and filler do not count. Vote again with this definition.')),
+        mo.accordion({t(f'Auflösung: Satz {letter} nach jeder Definition', f'Solution: sentence {letter} by each definition'): _breakdown(letter, text, splits)
+                      for letter, text, splits in EXAMPLES}),
         hint(t(f'RAGAS gibt dem Richter keine Definition. Die Anweisung lautet nur: "{_cr_prompt.splitlines()[0]}". Der Richter gpt-oss-120b zerlegt meist je Satz, llama-3-3-70b feiner (Abschnitt E b).',
                f'RAGAS gives the judge no definition. The instruction only says: "{_cr_prompt.splitlines()[0]}". The judge gpt-oss-120b mostly splits per sentence, llama-3-3-70b finer (section E b).')),
     ], gap=1)

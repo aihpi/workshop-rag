@@ -11,6 +11,7 @@
   - 2026-10-21 created from the material and Hanno's review notes (no earlier plan.md existed in the repository; Jill's "meta plan" referenced in code comments is not in the repo)
   - 2026-10-21 audience and presenter roles skipped on request
   - 2026-10-21 revision 2 confirmed by Hanno; deviations from the rows below: 4.3 (E a, line 72) not applied; X2 translation stage dropped, judge reasons stay English with one hint; F3 and G4 say "small to medium effects in opposite directions, cost decides" instead of "cannot decide"; F4 ends with the held-out set sentence; D2 dictionary card also allows two claims; F7 run band is GitHub issue #33 (aihpi/workshop-rag); the live button stays
+  - 2026-10-21 Hanno: examples replaced by three single sentences of at most 150 characters (gold 34, 28, 30 as A, B, C); definitions split into everyday whole, everyday granular, logic (without the purpose link) and working definition with four rules (actions split, reasons and purposes split, a list the Kompendium states as one list stays one claim, repetitions do not count); counts A 1/2/5/5, B 1/2/4/3, C 1/2/9/3; slides rebuilt per hpi-corporate-design (no shadow, sentence case)
   - 2026-10-21 creator (main agent) complete: w3_02_retrieval_evaluation.py, ragkit/w3_eval.py (paired_diff), ragkit/corpus_text.py; marimo check, export de and en, gated cells exercised, pytest 80 passed, ruff clean
 
 ## 2. Interface (read-only copy)
