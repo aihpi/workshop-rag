@@ -99,7 +99,7 @@ def _(mo, t, theme):
 
     # Every place where participants act gets a numbered task box; the short version has no TOP_K choice.
     # Each quiz is its own counted step (CR-19, as in w3_01): "Kurz geprüft" before the task it prepares.
-    TASK_ORDER = (['judge', 'quiz_cp', 'cp', 'quiz_cr', 'cr', 'check', 'spread', 'topk_predict']
+    TASK_ORDER = (['judge', 'quiz_cp', 'cp', 'quiz_cr', 'cr', 'check', 'topk_predict']
                   + t.full(['quiz_topk', 'topk_choose', 'topk_choose2'], []))
 
     def task(name, title, steps, time):
@@ -697,27 +697,15 @@ def _(bi_cell, demo, ev, frame, hint, left, md_table, mo, nw, t, yes_no):
 
 
 @app.cell(hide_code=True)
-def _(mo, t, task):
-    # Section E, part c (row 12, part 1): heading and prediction; the diagram appears as soon as a prediction is chosen
-    _choices = {t('immer dieselben Zahlen', 'always the same numbers'): 'same',
-                t('leicht unterschiedliche Zahlen', 'slightly different numbers'): 'slight',
-                t('völlig verschiedene Zahlen', 'completely different numbers'): 'wild'}
-    # One prediction per metric: the split into claims and the chunk verdicts can vary independently.
-    ui_pred12 = mo.ui.dictionary({
-        'cp': mo.ui.radio(_choices, label=t('Was erwarten Sie für Context Precision?', 'What do you expect for Context Precision?')),
-        'cr': mo.ui.radio(_choices, label=t('Was erwarten Sie für Context Recall?', 'What do you expect for Context Recall?')),
-    })
+def _(mo, t):
+    # Section E, part c (row 12, part 1): heading only. The prediction task was dropped on 2026-10-27: whether CP or CR
+    # varies depends on the question (rank of the flipped verdict, number of claims), so no answer holds in general.
     mo.vstack([
         mo.md(t('### c. Derselbe Richter, fünf Läufe', '### c. The same judge, five runs')),
         mo.md(t('Der Richter bewertet die Frage aus Abschnitt B mit denselben fünf Zeilen fünfmal.',
                 'The judge scores the question from section B with the same five lines five times.')),
-        task('spread', t('Vorhersage', 'Prediction'), t(
-            ['Wählen Sie für jede Kennzahl, was Sie erwarten, bevor Sie das Diagramm sehen.', 'Vergleichen Sie danach mit dem Diagramm.'],
-            ['Choose for each metric what you expect before you see the diagram.', 'Then compare with the diagram.']),
-            t('etwa 2 Minuten', 'about 2 minutes')),
-        mo.hstack([ui_pred12['cp'], ui_pred12['cr']], justify='start', gap=3),
     ], gap=1)
-    return (ui_pred12,)
+    return
 
 
 @app.cell(hide_code=True)
@@ -729,9 +717,8 @@ def _(mo):
 
 
 @app.cell(hide_code=True)
-def _(demo, feedback, frame, get_live, hint, mo, plt, t, theme, ui_pred12):
-    # Row 12, part 2: the five cached runs (and your own ones), one resolution per metric and the key takeaway
-    mo.stop(any(v is None for v in ui_pred12.value.values()))
+def _(demo, frame, get_live, hint, mo, plt, t, theme):
+    # Row 12, part 2: the five cached runs (and your own ones), the range per metric and the key takeaway
     _runs = demo['runs']
     _own = get_live()['runs']
     _all = _runs + _own
@@ -777,16 +764,10 @@ def _(demo, feedback, frame, get_live, hint, mo, plt, t, theme, ui_pred12):
                         else ('liegt', f'zwischen {t.num(min(_v))} und {t.num(max(_v))}'))
         return f'{_verb} {name} {_rest}' if inverted else f'{name} {_verb} {_rest}'
 
-    def _actual(metric):
-        """Which prediction the five cached runs confirm (3g): no change, at most half the scale, or more."""
-        _w = round(max(r[metric] for r in _runs) - min(r[metric] for r in _runs), 2)
-        return 'same' if _w == 0 else ('slight' if _w <= 0.5 else 'wild')
-
-    _metrics = (('cp', 'context_precision', 'Context Precision'), ('cr', 'context_recall', 'Context Recall'))
-    _resolve = [feedback(ui_pred12.value[k] == _actual(m), t(
-        f"{'Ihre Rechnung oben war Lauf 1. ' if k == 'cp' else ''}Bei dieser Frage {_span(m, name, inverted=True)}.",
-        f"{'Your computation above was run 1. ' if k == 'cp' else ''}For this question, {_span(m, name)}."))
-        for k, m, name in _metrics]
+    _cp, _cr = ('context_precision', 'Context Precision'), ('context_recall', 'Context Recall')
+    _range = hint(t(
+        f'Ihre Rechnung oben war Lauf 1. Bei dieser Frage {_span(*_cp, inverted=True)}, und {_span(*_cr)}. Bei anderen Fragen kann es anders aussehen: Wie stark ein Wert schwankt, hängt davon ab, auf welchem Rang ein Urteil kippt und in wie viele Aussagen der Richter die Referenzantwort zerlegt.',
+        f'Your computation above was run 1. For this question, {_span(*_cp)}, and {_span(*_cr)}. For other questions it can look different: how much a value varies depends on the rank at which a verdict flips and on how many claims the judge splits the reference answer into.'))
     # What varies over the five runs: the verdicts on single ranks, the claims, or both.
     _ranks = [i for i in range(len(demo['chunks'])) if len({r['chunks'][i]['verdict'] for r in _runs}) > 1]
     _claims_same = len({tuple((c['statement'], c['attributed']) for c in r['claims']) for r in _runs}) == 1
@@ -801,7 +782,7 @@ def _(demo, feedback, frame, get_live, hint, mo, plt, t, theme, ui_pred12):
         _fig,
         hint(t('Punkte: Context Precision. Quadrate: Context Recall. Unter jedem Lauf die Zahl der Aussagen.',
                'Dots: Context Precision. Squares: Context Recall. Under each run the number of claims.')),
-        *_resolve,
+        _range,
         hint(_why),
         frame(t('Kernaussage', 'Key takeaway'), t(
             'Ein einzelner Wert ist eine Stichprobe. Belastbar sind Mittelwerte über viele Fragen, gemessen mit demselben Richter.',
@@ -811,14 +792,14 @@ def _(demo, feedback, frame, get_live, hint, mo, plt, t, theme, ui_pred12):
 
 
 @app.cell(hide_code=True)
-def _(LIMIT, cta, get_used, hint, mo, t, theme, ui_pred12):
+def _(LIMIT, cta, get_used, hint, mo, t, theme):
     # Row 12, part 3 (normal only): ask the judge again, live; prominent button, the limit as a hint (section 10.4)
     _spent = get_used() >= LIMIT
     ui_rerun = mo.ui.run_button(
         label=theme.cta_label(t('Alle drei Läufe genutzt', 'All three runs used') if _spent
                               else t('Richter noch einmal fragen', 'Ask the judge again')),
         disabled=_spent, kind='success')
-    mo.stop(t.short or any(v is None for v in ui_pred12.value.values()))
+    mo.stop(t.short)
     mo.vstack([
         cta(ui_rerun),
         hint(t('Sie können den Richter bis zu dreimal neu urteilen lassen. Vergleichen Sie Ihre neuen Punkte mit denen Ihres Nachbarn.',
@@ -1001,8 +982,8 @@ def _(key, mo, quiz_feedback, quiz_task, t, ui_quiz16):
     # Section G, the quiz as its own counted step before the choice (CR-19)
     t.full(mo.vstack([
         mo.md(t('## G. Ihr TOP_K', '## G. Your TOP_K')),
-        key(t('TOP_K ist eine Abwägung: Wo die Zahlen keinen Unterschied belegen, entscheiden die Kosten.',
-              'TOP_K is a trade-off: where the numbers show no difference, cost decides.')),
+        key(t('TOP_K ist eine Abwägung: Welche Kennzahl zählt, entscheidet der Einsatz; wo die Zahlen keinen Unterschied belegen, entscheiden die Kosten.',
+              'TOP_K is a trade-off: the use case decides which metric counts; where the numbers show no difference, cost decides.')),
         quiz_task('quiz_topk'),
         ui_quiz16,
         quiz_feedback(ui_quiz16.value, 'b', t(
@@ -1131,12 +1112,12 @@ def _(LMM, METRICS, coef_rows, confirmed, contrast_rows, frame, hint, left, md_t
         *[mo.vstack([mo.md(f'#### {name}'), mo.md(left(md_table(coef_rows(model)))), hint(variance_text(model)),
                      mo.md(t('**Alle Paare**', '**All pairs**')), mo.md(left(md_table(contrast_rows(model))))], gap=0.5)
           for model, (_, name) in zip(_models, METRICS)],
-        hint(t('Effektstärke: Differenz geteilt durch die Reststandardabweichung des Modells. Holm: Korrektur für sechs Vergleiche je Kennzahl. Die Scores liegen zwischen 0 und 1; das lineare Modell ist eine Näherung. Jeder Wert ist ein Lauf des Richters; die Streuung von Lauf zu Lauf (Abschnitt E c) steckt nicht in den Intervallen.',
-               'Effect size: difference divided by the residual standard deviation of the model. Holm: correction for six comparisons per metric. Scores lie between 0 and 1; the linear model is an approximation. Every value is one judge run; the run-to-run spread (section E c) is not in the intervals.')),
+        hint(t('Effektstärke: Differenz geteilt durch die Reststandardabweichung des Modells. Holm: Korrektur für sechs Vergleiche je Kennzahl. Die Scores liegen zwischen 0 und 1; das lineare Modell ist eine Näherung. Jeder Wert ist ein eigener Lauf des Richters; die Streuung von Lauf zu Lauf (Abschnitt E c) steckt damit in der Restvarianz und so auch in den Intervallen.',
+               'Effect size: difference divided by the residual standard deviation of the model. Holm: correction for six comparisons per metric. Scores lie between 0 and 1; the linear model is an approximation. Every value is a separate judge run; the run-to-run spread (section E c) is therefore part of the residual variance and so of the intervals.')),
         summary_accordion(_models),
         frame(t('Kernaussage', 'Key takeaway'), t(
-            'Ein Wert ist erst dann besser als ein anderer, wenn der Unterschied belegt und groß genug ist. Sonst entscheiden Kosten, Geschwindigkeit und Promptlänge.',
-            'One value is only better than another when the difference is shown and large enough. Otherwise cost, speed and prompt length decide.')),
+            'Ein Wert ist erst dann besser als ein anderer, wenn der Unterschied belegt und groß genug ist. Sonst entscheiden Kosten, Geschwindigkeit und Promptlänge. Belegen die Zahlen eine Abwägung, etwa mehr Recall gegen weniger Precision, entscheidet der Einsatz, welche Kennzahl zählt.',
+            'One value is only better than another when the difference is shown and large enough. Otherwise cost, speed and prompt length decide. When the numbers show a trade-off, such as more recall against less precision, the use case decides which metric counts.')),
         hint(t('Wer so TOP_K oder eine Konfiguration gewählt hat, hat die 43 Fragen dafür verbraucht. Die endgültige Rechnung gehört auf einen zurückgehaltenen Fragensatz, den die Auswahl nie gesehen hat.',
                'Whoever chose TOP_K or a configuration this way has used up the 43 questions for it. The final computation belongs on a held-out question set that the selection never saw.')),
     ], gap=0.75)})
@@ -1182,6 +1163,7 @@ def _(LMM, confirmed, feedback, hint, mo, signed, t, ui_choice2_go, ui_choice_go
         return next(c for c in LMM['topk'][metric]['contrasts'] if (c['a'], c['b']) == (a, b))
 
     _r13, _p310, _p35, _r35 = _c('context_recall', 1, 3), _c('context_precision', 3, 10), _c('context_precision', 3, 5), _c('context_recall', 3, 5)
+    _r310 = _c('context_recall', 3, 10)
     _shown = [x['p_holm'] < 0.05 for x in (_r13, _p310, _p35, _r35)]
     _changed = t(f'Sie haben Ihre Wahl von {_k1} auf {_k2} geändert. ', f'You changed your choice from {_k1} to {_k2}. ') if _k1 != _k2 else t(
         f'Sie bleiben bei {_k2}. ', f'You stay with {_k2}. ')
@@ -1189,10 +1171,10 @@ def _(LMM, confirmed, feedback, hint, mo, signed, t, ui_choice2_go, ui_choice_go
         f'Zwischen 3 und 5 ist {"keiner der beiden" if not any(_shown[2:]) else "nur einer der beiden"} Unterschiede belegt (Precision {signed(_p35["estimate"])}, p nach Holm {t.num(_p35["p_holm"], 2)}; Recall {signed(_r35["estimate"])}, p nach Holm {t.num(_r35["p_holm"], 2)}).',
         f'Between 3 and 5 {"neither" if not any(_shown[2:]) else "only one"} of the two differences is shown (precision {signed(_p35["estimate"])}, p after Holm {t.num(_p35["p_holm"], 2)}; recall {signed(_r35["estimate"])}, p after Holm {t.num(_r35["p_holm"], 2)}).')
     _text = t(
-        f'{_changed}1 ist belegt schlechter im Recall (1 auf 3: {signed(_r13["estimate"])}, p nach Holm {t.num(_r13["p_holm"], 3)}), 10 belegt schlechter in der Precision (3 auf 10: {signed(_p310["estimate"])}, p nach Holm {t.num(_p310["p_holm"], 3)}). {_three_five} Wer 3 wählt, spart Promptlänge; wer 5 wählt, kauft etwas Recall, den die Daten nicht belegen. Beides ist vertretbar, 1 und 10 sind es nicht; zwischen 3 und 5 entscheiden Kosten und Promptlänge.',
-        f'{_changed}1 is shown to be worse in recall (1 to 3: {signed(_r13["estimate"])}, p after Holm {t.num(_r13["p_holm"], 3)}), 10 shown to be worse in precision (3 to 10: {signed(_p310["estimate"])}, p after Holm {t.num(_p310["p_holm"], 3)}). {_three_five} Choosing 3 saves prompt length; choosing 5 buys some recall the data do not show. Both are defensible, 1 and 10 are not; between 3 and 5 cost and prompt length decide.')
+        f'{_changed}1 ist belegt schlechter im Recall (1 auf 3: {signed(_r13["estimate"])}, p nach Holm {t.num(_r13["p_holm"], 3)}). Von 3 auf 10 steigt Recall belegt ({signed(_r310["estimate"])}, p nach Holm {t.num(_r310["p_holm"], 3)}) und Precision fällt belegt ({signed(_p310["estimate"])}, p nach Holm {t.num(_p310["p_holm"], 3)}): eine Abwägung, keine Rangfolge. {_three_five} Welche Kennzahl zählt, entscheidet der Einsatz. Darf keine einschlägige Stelle fehlen, etwa bei Rechtsfragen, sind 5 oder 10 gut begründet, bezahlt mit Promptlänge. Sonst spart 3 Promptlänge, ohne belegt schlechter zu sein als 5. Nur 1 ist nicht vertretbar.',
+        f'{_changed}1 is shown to be worse in recall (1 to 3: {signed(_r13["estimate"])}, p after Holm {t.num(_r13["p_holm"], 3)}). From 3 to 10 recall is shown to rise ({signed(_r310["estimate"])}, p after Holm {t.num(_r310["p_holm"], 3)}) and precision is shown to fall ({signed(_p310["estimate"])}, p after Holm {t.num(_p310["p_holm"], 3)}): a trade-off, not a ranking. {_three_five} The use case decides which metric counts. If no relevant passage may be missed, for example in legal questions, 5 or 10 are well founded, paid for with prompt length. Otherwise 3 saves prompt length without being shown to be worse than 5. Only 1 is not defensible.')
     mo.vstack([
-        feedback(_k2 in (3, 5), _text),
+        feedback(_k2 in (3, 5, 10), _text),
         hint(t('Vor der Pause fragen wir im Raum, wer was gewählt hat und wer gewechselt ist (etwa 3 Minuten).',
                'Before the break we ask the room who chose what and who switched (about 3 minutes).')),
     ], gap=0.75)
